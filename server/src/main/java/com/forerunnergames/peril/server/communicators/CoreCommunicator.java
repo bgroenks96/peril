@@ -31,7 +31,9 @@ public interface CoreCommunicator
 {
   ImmutableSet <PlayerPacket> fetchCurrentPlayerData ();
 
-  void notifyRemovePlayerFromGame (final PlayerPacket player);
+  void notifySuspendGame ();
+
+  void notifyResumeGame ();
 
   <T extends PlayerRequestEvent> void publishPlayerRequestEvent (final PlayerPacket player, final T requestEvent);
 

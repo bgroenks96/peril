@@ -25,11 +25,9 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.events.internal.player.InboundPlayerInformRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.InboundPlayerRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.InboundPlayerResponseRequestEvent;
-import com.forerunnergames.peril.core.events.internal.player.PlayerDisconnectedEvent;
 import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataResponseEvent;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
-import com.forerunnergames.peril.core.model.state.events.SuspendGameEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.events.remote.RequestEvent;
@@ -188,21 +186,5 @@ public class InternalCommunicationHandler
 
     final ImmutableSet <PlayerPacket> players = playerModel.getPlayerPackets ();
     eventBus.publish (new UpdatePlayerDataResponseEvent (players, event.getEventId ()));
-  }
-
-  @Handler
-  void onEvent (final PlayerDisconnectedEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}]", event);
-
-    if (!playerModel.existsPlayerWith (event.getPlayerName ()))
-    {
-      return;
-    }
-
-    log.debug ("Player [{}] disconnected unexpectedly!", event.getPlayer ());
-    eventBus.publish (new SuspendGameEvent ());
   }
 }

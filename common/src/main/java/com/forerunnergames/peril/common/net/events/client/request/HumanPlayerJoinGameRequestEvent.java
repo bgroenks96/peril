@@ -21,11 +21,18 @@ import com.forerunnergames.peril.common.net.events.defaults.AbstractPlayerJoinGa
 import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
+import java.util.UUID;
+
 public final class HumanPlayerJoinGameRequestEvent extends AbstractPlayerJoinGameRequestEvent
 {
   public HumanPlayerJoinGameRequestEvent (final String playerName)
   {
     super (playerName, PersonSentience.HUMAN);
+  }
+
+  public HumanPlayerJoinGameRequestEvent (final String playerName, final UUID playerSecretId)
+  {
+    super (playerName, PersonSentience.HUMAN, playerSecretId);
   }
 
   @RequiredForNetworkSerialization

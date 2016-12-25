@@ -24,14 +24,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.mockito.AdditionalMatchers.not;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -59,16 +60,18 @@ import com.forerunnergames.peril.common.net.events.client.request.AiJoinGameServ
 import com.forerunnergames.peril.common.net.events.client.request.AiPlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerQuitGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.SpectatorJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerDisconnectEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerQuitGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.SpectatorJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
@@ -109,6 +112,7 @@ import com.google.common.collect.Sets;
 import java.net.InetSocketAddress;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 import net.engio.mbassy.bus.MBassador;
 
@@ -561,39 +565,184 @@ public class MultiplayerControllerTest
   }
 
   @Test
-  public void testHumanPlayerLeaveGame ()
+  public void testHumanPlayerDisconnected ()
   {
     final MultiplayerController mpc = mpcBuilder.build (eventBus);
-    final ClientPlayerTuple clientPlayer = addHumanClientAndMockPlayerToGameServer ("TestPlayer1", mpc);
+    final ClientPlayerTuple clientPlayer1 = addHumanClientAndMockPlayerToGameServer ("TestPlayer1", mpc);
+    final ClientPlayerTuple clientPlayer2 = addHumanClientAndMockPlayerToGameServer ("TestPlayer2", mpc);
 
-    mockCoreCommunicatorPlayersWith (clientPlayer.player ());
+    mockCoreCommunicatorPlayersWith (clientPlayer1.player (), clientPlayer2.player ());
 
-    disconnect (clientPlayer.client ());
-    verify (mockCoreCommunicator).notifyRemovePlayerFromGame (eq (clientPlayer.player ()));
-    communicateEventFromCore (new PlayerLeaveGameEvent (clientPlayer.player (), ImmutableSet.<PlayerPacket> of ()));
+    disconnect (clientPlayer1.client ());
 
-    // make sure nothing was sent to the disconnecting player
-    verify (mockHumanClientCommunicator, never ()).sendTo (eq (clientPlayer.client ()),
-                                                           isA (PlayerLeaveGameEvent.class));
-    assertFalse (mpc.isPlayerInGame (clientPlayer.player ()));
+    verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer2.client ()), isA (PlayerDisconnectEvent.class));
+    verify (mockHumanClientCommunicator, never ()).sendTo (eq (clientPlayer1.client ()),
+                                                           isA (PlayerDisconnectEvent.class));
+    verify (mockHumanClientCommunicator, never ()).sendTo (any (RemoteClient.class),
+                                                           isA (PlayerQuitGameSuccessEvent.class));
+
+    assertFalse (mpc.isPlayerInGame (clientPlayer1.player ()));
   }
 
   @Test
-  public void testAiPlayerLeaveGame ()
+  public void testHumanPlayerRejoinSucceedsWithValidId ()
+  {
+    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final String playerName1 = "TestPlayer1";
+    final String playerName2 = "TestPlayer2";
+    final ClientPlayerTuple clientPlayer1 = addHumanClientAndMockPlayerToGameServer (playerName1, mpc);
+    final ClientPlayerTuple clientPlayer2 = addHumanClientAndMockPlayerToGameServer (playerName2, mpc);
+
+    reset (mockHumanClientCommunicator);
+
+    final UUID secretIdPlayer1 = mpc.getPlayerServerId (clientPlayer1.player ()).get ();
+
+    mockCoreCommunicatorPlayersWith (clientPlayer1.player (), clientPlayer2.player ());
+
+    disconnect (clientPlayer1.client ());
+
+    verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer2.client ()), isA (PlayerDisconnectEvent.class));
+    verify (mockHumanClientCommunicator, never ()).sendTo (eq (clientPlayer1.client ()),
+                                                           isA (PlayerDisconnectEvent.class));
+    verify (mockHumanClientCommunicator, never ()).sendTo (any (RemoteClient.class),
+                                                           isA (PlayerQuitGameSuccessEvent.class));
+
+    assertFalse (mpc.isPlayerInGame (clientPlayer1.player ()));
+
+    communicateEventFromClient (new HumanJoinGameServerRequestEvent (), clientPlayer1.client ());
+
+    verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer1.client ()), isA (JoinGameServerSuccessEvent.class));
+
+    communicateEventFromClient (new HumanPlayerJoinGameRequestEvent (playerName1, secretIdPlayer1),
+                                clientPlayer1.client ());
+
+    verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer1.client ()), isA (PlayerJoinGameSuccessEvent.class));
+    verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer2.client ()), isA (PlayerJoinGameSuccessEvent.class));
+
+    assertTrue (mpc.isPlayerInGame (clientPlayer1.player ()));
+  }
+
+  @Test
+  public void testHumanPlayerRejoinFailsWithInvalidId ()
+  {
+    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final String playerName1 = "TestPlayer1";
+    final String playerName2 = "TestPlayer2";
+    final ClientPlayerTuple clientPlayer1 = addHumanClientAndMockPlayerToGameServer (playerName1, mpc);
+    final ClientPlayerTuple clientPlayer2 = addHumanClientAndMockPlayerToGameServer (playerName2, mpc);
+
+    reset (mockHumanClientCommunicator);
+
+    mockCoreCommunicatorPlayersWith (clientPlayer1.player (), clientPlayer2.player ());
+
+    disconnect (clientPlayer1.client ());
+
+    verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer2.client ()), isA (PlayerDisconnectEvent.class));
+    verify (mockHumanClientCommunicator, never ()).sendTo (eq (clientPlayer1.client ()),
+                                                           isA (PlayerDisconnectEvent.class));
+    verify (mockHumanClientCommunicator, never ()).sendTo (any (RemoteClient.class),
+                                                           isA (PlayerQuitGameSuccessEvent.class));
+
+    assertFalse (mpc.isPlayerInGame (clientPlayer1.player ()));
+
+    communicateEventFromClient (new HumanJoinGameServerRequestEvent (), clientPlayer1.client ());
+
+    verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer1.client ()), isA (JoinGameServerSuccessEvent.class));
+
+    communicateEventFromClient (new HumanPlayerJoinGameRequestEvent (playerName1, UUID.randomUUID ()),
+                                clientPlayer1.client ());
+
+    final PlayerJoinGameDeniedEventMatcher deniedEventMatcher = new PlayerJoinGameDeniedEventMatcher (playerName1,
+            PlayerJoinGameDeniedEvent.Reason.INVALID_ID);
+    verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer1.client ()), argThat (deniedEventMatcher));
+    verify (mockHumanClientCommunicator, never ()).sendTo (eq (clientPlayer1.client ()),
+                                                           isA (PlayerJoinGameSuccessEvent.class));
+    verify (mockHumanClientCommunicator, never ()).sendTo (eq (clientPlayer2.client ()),
+                                                           isA (PlayerJoinGameSuccessEvent.class));
+
+    assertFalse (mpc.isPlayerInGame (clientPlayer1.player ()));
+  }
+
+  @Test
+  public void testHumanPlayerRejoinFailsWithNameMismatch ()
+  {
+    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final String playerName1 = "TestPlayer1";
+    final String playerName2 = "TestPlayer2";
+    final String playerReconnectName = "SomeOtherName";
+    final ClientPlayerTuple clientPlayer1 = addHumanClientAndMockPlayerToGameServer (playerName1, mpc);
+    final ClientPlayerTuple clientPlayer2 = addHumanClientAndMockPlayerToGameServer (playerName2, mpc);
+
+    reset (mockHumanClientCommunicator);
+
+    final UUID secretIdPlayer1 = mpc.getPlayerServerId (clientPlayer1.player ()).get ();
+
+    mockCoreCommunicatorPlayersWith (clientPlayer1.player (), clientPlayer2.player ());
+
+    disconnect (clientPlayer1.client ());
+
+    verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer2.client ()), isA (PlayerDisconnectEvent.class));
+    verify (mockHumanClientCommunicator, never ()).sendTo (eq (clientPlayer1.client ()),
+                                                           isA (PlayerDisconnectEvent.class));
+    verify (mockHumanClientCommunicator, never ()).sendTo (any (RemoteClient.class),
+                                                           isA (PlayerQuitGameSuccessEvent.class));
+
+    assertFalse (mpc.isPlayerInGame (clientPlayer1.player ()));
+
+    communicateEventFromClient (new HumanJoinGameServerRequestEvent (), clientPlayer1.client ());
+
+    verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer1.client ()), isA (JoinGameServerSuccessEvent.class));
+
+    communicateEventFromClient (new HumanPlayerJoinGameRequestEvent (playerReconnectName, secretIdPlayer1),
+                                clientPlayer1.client ());
+
+    final PlayerJoinGameDeniedEventMatcher deniedEventMatcher = new PlayerJoinGameDeniedEventMatcher (
+            playerReconnectName, PlayerJoinGameDeniedEvent.Reason.NAME_MISMATCH);
+    verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer1.client ()), argThat (deniedEventMatcher));
+    verify (mockHumanClientCommunicator, never ()).sendTo (eq (clientPlayer1.client ()),
+                                                           isA (PlayerJoinGameSuccessEvent.class));
+    verify (mockHumanClientCommunicator, never ()).sendTo (eq (clientPlayer2.client ()),
+                                                           isA (PlayerJoinGameSuccessEvent.class));
+
+    assertFalse (mpc.isPlayerInGame (clientPlayer1.player ()));
+  }
+
+  @Test
+  public void testAiPlayerQuitGame ()
   {
     final MultiplayerController mpc = mpcBuilder.aiPlayerLimit (1).build (eventBus);
-    final String playerName = GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1");
-    final ClientPlayerTuple clientPlayer = addAiClientAndMockPlayerToGameServer (playerName, mpc);
+    final String playerName1 = GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1");
+    final String playerName2 = "TestPlayer2";
+    final ClientPlayerTuple clientPlayer1 = addAiClientAndMockPlayerToGameServer (playerName1, mpc);
+    final ClientPlayerTuple clientPlayer2 = addHumanClientAndMockPlayerToGameServer (playerName2, mpc);
 
-    mockCoreCommunicatorPlayersWith (clientPlayer.player ());
+    mockCoreCommunicatorPlayersWith (clientPlayer1.player (), clientPlayer2.player ());
 
-    disconnect (clientPlayer.client ());
-    verify (mockCoreCommunicator).notifyRemovePlayerFromGame (eq (clientPlayer.player ()));
-    communicateEventFromCore (new PlayerLeaveGameEvent (clientPlayer.player (), ImmutableSet.<PlayerPacket> of ()));
+    communicateEventFromClient (new PlayerQuitGameRequestEvent (), clientPlayer1.client ());
 
-    // make sure nothing was sent to the disconnecting player
-    verify (mockAiClientCommunicator, never ()).sendTo (eq (clientPlayer.client ()), isA (PlayerLeaveGameEvent.class));
-    assertFalse (mpc.isPlayerInGame (clientPlayer.player ()));
+    verify (mockAiClientCommunicator).sendToAll (isA (PlayerQuitGameSuccessEvent.class));
+    verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer2.client ()), isA (PlayerQuitGameSuccessEvent.class));
+
+    assertFalse (mpc.isPlayerInGame (clientPlayer1.player ()));
+  }
+
+  @Test
+  public void testHumanPlayerQuitGame ()
+  {
+    final MultiplayerController mpc = mpcBuilder.aiPlayerLimit (1).build (eventBus);
+    final String playerName1 = GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1");
+    final String playerName2 = "TestPlayer2";
+    final ClientPlayerTuple clientPlayer1 = addAiClientAndMockPlayerToGameServer (playerName1, mpc);
+    final ClientPlayerTuple clientPlayer2 = addHumanClientAndMockPlayerToGameServer (playerName2, mpc);
+
+    mockCoreCommunicatorPlayersWith (clientPlayer1.player (), clientPlayer2.player ());
+
+    communicateEventFromClient (new PlayerQuitGameRequestEvent (), clientPlayer1.client ());
+
+    verify (mockAiClientCommunicator).sendToAll (isA (PlayerQuitGameSuccessEvent.class));
+    verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer2.client ()), isA (PlayerQuitGameSuccessEvent.class));
+
+    assertFalse (mpc.isPlayerInGame (clientPlayer1.player ()));
   }
 
   @Test
@@ -686,7 +835,7 @@ public class MultiplayerControllerTest
 
     // Request that the player/client claim an available country.
     communicateEventFromCore (new PlayerClaimCountryRequestEvent (clientPlayer.player (),
-            ImmutableSet.<CountryPacket> of ()));
+            ImmutableSet. <CountryPacket>of ()));
     verify (mockHumanClientCommunicator).sendTo (eq (clientPlayer.client ()),
                                                  isA (PlayerClaimCountryRequestEvent.class));
 
@@ -726,7 +875,7 @@ public class MultiplayerControllerTest
     final ClientPlayerTuple second = addHumanClientAndMockPlayerToGameServer ("TestPlayer2", mpc);
 
     // Request that the player/client claim an available country.
-    communicateEventFromCore (new PlayerClaimCountryRequestEvent (first.player (), ImmutableSet.<CountryPacket> of ()));
+    communicateEventFromCore (new PlayerClaimCountryRequestEvent (first.player (), ImmutableSet. <CountryPacket>of ()));
     verify (mockHumanClientCommunicator).sendTo (eq (first.client ()), isA (PlayerClaimCountryRequestEvent.class));
 
     mockCoreCommunicatorPlayersWith (first.player (), second.player ());
@@ -753,7 +902,7 @@ public class MultiplayerControllerTest
 
     // Request that the first player/client claim an available country.
     final Event claimCountryRequestEvent1 = new PlayerClaimCountryRequestEvent (first.player (),
-            ImmutableSet.<CountryPacket> of ());
+            ImmutableSet. <CountryPacket>of ());
     communicateEventFromCore (claimCountryRequestEvent1);
     verify (mockHumanClientCommunicator).sendTo (first.client (), claimCountryRequestEvent1);
     // Make sure that the request was not sent to the second player/client.
@@ -766,7 +915,7 @@ public class MultiplayerControllerTest
 
     // Request that the second player/client claim an available country.
     final Event claimCountryRequestEvent2 = new PlayerClaimCountryRequestEvent (second.player (),
-            ImmutableSet.<CountryPacket> of ());
+            ImmutableSet. <CountryPacket>of ());
     communicateEventFromCore (claimCountryRequestEvent2);
     verify (mockHumanClientCommunicator).sendTo (second.client (), claimCountryRequestEvent2);
     // Make sure that the request was not sent to the first player/client.
@@ -779,7 +928,7 @@ public class MultiplayerControllerTest
 
     // Request that the first player/client claim an available country.
     final Event claimCountryRequestEvent3 = new PlayerClaimCountryRequestEvent (first.player (),
-            ImmutableSet.<CountryPacket> of ());
+            ImmutableSet. <CountryPacket>of ());
     communicateEventFromCore (claimCountryRequestEvent3);
     verify (mockHumanClientCommunicator).sendTo (first.client (), claimCountryRequestEvent3);
     // Make sure that the request was not sent to the second player/client.
@@ -792,7 +941,7 @@ public class MultiplayerControllerTest
 
     // Request that the second player/client claim an available country.
     final Event claimCountryRequestEvent4 = new PlayerClaimCountryRequestEvent (second.player (),
-            ImmutableSet.<CountryPacket> of ());
+            ImmutableSet. <CountryPacket>of ());
     communicateEventFromCore (claimCountryRequestEvent4);
     verify (mockHumanClientCommunicator).sendTo (second.client (), claimCountryRequestEvent4);
     // Make sure that the request was not sent to the first player/client.
@@ -805,7 +954,7 @@ public class MultiplayerControllerTest
 
     // Request that the first player/client claim an available country.
     final Event claimCountryRequestEvent5 = new PlayerClaimCountryRequestEvent (first.player (),
-            ImmutableSet.<CountryPacket> of ());
+            ImmutableSet. <CountryPacket>of ());
     communicateEventFromCore (claimCountryRequestEvent5);
     verify (mockHumanClientCommunicator).sendTo (first.client (), claimCountryRequestEvent5);
     // Make sure that the request was not sent to the second player/client.
@@ -856,8 +1005,6 @@ public class MultiplayerControllerTest
     // TODO ... need some mechanism for polling player data from core/server
   }
 
-  // <<<<<<<<<<<< Test helper facilities >>>>>>>>>>>>>> //
-
   // unit test 1 for bug detailed in PERIL-100: https://forerunnergames.atlassian.net/browse/PERIL-100
   @Test
   public void testHumanClientDisconnectAfterSendingPlayerJoinGameRequest ()
@@ -872,7 +1019,7 @@ public class MultiplayerControllerTest
     assertFalse (mpc.isClientInServer (client));
     communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player),
             mpc.getPersonLimits ()));
-    verify (mockCoreCommunicator).notifyRemovePlayerFromGame (eq (player));
+    assertFalse (mpc.isPlayerInGame (player));
   }
 
   // unit test 2 for bug detailed in PERIL-100: https://forerunnergames.atlassian.net/browse/PERIL-100
@@ -889,8 +1036,10 @@ public class MultiplayerControllerTest
     assertFalse (mpc.isClientInServer (client));
     communicateEventFromCore (new PlayerJoinGameSuccessEvent (player, ImmutableSet.of (player),
             mpc.getPersonLimits ()));
-    verify (mockCoreCommunicator).notifyRemovePlayerFromGame (eq (player));
+    assertFalse (mpc.isPlayerInGame (player));
   }
+
+  // -------------- Test helper facilities -------------- //
 
   private PlayerPacket createMockHumanPlayer (final String playerName)
   {
@@ -1364,6 +1513,24 @@ public class MultiplayerControllerTest
     {
       return Objects.equals (argument.getPerson (), player)
               && Objects.equals (argument.getPlayersInGame (), playersInGame);
+    }
+  }
+
+  private static final class PlayerJoinGameDeniedEventMatcher implements ArgumentMatcher <PlayerJoinGameDeniedEvent>
+  {
+    private final String playerName;
+    private final PlayerJoinGameDeniedEvent.Reason reason;
+
+    PlayerJoinGameDeniedEventMatcher (final String playerName, final PlayerJoinGameDeniedEvent.Reason reason)
+    {
+      this.playerName = playerName;
+      this.reason = reason;
+    }
+
+    @Override
+    public boolean matches (final PlayerJoinGameDeniedEvent argument)
+    {
+      return Objects.equals (argument.getPlayerName (), playerName) && Objects.equals (argument.getReason (), reason);
     }
   }
 

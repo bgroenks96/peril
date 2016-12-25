@@ -23,10 +23,16 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
+import java.util.UUID;
+
+import javax.annotation.Nullable;
+
 public abstract class AbstractPlayerJoinGameRequestEvent implements PlayerJoinGameRequestEvent
 {
   private final String playerName;
   private final PersonSentience playerSentience;
+  @Nullable
+  private final UUID playerSecretId;
 
   protected AbstractPlayerJoinGameRequestEvent (final String playerName, final PersonSentience playerSentience)
   {
@@ -35,6 +41,20 @@ public abstract class AbstractPlayerJoinGameRequestEvent implements PlayerJoinGa
 
     this.playerName = playerName;
     this.playerSentience = playerSentience;
+    this.playerSecretId = null;
+  }
+
+  protected AbstractPlayerJoinGameRequestEvent (final String playerName,
+                                                final PersonSentience playerSentience,
+                                                final UUID playerSecretId)
+  {
+    Arguments.checkIsNotNull (playerName, "playerName");
+    Arguments.checkIsNotNull (playerSentience, "playerSentience");
+    Arguments.checkIsNotNull (playerSecretId, "playerSecretId");
+
+    this.playerName = playerName;
+    this.playerSentience = playerSentience;
+    this.playerSecretId = playerSecretId;
   }
 
   @RequiredForNetworkSerialization
@@ -42,6 +62,7 @@ public abstract class AbstractPlayerJoinGameRequestEvent implements PlayerJoinGa
   {
     playerName = null;
     playerSentience = null;
+    playerSecretId = null;
   }
 
   @Override
@@ -54,6 +75,19 @@ public abstract class AbstractPlayerJoinGameRequestEvent implements PlayerJoinGa
   public PersonSentience getPlayerSentience ()
   {
     return playerSentience;
+  }
+
+  @Override
+  @Nullable
+  public UUID getPlayerSecretId ()
+  {
+    return playerSecretId;
+  }
+
+  @Override
+  public boolean hasSecretId ()
+  {
+    return playerSecretId != null;
   }
 
   @Override

@@ -25,6 +25,7 @@ import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableCollection;
@@ -41,7 +42,7 @@ import net.engio.mbassy.listener.Handler;
 
 public final class EventBusHandler
 {
-  private final Deque <Event> events = new ArrayDeque<> ();
+  private final Deque <Event> events = new ArrayDeque <> ();
 
   public static IPublicationErrorHandler createEventBusFailureHandler ()
   {
@@ -51,6 +52,20 @@ public final class EventBusHandler
   public void clearEvents ()
   {
     events.clear ();
+  }
+
+  public <T> T lastEventWhere (final Class <T> type, final Predicate <T> matcher)
+  {
+    Arguments.checkIsNotNull (type, "type");
+
+    for (final Event event : events)
+    {
+      if (!type.isInstance (event)) continue;
+      final T typedEvent = type.cast (event);
+      if (matcher.apply (typedEvent)) return typedEvent;
+    }
+
+    throw new IllegalStateException ("No matching event of type [" + type + "] was fired.");
   }
 
   /**
@@ -363,7 +378,7 @@ public final class EventBusHandler
       // if (causeMessage.isPresent () && causeMessage.get ().contains (getClass ().getSimpleName ())) return;
 
       final StringBuilder errorTraceBuilder = new StringBuilder (error + "\n");
-      final Deque <Throwable> causeChain = new ArrayDeque<> ();
+      final Deque <Throwable> causeChain = new ArrayDeque <> ();
       addCause (errorTraceBuilder, error.getCause (), causeChain);
       fail (Strings.format ("{}: Error caught in EventBus:\n{}", getClass ().getSimpleName (),
                             errorTraceBuilder.toString ()));

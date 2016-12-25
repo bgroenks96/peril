@@ -33,7 +33,10 @@ public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <Player
     DUPLICATE_NAME,
     DUPLICATE_COLOR,
     DUPLICATE_TURN_ORDER,
-    INVALID_NAME
+    INVALID_NAME,
+    INVALID_ADDRESS,
+    INVALID_ID,
+    NAME_MISMATCH
   }
 
   public PlayerJoinGameDeniedEvent (final String playerName, final Reason reason)

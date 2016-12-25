@@ -28,9 +28,10 @@ import com.forerunnergames.peril.core.events.internal.interfaces.InternalRespons
 import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerInformRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerResponseRequestEvent;
-import com.forerunnergames.peril.core.events.internal.player.PlayerDisconnectedEvent;
 import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataResponseEvent;
+import com.forerunnergames.peril.core.model.state.events.ResumeGameEvent;
+import com.forerunnergames.peril.core.model.state.events.SuspendGameEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
@@ -74,16 +75,21 @@ public class DefaultCoreCommunicator implements CoreCommunicator
   }
 
   @Override
-  public void notifyRemovePlayerFromGame (final PlayerPacket player)
+  public void notifySuspendGame ()
   {
-    final PlayerDisconnectedEvent leaveGameEvent = new PlayerDisconnectedEvent (player);
-    eventBus.publish (leaveGameEvent);
+    eventBus.publish (new SuspendGameEvent ());
+  }
+
+  @Override
+  public void notifyResumeGame ()
+  {
+    eventBus.publish (new ResumeGameEvent ());
   }
 
   @Override
   public <T extends PlayerRequestEvent> void publishPlayerRequestEvent (final PlayerPacket player, final T event)
   {
-    eventBus.publish (new DefaultInboundPlayerRequestEvent<> (player, event));
+    eventBus.publish (new DefaultInboundPlayerRequestEvent <> (player, event));
   }
 
   @Override
@@ -91,7 +97,8 @@ public class DefaultCoreCommunicator implements CoreCommunicator
                                                                                                                      final T responseRequestEvent,
                                                                                                                      final R inputRequestEvent)
   {
-    eventBus.publish (new DefaultInboundPlayerResponseRequestEvent<> (player, responseRequestEvent, inputRequestEvent));
+    eventBus.publish (new DefaultInboundPlayerResponseRequestEvent <> (player, responseRequestEvent,
+            inputRequestEvent));
   }
 
   @Override
@@ -99,7 +106,7 @@ public class DefaultCoreCommunicator implements CoreCommunicator
                                                                                                            final T informRequestEvent,
                                                                                                            final R informEvent)
   {
-    eventBus.publish (new DefaultInboundPlayerInformRequestEvent<> (player, informRequestEvent, informEvent));
+    eventBus.publish (new DefaultInboundPlayerInformRequestEvent <> (player, informRequestEvent, informEvent));
   }
 
   // --- response handlers --- //

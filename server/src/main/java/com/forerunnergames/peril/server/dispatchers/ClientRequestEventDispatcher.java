@@ -25,7 +25,7 @@ import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerReque
 import com.forerunnergames.peril.common.net.events.client.request.AiJoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerRejoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerQuitGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.SpectatorJoinGameRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -85,7 +85,7 @@ public final class ClientRequestEventDispatcher extends AbstractNetworkEventDisp
   }
 
   @Handler
-  void onEvent (final PlayerRejoinGameRequestEvent event)
+  void onEvent (final PlayerQuitGameRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

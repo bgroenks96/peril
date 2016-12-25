@@ -25,15 +25,24 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
+import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
+import java.util.UUID;
+
+import javax.annotation.Nullable;
+
 public final class PlayerJoinGameSuccessEvent extends AbstractPersonJoinGameSuccessEvent <PlayerPacket>
         implements PlayerEvent
 {
+  // only present if identity = self
+  @Nullable
+  private final UUID playerSecretId;
+
   /**
    * Convenience constructor for when person identity is unknown or not cared about, and there are no spectators in game
    * or spectators in game are unknown or not cared about.
@@ -43,6 +52,8 @@ public final class PlayerJoinGameSuccessEvent extends AbstractPersonJoinGameSucc
                                      final PersonLimits personLimits)
   {
     super (player, playersInGame, personLimits);
+
+    playerSecretId = null;
   }
 
   /**
@@ -54,6 +65,8 @@ public final class PlayerJoinGameSuccessEvent extends AbstractPersonJoinGameSucc
                                      final PersonLimits personLimits)
   {
     super (player, playersInGame, spectatorsInGame, personLimits);
+
+    playerSecretId = null;
   }
 
   public PlayerJoinGameSuccessEvent (final PlayerPacket player,
@@ -63,6 +76,21 @@ public final class PlayerJoinGameSuccessEvent extends AbstractPersonJoinGameSucc
                                      final PersonLimits personLimits)
   {
     super (player, identity, playersInGame, spectatorsInGame, personLimits);
+
+    playerSecretId = null;
+  }
+
+  public PlayerJoinGameSuccessEvent (final PlayerPacket player,
+                                     final UUID playerSecretId,
+                                     final ImmutableSet <PlayerPacket> playersInGame,
+                                     final ImmutableSet <SpectatorPacket> spectatorsInGame,
+                                     final PersonLimits personLimits)
+  {
+    super (player, PersonIdentity.SELF, playersInGame, spectatorsInGame, personLimits);
+
+    Arguments.checkIsNotNull (playerSecretId, "playerSecretId");
+
+    this.playerSecretId = playerSecretId;
   }
 
   @Override
@@ -101,8 +129,20 @@ public final class PlayerJoinGameSuccessEvent extends AbstractPersonJoinGameSucc
     }));
   }
 
+  @Nullable
+  public UUID getPlayerSecretId ()
+  {
+    return playerSecretId;
+  }
+
+  public boolean hasSecretId ()
+  {
+    return playerSecretId != null && getIdentity () == PersonIdentity.SELF;
+  }
+
   @RequiredForNetworkSerialization
   private PlayerJoinGameSuccessEvent ()
   {
+    playerSecretId = null;
   }
 }
