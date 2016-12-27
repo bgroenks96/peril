@@ -32,6 +32,8 @@ import com.google.common.collect.UnmodifiableIterator;
 import java.util.Collection;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 /**
  * An immutable, set-like data structure for holding sets of cards. A CardSet can be verified as a valid trade-in match
  * through the {@link #isMatch()} method and obtained via the {@link #match()} method. Any CardSets referenced through a
@@ -77,11 +79,9 @@ public final class CardSet implements Collection <Card>
   }
 
   @Override
-  public boolean contains (final Object card)
+  public boolean contains (@Nullable final Object card)
   {
-    Arguments.checkIsNotNull (card, "card");
-
-    return cards.contains (card);
+    return card != null && cards.contains (card);
   }
 
   @Override
