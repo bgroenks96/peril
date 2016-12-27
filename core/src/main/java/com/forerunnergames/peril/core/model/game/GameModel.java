@@ -20,6 +20,8 @@ package com.forerunnergames.peril.core.model.game;
 
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.EndPlayerTurnDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.WaitingForPlayersToJoinGameEvent;
@@ -44,6 +46,7 @@ import com.forerunnergames.peril.core.model.state.annotations.StateTransitionCon
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
@@ -204,12 +207,30 @@ public final class GameModel extends AbstractGamePhaseHandler
                getCurrentPlayerId (), turnDataCache);
   }
 
+  @Handler (priority = Integer.MIN_VALUE)
+  void onEvent (final EndPlayerTurnRequestEvent event)
+  {
+    if (turnDataCache.isSet (CacheKey.END_PLAYER_TURN_VERIFIED))
+    {
+      return;
+    }
+
+    final Optional <PlayerPacket> sender = internalCommHandler.senderOf (event);
+    if (!sender.isPresent () || sender.get ().isNot (getCurrentPlayerPacket ()))
+    {
+      publish (new EndPlayerTurnDeniedEvent (sender.get (), EndPlayerTurnDeniedEvent.Reason.NOT_IN_TURN));
+      return;
+    }
+
+    publish (new EndPlayerTurnDeniedEvent (getCurrentPlayerPacket (), EndPlayerTurnDeniedEvent.Reason.ACTION_REQUIRED));
+  }
+
   @Handler
   void onEvent (final UpdatePlayerDataRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}]", event);
+    log.trace ("Internal event received [{}]", event);
 
     final ImmutableSet <PlayerPacket> players = playerModel.getPlayerPackets ();
     publish (new UpdatePlayerDataResponseEvent (players, event.getEventId ()));
@@ -220,7 +241,7 @@ public final class GameModel extends AbstractGamePhaseHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}]", event);
+    log.trace ("Internal event received [{}]", event);
 
     final String targetPlayerName = event.getTargetPlayer ().getName ();
     if (!playerModel.existsPlayerWith (targetPlayerName))

@@ -9,7 +9,8 @@ public final class EndPlayerTurnDeniedEvent extends AbstractPlayerDeniedEvent <R
 {
   public enum Reason
   {
-    NOT_IN_TURN
+    NOT_IN_TURN,
+    ACTION_REQUIRED
   }
 
   public EndPlayerTurnDeniedEvent (final PlayerPacket player, final Reason reason)

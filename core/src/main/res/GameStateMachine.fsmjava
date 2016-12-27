@@ -309,9 +309,6 @@
                 <transition event="onSkipPlayerTurnEvent"
                             action="turnPhase.skipPlayerTurn(event)"
                             nextState="AdvancePlayerTurn"/>
-                <transition event="onEndPlayerTurnRequestEvent"
-                            condition="turnPhase.verifyPlayerEndTurnRequest(event)"
-                            nextState="AdvancePlayerTurn"/>
                 <state name="ReinforcementPhase">
                   <onEntry action="reinforcePhase.begin()"/>
                   <onExit action="reinforcePhase.end()"/>
@@ -347,6 +344,9 @@
                     <transition event="onPlayerEndAttackPhaseRequestEvent"
                                 action="attackPhase.processPlayerEndAttackPhase(event)"
                                 nextState="FortifyPhase"/>
+                    <transition event="onEndPlayerTurnRequestEvent"
+                               condition="turnPhase.verifyPlayerEndTurnRequest(event)"
+                               nextState="AdvancePlayerTurn"/>
                   </state>
                   <state name="WaitForPlayerAttackOrder">
                     <onEntry action="attackPhase.waitForPlayerAttackOrder()">
@@ -357,6 +357,9 @@
                       <timerStop timer="AttackerResponseTimer"/>
                       <timerStop timer="DefenderResponseTimer"/>
                     </onExit>
+                    <transition event="onEndPlayerTurnRequestEvent"
+                               condition="turnPhase.verifyPlayerEndTurnRequest(event)"
+                               nextState="AdvancePlayerTurn"/>
                     <transition event="onPlayerOrderAttackRequestEvent"
                                 condition="attackPhase.verifyPlayerAttackOrder(event)"
                                 nextState="ProcessBattle">
@@ -388,7 +391,7 @@
                       <!-- Timer will be stopped in onExit when condition is true. -->
                       <timerStop timer="DefenderResponseTimer"/>
                     </transition>
-                  </state>
+                  </state> <!-- End WaitForPlayerAttackOrder state -->
                   <state name="ProcessBattle">
                     <onEntry action="attackPhase.processBattle()"/>
                     <transition event="onBattleResultVictoryEvent"
@@ -409,6 +412,9 @@
                   <onEntry action="fortifyPhase.begin()"/>
                   <onExit action="fortifyPhase.end()"/>
                   <transition event="onSkipFortifyPhaseEvent"
+                              nextState="AdvancePlayerTurn"/>
+                  <transition event="onEndPlayerTurnRequestEvent"
+                              condition="turnPhase.verifyPlayerEndTurnRequest(event)"
                               nextState="AdvancePlayerTurn"/>
                   <state name="WaitForPlayerToSelectFortifyVector">
                     <onEntry action="fortifyPhase.waitForPlayerToSelectFortifyVector()"/>
@@ -435,13 +441,13 @@
             <!-- Resume history state -->
             <state name="ResumeGame" kind="history">
               <onEntry action="gameModel.resumeGame()"/>
-            </state>
+            </state> <!-- End ResumeGame state -->
           </state> <!-- End PlayingGame state -->
           <state name="Suspended">
             <onEntry action="gameModel.suspendGame()"/>
             <transition event="onResumeGameEvent"
                         nextState="ResumeGame"/>
-          </state>
+          </state> <!-- End Suspended state -->
           <state name="EndGame">
             <transition event="onCreateGameEvent" condition="gameModel.isNotFull()" nextState="WaitForGameToBegin"/>
             <transition event="onCreateGameEvent" condition="gameModel.isFull()" nextState="PlayingGame"/>

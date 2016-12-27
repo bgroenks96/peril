@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.EndPlayerTurnDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.success.EndPlayerTurnSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.model.game.phase.AbstractGamePhaseHandlerTest;
@@ -49,7 +48,6 @@ public class TurnPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     when (mockCommHandler.senderOf (endTurnRequest)).thenReturn (Optional.of (player));
 
     assertFalse (turnPhase.verifyPlayerEndTurnRequest (endTurnRequest));
-    assertTrue (eventHandler.wasFiredExactlyOnce (EndPlayerTurnDeniedEvent.class));
     assertTrue (eventHandler.wasNeverFired (EndPlayerTurnSuccessEvent.class));
   }
 }

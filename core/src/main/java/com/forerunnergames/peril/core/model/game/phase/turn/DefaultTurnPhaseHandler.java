@@ -4,7 +4,6 @@ import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerCardsChangedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.EndPlayerTurnDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.success.EndPlayerTurnSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
@@ -13,6 +12,7 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.model.card.Card;
 import com.forerunnergames.peril.core.model.card.CardPackets;
 import com.forerunnergames.peril.core.model.card.CardSet;
+import com.forerunnergames.peril.core.model.game.CacheKey;
 import com.forerunnergames.peril.core.model.game.GameModelConfiguration;
 import com.forerunnergames.peril.core.model.game.GamePhaseEventFactory;
 import com.forerunnergames.peril.core.model.game.phase.AbstractGamePhaseHandler;
@@ -108,9 +108,6 @@ public final class DefaultTurnPhaseHandler extends AbstractGamePhaseHandler impl
     return !shouldWaitForNextTradeIn;
   }
 
-  /* (non-Javadoc)
-   * @see com.forerunnergames.peril.core.model.game.phase.turn.TurnPhaseHandler#verifyPlayerEndTurnRequest(com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent)
-   */
   @Override
   @StateTransitionCondition
   public boolean verifyPlayerEndTurnRequest (final EndPlayerTurnRequestEvent event)
@@ -123,11 +120,13 @@ public final class DefaultTurnPhaseHandler extends AbstractGamePhaseHandler impl
     final Optional <PlayerPacket> sender = internalCommHandler.senderOf (event);
     if (!sender.isPresent () || player.isNot (sender.get ()))
     {
-      publish (new EndPlayerTurnDeniedEvent (player, EndPlayerTurnDeniedEvent.Reason.NOT_IN_TURN));
+      // defer to GameModel::onEvent(EndPlayerTurnRequestEvent) for publishing denial
       return false;
     }
 
     publish (new EndPlayerTurnSuccessEvent (player));
+
+    turnDataCache.put (CacheKey.END_PLAYER_TURN_VERIFIED, true);
 
     return true;
   }
