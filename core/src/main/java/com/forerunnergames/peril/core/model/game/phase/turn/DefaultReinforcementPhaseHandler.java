@@ -5,7 +5,9 @@ import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforc
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginReinforcementWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.ContinentPacket;
@@ -53,6 +55,15 @@ public final class DefaultReinforcementPhaseHandler extends AbstractGamePhaseHan
 
     log.info ("Begin reinforcement phase for player [{}].", getCurrentPlayerPacket ());
 
+    final ImmutableSet <CountryPacket> validCountries = getValidCountriesForReinforcement (playerId);
+    if (validCountries.isEmpty ())
+    {
+      publish (new SkipReinforcementPhaseEvent (getCurrentPlayerPacket (),
+              SkipReinforcementPhaseEvent.Reason.COUNTRY_ARMY_OVERFLOW));
+      log.info ("No valid countries for reinforcment. Skipping phase...", getCurrentPlayerPacket ());
+      return;
+    }
+
     // add country reinforcements and publish event
     final int countryReinforcementBonus = rules
             .calculateCountryReinforcements (countryOwnerModel.countCountriesOwnedBy (playerId));
@@ -62,6 +73,7 @@ public final class DefaultReinforcementPhaseHandler extends AbstractGamePhaseHan
     {
       continentReinforcementBonus += cont.getReinforcementBonus ();
     }
+
     final int totalReinforcementBonus = countryReinforcementBonus + continentReinforcementBonus;
     playerModel.addArmiesToHandOf (playerId, totalReinforcementBonus);
 
@@ -69,9 +81,10 @@ public final class DefaultReinforcementPhaseHandler extends AbstractGamePhaseHan
 
     // publish phase begin event and trade in request
     publish (new BeginReinforcementPhaseEvent (playerPacket, countryReinforcementBonus, continentReinforcementBonus));
-    publish (gamePhaseEventFactory.createReinforcementEventFor (playerId));
-    turnPhaseHandler.publishTradeInEventIfNecessary ();
+    publish (new PlayerBeginReinforcementEvent (playerPacket, validCountries,
+            rules.getMinReinforcementsPlacedPerCountry (), rules.getMaxArmiesOnCountry ()));
     publish (new PlayerBeginReinforcementWaitEvent (playerPacket));
+    turnPhaseHandler.publishTradeInEventIfNecessary ();
   }
 
   @Override
@@ -92,18 +105,26 @@ public final class DefaultReinforcementPhaseHandler extends AbstractGamePhaseHan
   {
     final Id playerId = getCurrentPlayerId ();
     final PlayerPacket playerPacket = getCurrentPlayerPacket ();
+    final ImmutableSet <CountryPacket> validCountries = getValidCountriesForReinforcement (playerId);
 
-    if (playerModel.getArmiesInHand (playerId) > 0)
+    if (validCountries.isEmpty ())
     {
-      publish (gamePhaseEventFactory.createReinforcementEventFor (playerId));
-      publish (new PlayerBeginReinforcementWaitEvent (playerPacket));
-      log.info ("Waiting for player [{}] to place reinforcements...", playerPacket);
+      log.info ("No valid countries for reinforcment. Moving to next phase...", playerPacket);
+      endReinforcementPhase ();
+      return;
     }
-    else
+
+    if (playerModel.getArmiesInHand (playerId) <= 0)
     {
-      publish (new EndReinforcementPhaseEvent (playerPacket, countryOwnerModel.getCountryPacketsOwnedBy (playerId)));
       log.info ("Player [{}] has no more armies in hand. Moving to next phase...", playerPacket);
+      endReinforcementPhase ();
+      return;
     }
+
+    publish (new PlayerBeginReinforcementEvent (playerPacket, validCountries,
+            rules.getMinReinforcementsPlacedPerCountry (), rules.getMaxArmiesOnCountry ()));
+    publish (new PlayerBeginReinforcementWaitEvent (playerPacket));
+    log.info ("Waiting for player [{}] to place reinforcements...", playerPacket);
   }
 
   /* (non-Javadoc)
@@ -182,5 +203,12 @@ public final class DefaultReinforcementPhaseHandler extends AbstractGamePhaseHan
     publish (new PlayerReinforceCountrySuccessEvent (getCurrentPlayerPacket (), countryPacket, reinforcementCount));
 
     return true;
+  }
+
+  public void endReinforcementPhase ()
+  {
+    final Id playerId = getCurrentPlayerId ();
+    final PlayerPacket playerPacket = getCurrentPlayerPacket ();
+    publish (new EndReinforcementPhaseEvent (playerPacket, countryOwnerModel.getCountryPacketsOwnedBy (playerId)));
   }
 }

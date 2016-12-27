@@ -13,6 +13,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCa
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
@@ -79,6 +80,27 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
   }
 
   @Test
+  public void testBeginReinforcementPhaseSkipsForCountryArmyOverflow ()
+  {
+    addMaxPlayers ();
+
+    final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
+    final PlayMapStateBuilder builder = new PlayMapStateBuilder (playMapModel);
+    builder.forCountries (countryGraphModel.getCountryIds ()).setOwner (testPlayer)
+            .addArmies (gameRules.getMaxArmiesOnCountry ());
+
+    reinforcementPhase.begin ();
+
+    assertTrue (eventHandler.wasFiredExactlyOnce (SkipReinforcementPhaseEvent.class));
+    assertEquals (SkipReinforcementPhaseEvent.Reason.COUNTRY_ARMY_OVERFLOW,
+                  eventHandler.lastEventOfType (SkipReinforcementPhaseEvent.class).getReason ());
+    assertTrue (eventHandler.wasNeverFired (BeginReinforcementPhaseEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerArmiesChangedEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerCardTradeInAvailableEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerBeginReinforcementEvent.class));
+  }
+
+  @Test
   public void testBeginReinforcementPhaseWithTradeInAvailable ()
   {
     addMaxPlayers ();
@@ -132,7 +154,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
   }
 
   @Test
-  public void testWaitForPlayerToPlaceReinforcementsEndsReinforcementPhase ()
+  public void testWaitForPlayerToPlaceReinforcementsEndsReinforcementPhaseWhenNoArmiesInHand ()
   {
     addMaxPlayers ();
 
@@ -141,6 +163,25 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     builder.forCountries (countryGraphModel.getCountryIds ()).setOwner (testPlayer);
 
     assertEquals (0, playerModel.getArmiesInHand (testPlayer));
+
+    reinforcementPhase.waitForPlayerToPlaceReinforcements ();
+
+    assertTrue (eventHandler.wasNeverFired (PlayerBeginReinforcementEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (EndReinforcementPhaseEvent.class));
+    assertTrue (eventHandler.lastEventOfType (EndReinforcementPhaseEvent.class).getPlayerOwnedCountries ()
+            .equals (countryGraphModel.getCountryPackets ()));
+  }
+
+  @Test
+  public void testWaitForPlayerToPlaceReinforcementsEndsReinforcementPhaseMaxCountryArmyOverflow ()
+  {
+    addMaxPlayers ();
+
+    final Id testPlayer = playerModel.playerWith (PlayerTurnOrder.FIRST);
+    final PlayMapStateBuilder builder = new PlayMapStateBuilder (playMapModel);
+    builder.forCountries (countryGraphModel.getCountryIds ()).setOwner (testPlayer)
+            .addArmies (gameRules.getMaxArmiesOnCountry ());
+    playerModel.addArmiesToHandOf (testPlayer, gameRules.getMinReinforcementsPlacedPerCountry ());
 
     reinforcementPhase.waitForPlayerToPlaceReinforcements ();
 
@@ -168,7 +209,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     final int armiesInHand = testPlayerPacket.getArmiesInHand ();
 
     final PlayerTradeInCardsRequestEvent tradeInRequest = new PlayerTradeInCardsRequestEvent (
-            new DefaultCardSetPacket (ImmutableSet.<CardPacket> of ()));
+            new DefaultCardSetPacket (ImmutableSet. <CardPacket>of ()));
     turnPhaseHandler.verifyPlayerCardTradeIn (tradeInRequest);
 
     final int count = armiesInHand;
@@ -378,7 +419,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     final int armyCount = playerModel.getArmiesInHand (testPlayer);
 
     final PlayerTradeInCardsRequestEvent tradeInResponse = new PlayerTradeInCardsRequestEvent (
-            new DefaultCardSetPacket (ImmutableSet.<CardPacket> of ()));
+            new DefaultCardSetPacket (ImmutableSet. <CardPacket>of ()));
     turnPhaseHandler.verifyPlayerCardTradeIn (tradeInResponse);
 
     final PlayerReinforceCountryRequestEvent reinforceResponse = new PlayerReinforceCountryRequestEvent (
@@ -410,7 +451,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     final int reinforcementCount = playerModel.getArmiesInHand (testPlayer) + 1;
 
     final PlayerTradeInCardsRequestEvent tradeInResponse = new PlayerTradeInCardsRequestEvent (
-            new DefaultCardSetPacket (ImmutableSet.<CardPacket> of ()));
+            new DefaultCardSetPacket (ImmutableSet. <CardPacket>of ()));
     turnPhaseHandler.verifyPlayerCardTradeIn (tradeInResponse);
 
     final PlayerReinforceCountryRequestEvent reinforceResponse = new PlayerReinforceCountryRequestEvent (

@@ -36,7 +36,9 @@ public interface PlayerModel
 {
   void addArmiesToHandOf (final Id playerId, final int armies);
 
-  void addArmyToHandOf (final Id playerId);  @Override
+  void addArmyToHandOf (final Id playerId);
+
+  @Override
   String toString ();
 
   void addCardsToHandOf (final Id playerId, final int cards);
@@ -140,6 +142,8 @@ public interface PlayerModel
   void removeAllArmiesFromHandsOfAllPlayers ();
 
   void removeAllCardsFromHandsOfAllPlayers ();
+
+  void removeAllArmiesFromHandOf (final Id playerId);
 
   void removeArmiesFromHandOf (final Id playerId, final int armies);
 
@@ -285,7 +289,9 @@ public interface PlayerModel
     public int getOldTurnOrder ()
     {
       return oldTurnOrder;
-    }    @Override
+    }
+
+    @Override
     public String toString ()
     {
       return Strings.format ("{}: Player: [{}] | OldTurnOrder: [{}]", getClass ().getSimpleName (), player,
@@ -297,10 +303,6 @@ public interface PlayerModel
       return player;
     }
 
-
-
   }
-
-
 
 }

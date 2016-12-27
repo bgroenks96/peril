@@ -44,7 +44,7 @@ import java.util.Map;
 
 public final class DefaultPlayerModel implements PlayerModel
 {
-  private final Map <Id, Player> players = new HashMap<> ();
+  private final Map <Id, Player> players = new HashMap <> ();
   private final GameRules rules;
 
   public DefaultPlayerModel (final GameRules rules)
@@ -508,6 +508,12 @@ public final class DefaultPlayerModel implements PlayerModel
     {
       player.removeAllCardsFromHand ();
     }
+  }
+
+  @Override
+  public void removeAllArmiesFromHandOf (final Id playerId)
+  {
+    modelPlayerWith (playerId).removeAllArmiesFromHand ();
   }
 
   @Override

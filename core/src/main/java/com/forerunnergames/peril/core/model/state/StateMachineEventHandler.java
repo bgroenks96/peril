@@ -42,6 +42,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndRe
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.core.model.game.GameModel;
@@ -284,6 +285,16 @@ public final class StateMachineEventHandler
   }
 
   @Handler
+  public void onEvent (final SkipReinforcementPhaseEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Received event {}", event);
+
+    context.onSkipReinforcementPhaseEvent (event);
+  }
+
+  @Handler
   public void onEvent (final EndReinforcementPhaseEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -510,7 +521,7 @@ public final class StateMachineEventHandler
 
   private class CompositeStateMachineListener implements StateMachineListener
   {
-    private final List <StateMachineListener> stateMachineListeners = new CopyOnWriteArrayList<> ();
+    private final List <StateMachineListener> stateMachineListeners = new CopyOnWriteArrayList <> ();
 
     CompositeStateMachineListener ()
     {

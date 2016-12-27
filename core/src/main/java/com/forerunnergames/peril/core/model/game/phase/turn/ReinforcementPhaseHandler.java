@@ -8,4 +8,6 @@ public interface ReinforcementPhaseHandler extends GamePhaseHandler
   void waitForPlayerToPlaceReinforcements ();
 
   boolean verifyPlayerReinforceCountry (PlayerReinforceCountryRequestEvent event);
+
+  void endReinforcementPhase ();
 }

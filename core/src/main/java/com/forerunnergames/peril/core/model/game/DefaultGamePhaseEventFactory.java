@@ -20,10 +20,8 @@ package com.forerunnergames.peril.core.model.game;
 
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
-import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.card.CardModel;
 import com.forerunnergames.peril.core.model.card.CardPackets;
 import com.forerunnergames.peril.core.model.card.CardSet;
@@ -33,9 +31,7 @@ import com.forerunnergames.peril.core.model.playmap.country.CountryOwnerModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 
 public final class DefaultGamePhaseEventFactory implements GamePhaseEventFactory
 {
@@ -77,25 +73,5 @@ public final class DefaultGamePhaseEventFactory implements GamePhaseEventFactory
     return new PlayerCardTradeInAvailableEvent (playerModel.playerPacketWith (playerId),
             cardModel.getNextTradeInBonus (), matchPackets,
             cardCount >= rules.getMinCardsInHandToRequireTradeIn (turnPhase));
-  }
-
-  @Override
-  public PlayerBeginReinforcementEvent createReinforcementEventFor (final Id playerId)
-  {
-    Arguments.checkIsNotNull (playerId, "playerId");
-
-    final ImmutableSet <CountryPacket> validCountries;
-    final Predicate <CountryPacket> filter = new Predicate <CountryPacket> ()
-    {
-      @Override
-      public boolean apply (final CountryPacket input)
-      {
-        return input.getArmyCount () < rules.getMaxArmiesOnCountry ();
-      }
-    };
-    validCountries = ImmutableSet.copyOf (Sets.filter (countryOwnerModel.getCountryPacketsOwnedBy (playerId), filter));
-
-    return new PlayerBeginReinforcementEvent (playerModel.playerPacketWith (playerId), validCountries,
-            rules.getMinReinforcementsPlacedPerCountry (), rules.getMaxArmiesOnCountry ());
   }
 }

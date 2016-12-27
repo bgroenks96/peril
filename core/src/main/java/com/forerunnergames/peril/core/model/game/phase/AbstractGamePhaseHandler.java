@@ -44,8 +44,10 @@ import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 
 import javax.annotation.Nullable;
 
@@ -332,6 +334,22 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     }
 
     publish (originalRequest.get ());
+  }
+
+  protected ImmutableSet <CountryPacket> getValidCountriesForReinforcement (final Id playerId)
+  {
+    assert playerId != null;
+    final ImmutableSet <CountryPacket> validCountries;
+    final Predicate <CountryPacket> filter = new Predicate <CountryPacket> ()
+    {
+      @Override
+      public boolean apply (final CountryPacket input)
+      {
+        return input.getArmyCount () < rules.getMaxArmiesOnCountry ();
+      }
+    };
+    validCountries = ImmutableSet.copyOf (Sets.filter (countryOwnerModel.getCountryPacketsOwnedBy (playerId), filter));
+    return validCountries;
   }
 
   /**

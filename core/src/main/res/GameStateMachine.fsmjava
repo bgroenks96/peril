@@ -90,6 +90,11 @@
                 name="event"
                 type="com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent"/>
       </event>
+      <event id="onSkipReinforcementPhaseEvent">
+        <parameter
+                name="event"
+                type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipReinforcementPhaseEvent"/>
+      </event>
       <event id="onEndReinforcementPhaseEvent">
         <parameter
                 name="event"
@@ -317,6 +322,9 @@
                     <transition event="onPlayerTradeInCardsRequestEvent"
                                 condition="turnPhase.verifyPlayerCardTradeIn(event)"
                                 nextState="WaitForPlayerToPlaceReinforcements"/>
+                    <transition event="onSkipReinforcementPhaseEvent"
+                                action="reinforcePhase.endReinforcementPhase()"
+                                nextState="AttackPhase"/>
                   </state>
                   <state name="WaitForPlayerToPlaceReinforcements">
                     <onEntry action="reinforcePhase.waitForPlayerToPlaceReinforcements()"/>
