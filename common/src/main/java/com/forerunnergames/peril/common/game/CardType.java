@@ -27,24 +27,39 @@ import java.util.Map;
 
 public enum CardType
 {
-  TYPE1 (0b001),
-  TYPE2 (0b010),
-  TYPE3 (0b100),
-  WILDCARD (0b111);
+  WILDCARD (0, 0b111),
+  TYPE1 (1, 0b001),
+  TYPE2 (2, 0b010),
+  TYPE3 (3, 0b100);
 
   public static final int VALUE1 = 0b001, VALUE2 = 0b010, VALUE3 = 0b100, VALUE_WILDCARD = 0b111;
 
+  private static final Map <Integer, CardType> idMap = new HashMap <> ();
   private static final Map <Integer, CardType> valueMap = new HashMap <> ();
 
   static
   {
     for (final CardType cardType : values ())
     {
+      idMap.put (cardType.id, cardType);
       valueMap.put (cardType.typeValue, cardType);
     }
   }
 
+  private final int id;
   private final int typeValue;
+
+  public static CardType fromId (final int id)
+  {
+    Arguments.checkIsNotNegative (id, "id");
+
+    if (!idMap.containsKey (id))
+    {
+      throw new IllegalArgumentException ("Unrecognized type value [" + id + "].");
+    }
+
+    return idMap.get (id);
+  }
 
   public static CardType fromValue (final int typeValue)
   {
@@ -68,6 +83,11 @@ public enum CardType
     return Randomness.getRandomElementFrom (CardType.values ());
   }
 
+  public int getId ()
+  {
+    return id;
+  }
+
   public int getTypeValue ()
   {
     return typeValue;
@@ -84,8 +104,9 @@ public enum CardType
     return Strings.format ("{}: Type: {} Value: {}", getClass ().getSimpleName (), name (), typeValue);
   }
 
-  CardType (final int typeValue)
+  CardType (final int id, final int typeValue)
   {
+    this.id = id;
     this.typeValue = typeValue;
   }
 }

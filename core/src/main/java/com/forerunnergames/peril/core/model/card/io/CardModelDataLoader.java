@@ -40,7 +40,7 @@ public final class CardModelDataLoader extends AbstractBiMapDataLoader <Id, Card
   private StreamParser parser;
   private String fileName;
   private String name;
-  private int typeValue;
+  private int idValue;
 
   public CardModelDataLoader (final StreamParserFactory streamParserFactory)
   {
@@ -73,9 +73,9 @@ public final class CardModelDataLoader extends AbstractBiMapDataLoader <Id, Card
   protected boolean readData ()
   {
     name = parser.getNextQuotedString ();
-    typeValue = parser.getNextInteger ();
+    idValue = parser.getNextInteger ();
 
-    log.trace ("Parsed data: [name={}] [type={}].", name, typeValue);
+    log.trace ("Parsed data: [name={}] [type={}].", name, idValue);
 
     return !parser.isEndOfFile ();
   }
@@ -83,7 +83,7 @@ public final class CardModelDataLoader extends AbstractBiMapDataLoader <Id, Card
   @Override
   protected void saveData ()
   {
-    final Card card = CardFactory.create (name, CardType.fromValue (typeValue));
+    final Card card = CardFactory.create (name, CardType.fromId (idValue));
 
     log.debug ("Successfully loaded data [{}] from file [{}].", card, fileName);
 
