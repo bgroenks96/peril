@@ -32,6 +32,8 @@ public enum CardType
   TYPE3 (0b100),
   WILDCARD (0b111);
 
+  public static final int VALUE1 = 0b001, VALUE2 = 0b010, VALUE3 = 0b100, VALUE_WILDCARD = 0b111;
+
   private static final Map <Integer, CardType> valueMap = new HashMap <> ();
 
   static
@@ -48,7 +50,7 @@ public enum CardType
   {
     Arguments.checkIsNotNegative (typeValue, "typeValue");
 
-    if (valueMap.containsKey (typeValue))
+    if (!valueMap.containsKey (typeValue))
     {
       throw new IllegalArgumentException ("Unrecognized type value [" + typeValue + "].");
     }
@@ -63,7 +65,7 @@ public enum CardType
 
   public static CardType random ()
   {
-    return fromValue (Randomness.getRandomIntegerFrom (0, values ().length - 1));
+    return Randomness.getRandomElementFrom (CardType.values ());
   }
 
   public int getTypeValue ()

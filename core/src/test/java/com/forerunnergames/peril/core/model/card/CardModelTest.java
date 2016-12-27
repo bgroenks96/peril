@@ -59,7 +59,7 @@ public abstract class CardModelTest
 
   public static ImmutableSet <Card> generateCards (final CardType type, final int count)
   {
-    return CardDealerTest.generateCards (type, count);
+    return CardDealerTest.generateCards (count, type);
   }
 
   @Before
@@ -81,7 +81,7 @@ public abstract class CardModelTest
   {
     final int maxCards = rules.getMaxCardsInHand (TurnPhase.REINFORCE);
     final CardModel cardModel = createCardModel (rules, playerModel,
-                                                 CardDealerTest.generateCards (CardType.TYPE1, maxCards + 1));
+                                                 CardDealerTest.generateCards (maxCards + 1, CardType.TYPE1));
     final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     for (int i = 0; i < maxCards + 1; i++)
     {
@@ -94,7 +94,7 @@ public abstract class CardModelTest
   {
     final int maxCards = rules.getMaxCardsInHand (TurnPhase.ATTACK);
     final CardModel cardModel = createCardModel (rules, playerModel,
-                                                 CardDealerTest.generateCards (CardType.TYPE1, maxCards + 1));
+                                                 CardDealerTest.generateCards (maxCards + 1, CardType.TYPE1));
     final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     for (int i = 0; i < maxCards + 1; i++)
     {
@@ -107,7 +107,7 @@ public abstract class CardModelTest
   {
     final int maxCards = rules.getMaxCardsInHand (TurnPhase.FORTIFY);
     final CardModel cardModel = createCardModel (rules, playerModel,
-                                                 CardDealerTest.generateCards (CardType.TYPE1, maxCards + 1));
+                                                 CardDealerTest.generateCards (maxCards + 1, CardType.TYPE1));
     final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     for (int i = 0; i < maxCards + 1; i++)
     {
@@ -121,7 +121,7 @@ public abstract class CardModelTest
     // make deck size only enough to do one trade in; this is important so that we can test
     // whether or not CardModel is managing the deck correctly via hasCardsRemainingInDeck()
     final int deckSize = rules.getCardTradeInCount ();
-    final ImmutableSet <Card> generatedCards = CardDealerTest.generateCards (CardType.TYPE3, deckSize);
+    final ImmutableSet <Card> generatedCards = CardDealerTest.generateCards (deckSize, CardType.TYPE3);
     final CardDealer dealer = createCardDealer (generatedCards);
     final CardSet cardSet = new CardSet (rules, generatedCards);
 
@@ -160,7 +160,7 @@ public abstract class CardModelTest
   @Test
   public void testNextTradeInBonusGlobalCountIs2 ()
   {
-    final CardModel cardModel = createCardModel (rules, playerModel, CardDealerTest.generateCards (CardType.TYPE1, 6));
+    final CardModel cardModel = createCardModel (rules, playerModel, CardDealerTest.generateCards (6, CardType.TYPE1));
     final int tradeInCount = 2;
     for (int i = 0; i < tradeInCount; i++)
     {
@@ -179,7 +179,7 @@ public abstract class CardModelTest
   @Test
   public void testNextTradeInBonusGlobalCountIs7 ()
   {
-    final CardModel cardModel = createCardModel (rules, playerModel, CardDealerTest.generateCards (CardType.TYPE1, 21));
+    final CardModel cardModel = createCardModel (rules, playerModel, CardDealerTest.generateCards (21, CardType.TYPE1));
     final int tradeInCount = 7;
     for (int i = 0; i < tradeInCount; i++)
     {
@@ -199,9 +199,9 @@ public abstract class CardModelTest
   public void testComputeMatchesNoMatch ()
   {
     final int deckSize = rules.getCardTradeInCount ();
-    // all wildcards; shouldn't match (for ClassicGameRules at leasts)
-    final CardModel cardModel = createCardModel (rules, playerModel,
-                                                 CardDealerTest.generateCards (CardType.WILDCARD, deckSize));
+    // all of two types; can't be a match
+    final CardModel cardModel = createCardModel (rules, playerModel, CardDealerTest
+            .generateCards (deckSize, CardType.TYPE1, CardType.TYPE2));
     final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     for (int i = 0; i < rules.getCardTradeInCount (); i++)
     {
@@ -217,7 +217,7 @@ public abstract class CardModelTest
   {
     final int deckSize = rules.getCardTradeInCount ();
     final CardModel cardModel = createCardModel (rules, playerModel,
-                                                 CardDealerTest.generateCards (CardType.TYPE2, deckSize));
+                                                 CardDealerTest.generateCards (deckSize, CardType.TYPE2));
     final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     final ImmutableSet.Builder <Card> builder = ImmutableSet.builder ();
     for (int i = 0; i < rules.getCardTradeInCount (); i++)

@@ -144,7 +144,7 @@ public abstract class PlayerCardHandlerTest
   @Test
   public void testAreCardsNotInHand ()
   {
-    final ImmutableSet <Card> cards = CardDealerTest.generateCards (CardType.random (), 3);
+    final ImmutableSet <Card> cards = CardDealerTest.generateCards (3, CardType.random ());
     final PlayerCardHandler cardHandler = createPlayerCardHandler (playerModel, defaultRules);
     final Id testPlayerId = playerModel.idOf (TEST_PLAYER_NAME);
     assertFalse (cardHandler.areCardsInHand (testPlayerId, createCardSetFrom (cards)));

@@ -32,12 +32,13 @@ public abstract class CardDealerTest
 {
   private static final ImmutableSet <Card> defaultCards = generateTestCards ();
 
-  static ImmutableSet <Card> generateCards (final CardType type, final int count)
+  static ImmutableSet <Card> generateCards (final int count, final CardType... types)
   {
+    assert types.length > 0;
     final ImmutableSet.Builder <Card> cardSetBuilder = ImmutableSet.builder ();
     for (int i = 0; i < count; i++)
     {
-      cardSetBuilder.add (CardFactory.create ("TestCard-" + i, type));
+      cardSetBuilder.add (CardFactory.create ("TestCard-" + i, types [i % types.length]));
     }
     return cardSetBuilder.build ();
   }
@@ -45,10 +46,10 @@ public abstract class CardDealerTest
   public static ImmutableSet <Card> generateTestCards ()
   {
     final ImmutableSet.Builder <Card> cardSetBuilder = ImmutableSet.builder ();
+    final CardType[] values = CardType.values ();
     for (int i = 0; i < CardModelTest.DEFAULT_CARD_COUNT; i++)
     {
-      final int type = i % 3 + 1; // cycle over values 1, 2, and 3.
-      cardSetBuilder.add (CardFactory.create ("TestCard-" + i, CardType.fromValue (type)));
+      cardSetBuilder.add (CardFactory.create ("TestCard-" + i, values [i % 3 + 1]));
     }
     for (int i = 0; i < CardModelTest.DEFAULT_WILDCARD_COUNT; i++)
     {
@@ -70,7 +71,7 @@ public abstract class CardDealerTest
   public void testIsNotInDeckWhenDeckIsEmpty ()
   {
     final Card testCard = CardFactory.create ("TestCard", CardType.TYPE1);
-    final CardDealer deckHandler = createCardDealer (ImmutableSet.<Card> of ());
+    final CardDealer deckHandler = createCardDealer (ImmutableSet. <Card>of ());
     assertFalse (deckHandler.isInDeck (testCard));
   }
 
@@ -86,7 +87,7 @@ public abstract class CardDealerTest
   @Test (expected = IllegalStateException.class)
   public void testTakeFromDeckFailsWhenCardNotInDeck ()
   {
-    final CardDealer deckHandler = createCardDealer (ImmutableSet.<Card> of ());
+    final CardDealer deckHandler = createCardDealer (ImmutableSet. <Card>of ());
     deckHandler.take ();
   }
 
@@ -112,7 +113,7 @@ public abstract class CardDealerTest
   @Test (expected = IllegalStateException.class)
   public void testCardWithFailsWhenNotInDeck ()
   {
-    final CardDealer deckHandler = createCardDealer (ImmutableSet.<Card> of ());
+    final CardDealer deckHandler = createCardDealer (ImmutableSet. <Card>of ());
     deckHandler.cardWith ("");
   }
 

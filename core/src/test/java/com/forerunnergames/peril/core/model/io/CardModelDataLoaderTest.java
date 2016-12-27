@@ -36,7 +36,8 @@ public class CardModelDataLoaderTest extends DataLoaderTest <ImmutableBiMap <Id,
 {
   private static final String TEST_CARDS_FILENAME = "test-cards.txt";
   private static final int EXPECTED_CARD_COUNT_FROM_FILE = 7;
-  private static final int[] EXPECTED_CARD_TYPES_FROM_FILE = { 3, 3, 2, 1, 1, 2, 0 };
+  private static final int[] EXPECTED_CARD_TYPES_FROM_FILE = { CardType.VALUE3, CardType.VALUE3, CardType.VALUE2,
+          CardType.VALUE1, CardType.VALUE1, CardType.VALUE2, CardType.VALUE_WILDCARD };
   private static ImmutableSet <Card> mockCards;
 
   @Override
