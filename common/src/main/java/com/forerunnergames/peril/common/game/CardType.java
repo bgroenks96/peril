@@ -27,12 +27,12 @@ import java.util.Map;
 
 public enum CardType
 {
-  TYPE1 (1),
-  TYPE2 (2),
-  TYPE3 (3),
-  WILDCARD (0);
+  TYPE1 (0b001),
+  TYPE2 (0b010),
+  TYPE3 (0b100),
+  WILDCARD (0b111);
 
-  private static final Map <Integer, CardType> valueMap = new HashMap<> ();
+  private static final Map <Integer, CardType> valueMap = new HashMap <> ();
 
   static
   {
@@ -48,10 +48,17 @@ public enum CardType
   {
     Arguments.checkIsNotNegative (typeValue, "typeValue");
 
-    final CardType type = valueMap.get (typeValue);
-    if (type == null) throw new IllegalArgumentException ("Unrecognized type value [" + typeValue + "].");
+    if (valueMap.containsKey (typeValue))
+    {
+      throw new IllegalArgumentException ("Unrecognized type value [" + typeValue + "].");
+    }
 
-    return type;
+    return valueMap.get (typeValue);
+  }
+
+  public static boolean isValidValue (final int typeValue)
+  {
+    return valueMap.containsKey (typeValue);
   }
 
   public static CardType random ()
@@ -62,6 +69,11 @@ public enum CardType
   public int getTypeValue ()
   {
     return typeValue;
+  }
+
+  public boolean matches (final CardType otherCardType)
+  {
+    return (typeValue & otherCardType.getTypeValue ()) != 0;
   }
 
   @Override

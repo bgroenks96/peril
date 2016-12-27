@@ -353,17 +353,24 @@ public class ClassicGameRulesTest
   }
 
   @Test
-  public void testNotValidCardSetTwoWildcards ()
+  public void testIsValidCardSetMatchingWithWildcard ()
   {
     final GameRules rules = ClassicGameRules.defaults ();
-    assertFalse (rules.isValidCardSet (ImmutableList.of (CardType.WILDCARD, CardType.WILDCARD, CardType.TYPE3)));
+    assertTrue (rules.isValidCardSet (ImmutableList.of (CardType.WILDCARD, CardType.TYPE2, CardType.TYPE2)));
   }
 
   @Test
-  public void testNotValidCardSetAllWildcards ()
+  public void testIsValidCardSetTwoWildcards ()
   {
     final GameRules rules = ClassicGameRules.defaults ();
-    assertFalse (rules.isValidCardSet (ImmutableList.of (CardType.WILDCARD, CardType.WILDCARD, CardType.WILDCARD)));
+    assertTrue (rules.isValidCardSet (ImmutableList.of (CardType.WILDCARD, CardType.WILDCARD, CardType.TYPE3)));
+  }
+
+  @Test
+  public void testIsValidCardSetAllWildcards ()
+  {
+    final GameRules rules = ClassicGameRules.defaults ();
+    assertTrue (rules.isValidCardSet (ImmutableList.of (CardType.WILDCARD, CardType.WILDCARD, CardType.WILDCARD)));
   }
 
   @Test
@@ -378,6 +385,13 @@ public class ClassicGameRulesTest
   {
     final GameRules rules = ClassicGameRules.defaults ();
     assertFalse (rules.isValidCardSet (ImmutableList.of (CardType.TYPE2, CardType.TYPE1, CardType.TYPE2)));
+  }
+
+  @Test
+  public void testNotValidCardSetMismatchOrder3 ()
+  {
+    final GameRules rules = ClassicGameRules.defaults ();
+    assertFalse (rules.isValidCardSet (ImmutableList.of (CardType.TYPE3, CardType.TYPE1, CardType.TYPE1)));
   }
 
   public void testCalculateCountryReinforcementsMultipleOfThree ()

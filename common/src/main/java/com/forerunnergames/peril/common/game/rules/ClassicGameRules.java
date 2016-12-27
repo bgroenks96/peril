@@ -30,6 +30,7 @@ import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.tools.common.Arguments;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 
 import javax.annotation.Nullable;
 
@@ -589,18 +590,28 @@ public final class ClassicGameRules implements GameRules
     final int matchLen = cardTypes.size ();
     if (matchLen != getCardTradeInCount ()) return false;
 
-    // build the match string (string of type values) from cardTypes
-    final StringBuilder matchStrBuilder = new StringBuilder ();
-    for (final CardType type : cardTypes)
+    // the wildcard is equal to a bitwise OR of all card types
+    final int validUniqueMask = CardType.WILDCARD.getTypeValue ();
+
+    // OR together all values; note that wildcards will always cause the
+    // resulting value to be valid
+    int maskUnique = 0;
+    for (int i = 0; i < matchLen; i++)
     {
-      matchStrBuilder.append (type.getTypeValue ());
+      final int typeValue = cardTypes.get (i).getTypeValue ();
+      maskUnique |= typeValue;
     }
-    final String matchStr = matchStrBuilder.toString ();
-    // pattern 1: "(\\d)\\1{2}" matches repeating integers, excluding zero; i.e. 3 matching non-wild cards
-    // pattern 2: ^(?:(\\d)(?!.*\\2)){3,} matches strings of integers with no repeats; i.e. 3 unique types
-    // wildcard logic is implied by pattern 2; for example, wildcard (0) + 2 unique types is a unique int string
-    final String matchExp = String.format ("([1-9])\\1{%d}|^(?:(\\d)(?!.*\\2)){%d,}", matchLen - 1, matchLen);
-    return matchStr.matches (matchExp);
+
+    // if the values all OR up to be equal to the WILDCARD bitmask, it's valid
+    if (maskUnique == validUniqueMask)
+    {
+      return true;
+    }
+
+    // check if all values in the collection are the same by checking that the
+    // frequency of the first value is equal to the length of the set
+    final CardType first = Iterables.getFirst (cardTypes, CardType.WILDCARD);
+    return Iterables.frequency (cardTypes, first) == matchLen;
   }
 
   @Override
