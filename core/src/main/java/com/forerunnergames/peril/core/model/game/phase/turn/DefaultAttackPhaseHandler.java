@@ -19,6 +19,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerDefendCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueAttackOrderWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerOccupyCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.EndPlayerTurnAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueAttackOrderEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
@@ -111,6 +112,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
 
     publish (new PlayerBeginAttackEvent (playerPacket, builder.build ()));
     publish (new PlayerBeginAttackWaitEvent (playerPacket));
+    publish (new EndPlayerTurnAvailableEvent (playerPacket));
   }
 
   @Override
@@ -175,6 +177,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
 
     publish (new PlayerDefendCountryRequestEvent (attacker, defender));
     publish (new PlayerDefendCountryWaitEvent (defender.getPlayer (), attacker, defender));
+    publish (new EndPlayerTurnAvailableEvent (getCurrentPlayerPacket ()));
   }
 
   @Override

@@ -12,6 +12,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndFo
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginFortificationWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueFortifyOrderWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.EndPlayerTurnAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginFortificationEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueFortifyOrderEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerCancelFortifySuccessEvent;
@@ -114,6 +115,7 @@ public final class DefaultFortifyPhaseHandler extends AbstractGamePhaseHandler i
 
     publish (new PlayerBeginFortificationEvent (player, validFortifyVectors));
     publish (new PlayerBeginFortificationWaitEvent (player));
+    publish (new EndPlayerTurnAvailableEvent (player));
   }
 
   @Override
