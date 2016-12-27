@@ -25,6 +25,8 @@ import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
  */
 public interface PlayerTurnModel
 {
+  public static final int DEFAULT_START_ROUND = 1;
+
   void advance ();
 
   PlayerTurnOrder getCurrentTurn ();
@@ -40,6 +42,10 @@ public interface PlayerTurnModel
   void resetCurrentTurn ();
 
   void resetTurnCount ();
+
+  void resetRound ();
+
+  void resetAll ();
 
   int getRound ();
 

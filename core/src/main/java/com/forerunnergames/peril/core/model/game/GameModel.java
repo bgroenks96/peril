@@ -286,8 +286,7 @@ public final class GameModel extends AbstractGamePhaseHandler
     playerModel.removeAllCardsFromHandsOfAllPlayers ();
     countryOwnerModel.unassignAllCountries ();
     countryArmyModel.resetAllCountries ();
-    playerTurnModel.resetCurrentTurn ();
-    playerTurnModel.resetTurnCount ();
+    playerTurnModel.resetAll ();
 
     publish (new BeginGameEvent ());
 

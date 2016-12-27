@@ -32,7 +32,7 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   private PlayerTurnOrder currentTurn = PlayerTurnOrder.FIRST;
   private PlayerTurnOrder previousTurn = PlayerTurnOrder.UNKNOWN;
   private PlayerTurnOrder lastTurn = PlayerTurnOrder.UNKNOWN;
-  private int currentRound = 1;
+  private int currentRound = DEFAULT_START_ROUND;
   private boolean isRoundIncreasing = true;
 
   public DefaultPlayerTurnModel (final GameRules rules)
@@ -105,6 +105,20 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   }
 
   @Override
+  public void resetRound ()
+  {
+    currentRound = DEFAULT_START_ROUND;
+  }
+
+  @Override
+  public void resetAll ()
+  {
+    resetCurrentTurn ();
+    resetTurnCount ();
+    resetRound ();
+  }
+
+  @Override
   public int getRound ()
   {
     return currentRound;
@@ -140,7 +154,7 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   private void advanceRoundIfNeeded ()
   {
     if (!isRoundIncreasing) return;
-    if (currentTurn != PlayerTurnOrder.FIRST || previousTurn != lastTurn) ;
+    if (currentTurn != PlayerTurnOrder.FIRST || previousTurn != lastTurn) return;
 
     currentRound++;
   }

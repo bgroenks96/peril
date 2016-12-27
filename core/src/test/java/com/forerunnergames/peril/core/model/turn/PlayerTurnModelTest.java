@@ -33,6 +33,7 @@ public class PlayerTurnModelTest
   private static final GameRules RULES = ClassicGameRules.builder ()
           .humanPlayerLimit (ClassicGameRules.MAX_HUMAN_PLAYER_LIMIT).build ();
   private static final PlayerTurnOrder LAST_TURN = PlayerTurnOrder.getNthValidTurnOrder (RULES.getTotalPlayerLimit ());
+  private static final int START_ROUND = PlayerTurnModel.DEFAULT_START_ROUND;
   private PlayerTurnModel turnModel;
 
   @Before
@@ -170,6 +171,57 @@ public class PlayerTurnModelTest
   {
     turnModel.decrementTurnCount ();
     assertEquals (LAST_TURN.previousValid (), turnModel.getLastTurn ());
+  }
+
+  @Test
+  public void testRounStartsAtDefault ()
+  {
+    assertEquals (START_ROUND, turnModel.getRound ());
+    assertTrue (turnModel.isFirstTurn ());
+  }
+
+  @Test
+  public void testRoundChange ()
+  {
+    // advance to last turn
+    advanceToTurn (turnModel.getLastTurn ());
+    assertEquals (START_ROUND, turnModel.getRound ());
+
+    // advance to next turn, cycling to next round
+    turnModel.advance ();
+    assertEquals (START_ROUND + 1, turnModel.getRound ());
+    assertTrue (turnModel.isFirstTurn ());
+  }
+
+  @Test
+  public void testRoundChangeAfterDecrement ()
+  {
+    // advance to last turn
+    advanceToTurn (turnModel.getLastTurn ());
+    assertEquals (START_ROUND, turnModel.getRound ());
+
+    turnModel.decrementTurnCount ();
+
+    // advance to next turn, cycling to next round
+    turnModel.advance ();
+    assertEquals (START_ROUND + 1, turnModel.getRound ());
+    assertTrue (turnModel.isFirstTurn ());
+  }
+
+  @Test
+  public void testDisableRoundChange ()
+  {
+    // disable round increasing
+    turnModel.setRoundIncreasing (false);
+
+    // advance to last turn
+    advanceToTurn (turnModel.getLastTurn ());
+    assertEquals (START_ROUND, turnModel.getRound ());
+
+    // advance to next turn, cycling to next round
+    turnModel.advance ();
+    assertEquals (START_ROUND, turnModel.getRound ());
+    assertTrue (turnModel.isFirstTurn ());
   }
 
   private void advanceToTurn (final PlayerTurnOrder turn)
