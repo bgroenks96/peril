@@ -25,9 +25,6 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.events.internal.player.InboundPlayerInformRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.InboundPlayerRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.InboundPlayerResponseRequestEvent;
-import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataRequestEvent;
-import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataResponseEvent;
-import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.events.remote.RequestEvent;
@@ -35,7 +32,6 @@ import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequest
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 
@@ -52,30 +48,35 @@ import org.slf4j.LoggerFactory;
 public class InternalCommunicationHandler
 {
   private static final Logger log = LoggerFactory.getLogger (InternalCommunicationHandler.class);
-  private final PlayerModel playerModel;
+  private static final int OUTBOUND_CACHE_MAX_SIZE = 10000;
+  private static final float OUTBOUND_CACHE_LOAD_FACTOR = 0.8f;
   private final MBassador <Event> eventBus;
   private final Map <RequestEvent, PlayerPacket> requestEvents = Maps.newHashMap ();
   private final Map <ResponseRequestEvent, PlayerInputRequestEvent> responseRequests = Maps.newHashMap ();
   private final Map <InformRequestEvent, PlayerInformEvent> informRequests = Maps.newHashMap ();
   private final Deque <ServerEvent> outboundEventCache = Queues.newArrayDeque ();
 
-  public InternalCommunicationHandler (final PlayerModel playerModel, final MBassador <Event> eventBus)
+  public InternalCommunicationHandler (final MBassador <Event> eventBus)
   {
-    Arguments.checkIsNotNull (playerModel, "playerModel");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
-    this.playerModel = playerModel;
     this.eventBus = eventBus;
   }
 
   public boolean isSenderOf (final RequestEvent event, final PlayerPacket player)
   {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (player, "player");
+
     final Optional <PlayerPacket> sender = senderOf (event);
     return sender.isPresent () && sender.get ().is (player);
   }
 
   public boolean isNotSenderOf (final RequestEvent event, final PlayerPacket player)
   {
+    Arguments.checkIsNotNull (event, "event");
+    Arguments.checkIsNotNull (player, "player");
+
     return !isSenderOf (event, player);
   }
 
@@ -111,6 +112,8 @@ public class InternalCommunicationHandler
 
   public <T extends ServerEvent> Optional <T> lastOutboundEventOfType (final Class <T> type)
   {
+    Arguments.checkIsNotNull (type, "type");
+
     final Deque <ServerEvent> tempDeque = Queues.newArrayDeque ();
     Optional <T> maybe = Optional.absent ();
     while (!maybe.isPresent () && !outboundEventCache.isEmpty ())
@@ -147,7 +150,23 @@ public class InternalCommunicationHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    outboundEventCache.push (event);
+    outboundEventCache.offer (event);
+
+    if (outboundEventCache.size () < OUTBOUND_CACHE_MAX_SIZE)
+    {
+      return;
+    }
+
+    final int currentCacheSize = outboundEventCache.size ();
+    final int targetCacheSize = (int) (OUTBOUND_CACHE_MAX_SIZE * OUTBOUND_CACHE_LOAD_FACTOR);
+    while (outboundEventCache.size () > targetCacheSize)
+    {
+      final ServerEvent discarded = outboundEventCache.poll ();
+      log.trace ("Discarding old event from server revent cache [{}]", discarded);
+    }
+
+    log.debug ("Pruned outbound event cache [New Size: {}]; Discarded {} old events.", outboundEventCache.size (),
+               currentCacheSize - targetCacheSize);
   }
 
   @Handler (priority = 1)
@@ -171,20 +190,9 @@ public class InternalCommunicationHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("Event received [{}]", event);
+    log.trace ("Event received [{}]", event);
 
     requestEvents.put (event.getRequestEvent (), event.getPlayer ());
     eventBus.publish (event.getRequestEvent ());
-  }
-
-  @Handler
-  void onEvent (final UpdatePlayerDataRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}]", event);
-
-    final ImmutableSet <PlayerPacket> players = playerModel.getPlayerPackets ();
-    eventBus.publish (new UpdatePlayerDataResponseEvent (players, event.getEventId ()));
   }
 }

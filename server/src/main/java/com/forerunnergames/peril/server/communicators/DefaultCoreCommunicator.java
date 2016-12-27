@@ -28,10 +28,11 @@ import com.forerunnergames.peril.core.events.internal.interfaces.InternalRespons
 import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerInformRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerResponseRequestEvent;
+import com.forerunnergames.peril.core.events.internal.player.SendGameStateRequestEvent;
+import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent;
+import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent.ResponseCode;
 import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataResponseEvent;
-import com.forerunnergames.peril.core.model.state.events.ResumeGameEvent;
-import com.forerunnergames.peril.core.model.state.events.SuspendGameEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
@@ -75,15 +76,15 @@ public class DefaultCoreCommunicator implements CoreCommunicator
   }
 
   @Override
-  public void notifySuspendGame ()
+  public void requestSendGameStateTo (final PlayerPacket player)
   {
-    eventBus.publish (new SuspendGameEvent ());
-  }
+    final SendGameStateRequestEvent requestEvent = new SendGameStateRequestEvent (player);
+    eventBus.publish (requestEvent);
 
-  @Override
-  public void notifyResumeGame ()
-  {
-    eventBus.publish (new ResumeGameEvent ());
+    final Optional <InternalResponseEvent> responseEvent = getResponseFor (requestEvent);
+    if (!responseEvent.isPresent ()) return;
+    final SendGameStateResponseEvent sendGameStateResponse = (SendGameStateResponseEvent) responseEvent.get ();
+    assert sendGameStateResponse.getResponse () == ResponseCode.OK;
   }
 
   @Override
@@ -109,10 +110,8 @@ public class DefaultCoreCommunicator implements CoreCommunicator
     eventBus.publish (new DefaultInboundPlayerInformRequestEvent <> (player, informRequestEvent, informEvent));
   }
 
-  // --- response handlers --- //
-
   @Handler
-  public void onPlayerDataResponseEvent (final UpdatePlayerDataResponseEvent response)
+  public void onInternalResponseEvent (final InternalResponseEvent response)
   {
     Arguments.checkIsNotNull (response, "response");
 

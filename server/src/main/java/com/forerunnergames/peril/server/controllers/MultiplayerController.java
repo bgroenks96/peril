@@ -1195,12 +1195,14 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
             clientsToPlayers.players (), gameServerConfig.getPersonLimits ());
     sendPlayerJoinGameSuccessEvent (successEvent);
 
+    // send current game state to player
+    coreCommunicator.requestSendGameStateTo (updatedPlayer);
+
     if (!eventCache.hasPendingEvents (updatedPlayer))
     {
       return;
     }
 
-    coreCommunicator.notifyResumeGame ();
     resendPendingDirectEventsFor (updatedPlayer);
   }
 

@@ -18,6 +18,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Playe
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.battle.BattleModel;
 import com.forerunnergames.peril.core.model.card.Card;
 import com.forerunnergames.peril.core.model.card.CardModel;
@@ -43,6 +44,7 @@ import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 import javax.annotation.Nullable;
@@ -129,11 +131,13 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     return active;
   }
 
+  @Override
   public void advancePlayerTurn ()
   {
     playerTurnModel.advance ();
   }
 
+  @Override
   public void skipPlayerTurn (final SkipPlayerTurnEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -365,4 +369,24 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   protected abstract void onBegin ();
 
   protected abstract void onEnd ();
+
+  protected static ImmutableMap <CountryPacket, PlayerPacket> buildPlayMapViewFrom (final PlayerModel playerModel,
+                                                                                    final PlayMapModel playMapModel)
+  {
+    Arguments.checkIsNotNull (playerModel, "playerModel");
+    Arguments.checkIsNotNull (playMapModel, "playMapModel");
+
+    final CountryGraphModel countryGraphModel = playMapModel.getCountryGraphModel ();
+    final CountryOwnerModel countryOwnerModel = playMapModel.getCountryOwnerModel ();
+
+    final ImmutableMap.Builder <CountryPacket, PlayerPacket> playMapView = ImmutableMap.builder ();
+    for (final Id countryId : countryGraphModel)
+    {
+      if (!countryOwnerModel.isCountryOwned (countryId)) continue;
+
+      final Id ownerId = countryOwnerModel.ownerOf (countryId);
+      playMapView.put (countryGraphModel.countryPacketWith (countryId), playerModel.playerPacketWith (ownerId));
+    }
+    return playMapView.build ();
+  }
 }

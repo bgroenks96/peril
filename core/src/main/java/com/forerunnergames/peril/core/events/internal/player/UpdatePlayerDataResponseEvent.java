@@ -21,6 +21,7 @@ package com.forerunnergames.peril.core.events.internal.player;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.events.internal.defaults.AbstractInternalResponseEvent;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.id.Id;
 
 import com.google.common.collect.ImmutableSet;
@@ -42,5 +43,11 @@ public class UpdatePlayerDataResponseEvent extends AbstractInternalResponseEvent
   public ImmutableSet <PlayerPacket> getUpdatedPlayers ()
   {
     return updatedPlayers;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{} | UpdatedPlayers: [{}]", super.toString (), updatedPlayers);
   }
 }

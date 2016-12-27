@@ -133,7 +133,7 @@ public final class GameModelConfiguration
     {
       if (internalCommHandler == null)
       {
-        internalCommHandler = new InternalCommunicationHandler (playerModel, eventBus);
+        internalCommHandler = new InternalCommunicationHandler (eventBus);
       }
 
       return new GameModelConfiguration (playerModel, playMapModel, cardModel, playerTurnModel, battleModel, gameRules,
@@ -217,10 +217,10 @@ public final class GameModelConfiguration
               .create (disjointCountryGraph,
                        ContinentGraphModel.disjointContinentGraphFrom (emptyContinentFactory, disjointCountryGraph));
       playerModel = new DefaultPlayerModel (gameRules);
-      cardModel = new DefaultCardModel (gameRules, playerModel, ImmutableSet.<Card> of ());
+      cardModel = new DefaultCardModel (gameRules, playerModel, ImmutableSet. <Card>of ());
       playerTurnModel = new DefaultPlayerTurnModel (gameRules);
       battleModel = new DefaultBattleModel (playMapModel);
-      turnDataCache = new PlayerTurnDataCache<> ();
+      turnDataCache = new PlayerTurnDataCache <> ();
     }
   }
 }

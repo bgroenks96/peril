@@ -27,11 +27,7 @@ import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.game.GameModelConfiguration;
 import com.forerunnergames.peril.core.model.game.GamePhaseEventFactory;
 import com.forerunnergames.peril.core.model.game.phase.AbstractGamePhaseHandler;
-import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
-import com.forerunnergames.peril.core.model.playmap.PlayMapModel;
-import com.forerunnergames.peril.core.model.playmap.country.CountryGraphModel;
-import com.forerunnergames.peril.core.model.playmap.country.CountryOwnerModel;
 import com.forerunnergames.peril.core.model.state.annotations.StateEntryAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateTransitionCondition;
 import com.forerunnergames.peril.core.model.state.events.BeginManualCountryAssignmentEvent;
@@ -157,7 +153,7 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
       return;
     }
 
-    final List <Id> countries = Randomness.shuffle (new HashSet<> (countryGraphModel.getCountryIds ()));
+    final List <Id> countries = Randomness.shuffle (new HashSet <> (countryGraphModel.getCountryIds ()));
     final List <PlayerPacket> players = Randomness.shuffle (playerModel.getPlayerPackets ());
     final ImmutableList <Integer> playerCountryDistribution = rules
             .getInitialPlayerCountryDistribution (players.size ());
@@ -417,25 +413,5 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
   protected void onEnd ()
   {
     log.trace ("Exit InitialPhaseHandler");
-  }
-
-  private static ImmutableMap <CountryPacket, PlayerPacket> buildPlayMapViewFrom (final PlayerModel playerModel,
-                                                                                  final PlayMapModel playMapModel)
-  {
-    Arguments.checkIsNotNull (playerModel, "playerModel");
-    Arguments.checkIsNotNull (playMapModel, "playMapModel");
-
-    final CountryGraphModel countryGraphModel = playMapModel.getCountryGraphModel ();
-    final CountryOwnerModel countryOwnerModel = playMapModel.getCountryOwnerModel ();
-
-    final ImmutableMap.Builder <CountryPacket, PlayerPacket> playMapView = ImmutableMap.builder ();
-    for (final Id countryId : countryGraphModel)
-    {
-      if (!countryOwnerModel.isCountryOwned (countryId)) continue;
-
-      final Id ownerId = countryOwnerModel.ownerOf (countryId);
-      playMapView.put (countryGraphModel.countryPacketWith (countryId), playerModel.playerPacketWith (ownerId));
-    }
-    return playMapView.build ();
   }
 }

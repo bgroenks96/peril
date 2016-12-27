@@ -23,8 +23,17 @@ import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinG
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.WaitingForPlayersToJoinGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerRestoreGameStateEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.peril.core.events.internal.player.SendGameStateRequestEvent;
+import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent;
+import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent.ResponseCode;
+import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataRequestEvent;
+import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataResponseEvent;
+import com.forerunnergames.peril.core.model.card.CardPackets;
 import com.forerunnergames.peril.core.model.game.phase.AbstractGamePhaseHandler;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel.PlayerJoinGameStatus;
@@ -33,8 +42,12 @@ import com.forerunnergames.peril.core.model.state.annotations.StateExitAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateTransitionAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateTransitionCondition;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.id.Id;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+
+import net.engio.mbassy.listener.Handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +61,7 @@ public final class GameModel extends AbstractGamePhaseHandler
     super (gameModelConfig);
 
     eventBus.subscribe (internalCommHandler);
+    eventBus.subscribe (this);
   }
 
   @Override
@@ -188,6 +202,45 @@ public final class GameModel extends AbstractGamePhaseHandler
   {
     log.debug ("CurrentTurn: {} | Player: [{}] | Cache dump: [{}]", playerTurnModel.getCurrentTurn (),
                getCurrentPlayerId (), turnDataCache);
+  }
+
+  @Handler
+  void onEvent (final UpdatePlayerDataRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+
+    final ImmutableSet <PlayerPacket> players = playerModel.getPlayerPackets ();
+    publish (new UpdatePlayerDataResponseEvent (players, event.getEventId ()));
+  }
+
+  @Handler
+  void onEvent (final SendGameStateRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+
+    final String targetPlayerName = event.getTargetPlayer ().getName ();
+    if (!playerModel.existsPlayerWith (targetPlayerName))
+    {
+      publish (new SendGameStateResponseEvent (ResponseCode.PLAYER_NOT_FOUND, event.getEventId ()));
+      return;
+    }
+
+    final Id targetPlayerId = playerModel.idOf (targetPlayerName);
+
+    final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
+    final int currentRoundNumber = playerTurnModel.getRound ();
+    final ImmutableMap <CountryPacket, PlayerPacket> countriesToPlayers = buildPlayMapViewFrom (playerModel,
+                                                                                                playMapModel);
+    final CardSetPacket cardsInHand = CardPackets.fromCards (cardModel.getCardsInHand (targetPlayerId));
+    final ImmutableSet <CardSetPacket> availableTradeIns = CardPackets
+            .fromCardMatchSet (cardModel.computeMatchesFor (targetPlayerId));
+    publish (new PlayerRestoreGameStateEvent (event.getTargetPlayer (), currentPlayer, currentRoundNumber,
+            countriesToPlayers, cardsInHand, availableTradeIns));
+    publish (new SendGameStateResponseEvent (ResponseCode.OK, event.getEventId ()));
   }
 
   private void beginGame ()
