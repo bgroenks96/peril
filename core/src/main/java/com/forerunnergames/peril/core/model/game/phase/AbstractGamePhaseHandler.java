@@ -134,12 +134,6 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   }
 
   @Override
-  public void advancePlayerTurn ()
-  {
-    playerTurnModel.advance ();
-  }
-
-  @Override
   public void skipPlayerTurn (final SkipPlayerTurnEvent event)
   {
     Arguments.checkIsNotNull (event, "event");

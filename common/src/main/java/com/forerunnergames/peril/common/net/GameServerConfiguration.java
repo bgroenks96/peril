@@ -21,9 +21,13 @@ package com.forerunnergames.peril.common.net;
 import com.forerunnergames.peril.common.game.GameConfiguration;
 import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 
+import java.util.concurrent.TimeUnit;
+
 public interface GameServerConfiguration extends GameConfiguration, ServerConfiguration
 {
   String getGameServerName ();
 
   GameServerType getGameServerType ();
+
+  long getServerRequestTimeout (TimeUnit timeUnit);
 }

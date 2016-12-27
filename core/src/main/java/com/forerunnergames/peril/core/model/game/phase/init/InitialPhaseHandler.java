@@ -35,5 +35,7 @@ public interface InitialPhaseHandler extends GamePhaseHandler
   @StateTransitionCondition
   boolean verifyPlayerInitialCountryReinforcements (final PlayerReinforceCountryRequestEvent event);
 
+  void advancePlayerTurn ();
+
   void resetTurn ();
 }

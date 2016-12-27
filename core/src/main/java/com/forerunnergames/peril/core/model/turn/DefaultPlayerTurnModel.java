@@ -30,6 +30,7 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
 {
   private final GameRules rules;
   private PlayerTurnOrder currentTurn = PlayerTurnOrder.FIRST;
+  private PlayerTurnOrder previousTurn = PlayerTurnOrder.UNKNOWN;
   private PlayerTurnOrder lastTurn = PlayerTurnOrder.UNKNOWN;
   private int currentRound = 1;
   private boolean isRoundIncreasing = true;
@@ -45,11 +46,9 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   @Override
   public void advance ()
   {
+    previousTurn = currentTurn;
     currentTurn = currentTurn.is (lastTurn) ? PlayerTurnOrder.FIRST : currentTurn.nextValid ();
-    if (isFirstTurn () && lastTurn == maxTurn ())
-    {
-      advanceRound ();
-    }
+    advanceRoundIfNeeded ();
   }
 
   @Override
@@ -91,6 +90,7 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   public void resetCurrentTurn ()
   {
     currentTurn = PlayerTurnOrder.FIRST;
+    previousTurn = PlayerTurnOrder.UNKNOWN;
   }
 
   @Override
@@ -137,12 +137,10 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
     return PlayerTurnOrder.getNthValidTurnOrder (rules.getTotalPlayerLimit ());
   }
 
-  private void advanceRound ()
+  private void advanceRoundIfNeeded ()
   {
-    if (!isRoundIncreasing)
-    {
-      return;
-    }
+    if (!isRoundIncreasing) return;
+    if (currentTurn != PlayerTurnOrder.FIRST || previousTurn != lastTurn) ;
 
     currentRound++;
   }
@@ -150,7 +148,7 @@ public final class DefaultPlayerTurnModel implements PlayerTurnModel
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: CurrentTurn: [{}] | LastTurn: [{}] | Rules: [{}]", getClass ().getSimpleName (),
-                           currentTurn, lastTurn, rules);
+    return Strings.format ("{}: CurrentTurn: [{}] | PreviousTurn: [{}] | LastTurn: [{}] | Rules: [{}]",
+                           getClass ().getSimpleName (), currentTurn, previousTurn, lastTurn, rules);
   }
 }

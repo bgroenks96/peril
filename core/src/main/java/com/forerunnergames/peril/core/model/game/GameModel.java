@@ -24,12 +24,14 @@ import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnR
 import com.forerunnergames.peril.common.net.events.server.denied.EndPlayerTurnDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.WaitingForPlayersToJoinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerRestoreGameStateEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.peril.core.events.internal.player.NotifyPlayerInputTimeoutEvent;
 import com.forerunnergames.peril.core.events.internal.player.SendGameStateRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent;
 import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent.ResponseCode;
@@ -223,6 +225,18 @@ public final class GameModel extends AbstractGamePhaseHandler
     }
 
     publish (new EndPlayerTurnDeniedEvent (getCurrentPlayerPacket (), EndPlayerTurnDeniedEvent.Reason.ACTION_REQUIRED));
+  }
+
+  @Handler
+  void onEvent (final NotifyPlayerInputTimeoutEvent event)
+  {
+    final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
+    if (event.getPlayer ().isNot (currentPlayer))
+    {
+      return;
+    }
+
+    publish (new SkipPlayerTurnEvent (currentPlayer, SkipPlayerTurnEvent.Reason.PLAYER_INPUT_TIMED_OUT));
   }
 
   @Handler

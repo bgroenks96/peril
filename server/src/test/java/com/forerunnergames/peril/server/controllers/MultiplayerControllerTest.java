@@ -131,6 +131,7 @@ public class MultiplayerControllerTest
   private static final GameServerType DEFAULT_GAME_SERVER_TYPE = GameServerType.DEDICATED;
   private static final String DEFAULT_TEST_SERVER_ADDRESS = "server@test";
   private static final int DEFAULT_TEST_SERVER_PORT = 8888;
+  private static final int DEFAULT_TEST_REQUEST_TIMEOUT = 5000;
   private final EventBusHandler eventHandler = new EventBusHandler ();
   private final RemoteClientConnector mockConnector = mock (RemoteClientConnector.class, Mockito.RETURNS_SMART_NULLS);
   private final RemoteClientCommunicator mockHumanClientCommunicator = mock (RemoteClientCommunicator.class,
@@ -1440,7 +1441,7 @@ public class MultiplayerControllerTest
       final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, playMapMetadata, gameRules);
       final ServerConfiguration serverConfig = new DefaultServerConfiguration (serverAddress, serverPort);
       final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (gameServerName,
-              gameServerType, gameConfig, serverConfig);
+              gameServerType, gameConfig, serverConfig, DEFAULT_TEST_REQUEST_TIMEOUT);
 
       final MultiplayerController controller = new MultiplayerController (gameServerConfig, connector,
               humanPlayerCommunicator, aiPlayerCommunicator, spectatorCommunicator, coreCommunicator, eventBus);

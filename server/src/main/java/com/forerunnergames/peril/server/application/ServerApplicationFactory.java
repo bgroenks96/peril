@@ -145,7 +145,7 @@ public final class ServerApplicationFactory
 
     final GameConfiguration gameConfig = new DefaultGameConfiguration (args.gameMode, playMapMetadata, gameRules);
     final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (args.gameServerName,
-            args.gameServerType, gameConfig, serverConfig);
+            args.gameServerType, gameConfig, serverConfig, NetworkSettings.SERVER_REQUEST_TIMEOUT_MS);
 
     final MBassador <Event> aiEventBus = EventBusFactory.create ();
 

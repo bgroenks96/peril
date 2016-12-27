@@ -59,6 +59,12 @@ public final class DefaultTurnPhaseHandler extends AbstractGamePhaseHandler impl
     return playerTurnModel.isLastTurn ();
   }
 
+  @Override
+  public void advancePlayerTurn ()
+  {
+    playerTurnModel.advance ();
+  }
+
   /* (non-Javadoc)
    * @see com.forerunnergames.peril.core.model.game.phase.turn.TurnPhaseHandler#verifyPlayerCardTradeIn(com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent)
    */
@@ -148,10 +154,14 @@ public final class DefaultTurnPhaseHandler extends AbstractGamePhaseHandler impl
   @Override
   protected void onBegin ()
   {
+    log.trace ("Begin DefaultTurnPhaseHandler");
+
+    playerTurnModel.setRoundIncreasing (true);
   }
 
   @Override
   protected void onEnd ()
   {
+    log.trace ("End DefaultTurnPhaseHandler");
   }
 }

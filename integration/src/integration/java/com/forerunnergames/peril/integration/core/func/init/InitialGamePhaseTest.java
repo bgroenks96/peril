@@ -31,10 +31,12 @@ import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
+import com.forerunnergames.peril.integration.TestMonitor;
 import com.forerunnergames.peril.integration.TestSessions;
 import com.forerunnergames.peril.integration.TestSessions.TestSession;
 import com.forerunnergames.peril.integration.TestUtil;
@@ -43,6 +45,8 @@ import com.forerunnergames.peril.integration.core.func.ActionResult;
 import com.forerunnergames.peril.integration.core.func.DedicatedGameSession;
 import com.forerunnergames.peril.integration.server.TestClient;
 import com.forerunnergames.peril.integration.server.TestClientPool;
+import com.forerunnergames.peril.integration.server.TestClientPool.ClientEventCallback;
+import com.forerunnergames.peril.integration.server.TestServerApplicationFactory;
 import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.Strings;
 
@@ -72,8 +76,8 @@ public final class InitialGamePhaseTest
   public Object[][] generateSessionName (final Method method)
   {
     final String fullMethodName = Strings.format ("{}_{}", getClass ().getSimpleName (), method.getName ());
-    return new Object [] [] { { TestSessions.createUniqueNameFrom (fullMethodName),
-                                LoggerFactory.getLogger (fullMethodName) } };
+    return new Object [] [] {
+            { TestSessions.createUniqueNameFrom (fullMethodName), LoggerFactory.getLogger (fullMethodName) } };
   }
 
   @AfterClass
@@ -277,6 +281,38 @@ public final class InitialGamePhaseTest
     controller.performRandomInitialArmyPlacement ();
     TestUtil.pause (100);
     assertTrue (stateMachineMonitor.entered ("TurnPhase").atLeastOnce ());
+    assertFalse (stateMachineMonitor.checkError ().isPresent ());
+  }
+
+  @Test (groups = INITIAL_GAME_PHASE_TEST_GROUP_NAME, dataProvider = SINGLETON_PROVIDER)
+  public void testInitialReinforcementPhaseServerRequestTimeout (final String sessionName, final Logger log)
+  {
+    final DedicatedGameSession session = createNewTestSession (sessionName, InitialCountryAssignment.RANDOM);
+    final InitialGamePhaseController controller = new InitialGamePhaseController (session);
+    final StateMachineMonitor stateMachineMonitor = new StateMachineMonitor (session.getStateMachine (), log);
+    final TestClientPool clientPool = session.getTestClientPool ();
+    assertTrue (controller.connectAllClientsToGameServer ());
+    assertFalse (controller.waitForAllClientsToJoinGame ().hasAnyFailed ());
+    assertFalse (controller.waitForAllClientsToReceivePlayerTurnOrder ().hasAnyFailed ());
+    assertFalse (controller.waitForAllClientsToReceiveInitialArmies ().hasAnyFailed ());
+    assertFalse (controller.waitForAllClientsToReceiveCountryAssignment ().hasAnyFailed ());
+    TestUtil.pause (TestServerApplicationFactory.TEST_SERVER_REQUEST_TIMEOUT_MS);
+    final TestMonitor monitor = new TestMonitor (clientPool.count ());
+    clientPool.waitForAllClientsToReceive (SkipPlayerTurnEvent.class, 5000,
+                                           new ClientEventCallback <SkipPlayerTurnEvent> ()
+                                           {
+                                             @Override
+                                             public void onEventReceived (final Optional <SkipPlayerTurnEvent> event,
+                                                                          final TestClient client)
+                                             {
+                                               // make sure event was received and the first player was skipped
+                                               if (event.isPresent () && event.get ().getPerson ().getTurnOrder () == 1)
+                                               {
+                                                 monitor.checkIn ();
+                                               }
+                                             }
+                                           });
+    monitor.awaitCompletion (5000);
     assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 

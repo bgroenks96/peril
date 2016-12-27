@@ -10,6 +10,8 @@ public interface TurnPhaseHandler extends GamePhaseHandler
 
   boolean isLastTurn ();
 
+  void advancePlayerTurn ();
+
   /**
    * @return true if trade-ins are complete and state machine should advance to normal reinforcement state, false if
    *         additional trade-ins are available

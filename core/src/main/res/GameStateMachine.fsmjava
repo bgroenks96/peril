@@ -281,6 +281,9 @@
                                 condition="initialPhase.verifyPlayerClaimCountryResponseRequest(event)"
                                 nextState="WaitForPlayersToClaimInitialCountries"/>
                     <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="InitialReinforcementPhase"/>
+                    <transition event="onSkipPlayerTurnEvent"
+                                action="initialPhase.skipPlayerTurn(event)"
+                                nextState="WaitForPlayersToReinforceInitialCountries"/>
                   </state>
                 </state>
               </state> <!-- End AssignPlayerCountries state -->

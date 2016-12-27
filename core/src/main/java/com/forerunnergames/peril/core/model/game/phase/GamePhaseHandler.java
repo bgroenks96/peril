@@ -16,8 +16,6 @@ public interface GamePhaseHandler
 
   boolean isActive ();
 
-  void advancePlayerTurn ();
-
   void skipPlayerTurn (SkipPlayerTurnEvent event);
 
   Id getCurrentPlayerId ();

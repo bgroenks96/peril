@@ -42,7 +42,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
   @Override
   protected void setupTest ()
   {
-    initialPhase = new DefaultInitialPhaseHandler (gameModelConfig, eventFactory);
+    initialPhase = new DefaultInitialPhaseHandler (gameModelConfig);
   }
 
   @Test

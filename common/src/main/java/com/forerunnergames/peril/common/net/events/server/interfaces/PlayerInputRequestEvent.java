@@ -27,6 +27,6 @@ import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEv
  * answer with a {@link com.forerunnergames.tools.net.events.remote.origin.server.ResponseSuccessEvent} or
  * {@link com.forerunnergames.tools.net.events.remote.origin.server.ResponseDeniedEvent}.
  */
-public interface PlayerInputRequestEvent extends DirectPlayerEvent, ServerRequestEvent
+public interface PlayerInputRequestEvent extends PlayerInputEvent, ServerRequestEvent
 {
 }

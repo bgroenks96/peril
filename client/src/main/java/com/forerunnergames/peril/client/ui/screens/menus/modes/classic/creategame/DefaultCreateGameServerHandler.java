@@ -82,7 +82,8 @@ public final class DefaultCreateGameServerHandler implements CreateGameServerHan
 
     final CreateGameServerRequestEvent event = new CreateGameServerRequestEvent (new DefaultGameServerConfiguration (
             serverName, GameServerType.HOST_AND_PLAY, gameConfig,
-            new DefaultServerConfiguration (NetworkConstants.LOCALHOST_ADDRESS, NetworkSettings.DEFAULT_TCP_PORT)));
+            new DefaultServerConfiguration (NetworkConstants.LOCALHOST_ADDRESS, NetworkSettings.DEFAULT_TCP_PORT),
+            NetworkSettings.SERVER_REQUEST_TIMEOUT_MS));
 
     log.info ("Attempting to create game server... [{}]", event);
 

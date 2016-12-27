@@ -76,6 +76,7 @@ public class TestServerApplicationFactory
           GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_NAME, GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_TYPE,
           GameMode.CLASSIC, GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_DIR_NAME,
           GameSettings.DEFAULT_CLASSIC_MODE_PLAY_MAP_DIR_TYPE);
+  public static final long TEST_SERVER_REQUEST_TIMEOUT_MS = 10000;
   private static volatile int testGameServerId = 0;
 
   public static TestServerApplication createTestServer (final MBassador <Event> eventBus,
@@ -149,7 +150,7 @@ public class TestServerApplicationFactory
     final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, playMapMetadata, gameRules);
     final ServerConfiguration serverConfig = new DefaultServerConfiguration (serverAddress, serverPort);
     final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (gameServerName, type,
-            gameConfig, serverConfig);
+            gameConfig, serverConfig, TEST_SERVER_REQUEST_TIMEOUT_MS);
 
     final MBassador <Event> aiEventBus = EventBusFactory.create ();
 

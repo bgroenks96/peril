@@ -31,27 +31,33 @@ import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 
+import java.util.concurrent.TimeUnit;
+
 public final class DefaultGameServerConfiguration implements GameServerConfiguration
 {
   private final String gameServerName;
   private final GameServerType gameServerType;
   private final GameConfiguration gameConfig;
   private final ServerConfiguration serverConfig;
+  private final long serverRequestTimeoutMillis;
 
   public DefaultGameServerConfiguration (final String gameServerName,
                                          final GameServerType gameServerType,
                                          final GameConfiguration gameConfig,
-                                         final ServerConfiguration serverConfig)
+                                         final ServerConfiguration serverConfig,
+                                         final long serverRequestTimeoutMillis)
   {
     Arguments.checkIsNotNull (gameServerName, "gameServerName");
     Arguments.checkIsNotNull (gameServerType, "gameServerType");
     Arguments.checkIsNotNull (gameConfig, "gameConfig");
     Arguments.checkIsNotNull (serverConfig, "serverConfig");
+    Arguments.checkIsNotNegative (serverRequestTimeoutMillis, "serverRequestTimeoutMillis");
 
     this.gameServerName = gameServerName;
     this.gameServerType = gameServerType;
     this.gameConfig = gameConfig;
     this.serverConfig = serverConfig;
+    this.serverRequestTimeoutMillis = serverRequestTimeoutMillis;
   }
 
   @Override
@@ -159,6 +165,12 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   }
 
   @Override
+  public long getServerRequestTimeout (final TimeUnit timeUnit)
+  {
+    return timeUnit.convert (serverRequestTimeoutMillis, TimeUnit.MILLISECONDS);
+  }
+
+  @Override
   public String toString ()
   {
     return Strings.format ("{}: GameServerName: {} | GameServerType: {} | GameConfig: {} | ServerConfig: {}",
@@ -172,5 +184,6 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
     gameServerType = null;
     gameConfig = null;
     serverConfig = null;
+    serverRequestTimeoutMillis = 0;
   }
 }

@@ -152,10 +152,7 @@ public class InternalCommunicationHandler
 
     outboundEventCache.offer (event);
 
-    if (outboundEventCache.size () < OUTBOUND_CACHE_MAX_SIZE)
-    {
-      return;
-    }
+    if (outboundEventCache.size () < OUTBOUND_CACHE_MAX_SIZE) return;
 
     final int currentCacheSize = outboundEventCache.size ();
     final int targetCacheSize = (int) (OUTBOUND_CACHE_MAX_SIZE * OUTBOUND_CACHE_LOAD_FACTOR);

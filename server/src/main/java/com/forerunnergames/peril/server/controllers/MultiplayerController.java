@@ -43,6 +43,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerQuitGameD
 import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerDisconnectEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
@@ -66,6 +67,7 @@ import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
 import com.forerunnergames.peril.server.communicators.SpectatorCommunicator;
 import com.forerunnergames.peril.server.controllers.ClientPlayerMapping.RegisteredClientPlayerNotFoundException;
 import com.forerunnergames.peril.server.controllers.ClientSpectatorMapping.RegisteredClientSpectatorNotFoundException;
+import com.forerunnergames.peril.server.controllers.MultiplayerControllerEventCache.PlayerInputEventTimeoutCallback;
 import com.forerunnergames.peril.server.dispatchers.ClientRequestEventDispatchListener;
 import com.forerunnergames.peril.server.dispatchers.ClientRequestEventDispatcher;
 import com.forerunnergames.tools.common.Arguments;
@@ -82,7 +84,6 @@ import com.forerunnergames.tools.net.client.configuration.DefaultClientConfigura
 import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
-import com.forerunnergames.tools.net.events.remote.DirectEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
@@ -99,6 +100,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
@@ -108,11 +110,12 @@ import net.engio.mbassy.listener.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class MultiplayerController extends ControllerAdapter implements ClientRequestEventDispatchListener
+public final class MultiplayerController extends ControllerAdapter
+        implements ClientRequestEventDispatchListener, PlayerInputEventTimeoutCallback
 {
   // @formatter:off
   private static final Logger log = LoggerFactory.getLogger (MultiplayerController.class);
-  private final MultiplayerControllerEventCache eventCache = new MultiplayerControllerEventCache();
+  private final MultiplayerControllerEventCache eventCache;
   private final Set <RemoteClient> clientsInServer = Collections.synchronizedSet (new HashSet <RemoteClient> ());
   private final ClientPlayerMapping clientsToPlayers;
   private final ClientSpectatorMapping clientsToSpectators;
@@ -155,6 +158,8 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     this.coreCommunicator = coreCommunicator;
     this.eventBus = eventBus;
 
+    eventCache = new MultiplayerControllerEventCache (this,
+            gameServerConfig.getServerRequestTimeout (TimeUnit.MILLISECONDS));
     clientsToPlayers = new ClientPlayerMapping (coreCommunicator, gameServerConfig.getTotalPlayerLimit ());
     clientsToSpectators = new ClientSpectatorMapping (gameServerConfig.getSpectatorLimit ());
   }
@@ -188,6 +193,12 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
     networkEventDispatcher.shutDown ();
     connectorDaemon.threadPool.shutdown ();
     shouldShutDown = true;
+  }
+
+  @Override
+  public void onEventTimedOut (final PlayerInputEvent inputEvent)
+  {
+    coreCommunicator.notifyInputEventTimedOut (inputEvent);
   }
 
   // ---------- Remote inbound ClientRequestEvent callbacks from NetworkEventDispatcher ---------- //
@@ -1203,7 +1214,7 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
       return;
     }
 
-    resendPendingDirectEventsFor (updatedPlayer);
+    resendPendingInputEventsFor (updatedPlayer);
   }
 
   private void handlePlayerResponseRequestTo (final Class <? extends ServerRequestEvent> requestClass,
@@ -1244,10 +1255,10 @@ public final class MultiplayerController extends ControllerAdapter implements Cl
               informRequest, player, informClass);
   }
 
-  private void resendPendingDirectEventsFor (final PlayerPacket player)
+  private void resendPendingInputEventsFor (final PlayerPacket player)
   {
-    for (final DirectEvent event : Sets.union (eventCache.informEventsFor (player),
-                                               eventCache.inputRequestsFor (player)))
+    for (final PlayerInputEvent event : Sets.union (eventCache.informEventsFor (player),
+                                                    eventCache.inputRequestsFor (player)))
     {
       sendToPlayer (player, event);
     }

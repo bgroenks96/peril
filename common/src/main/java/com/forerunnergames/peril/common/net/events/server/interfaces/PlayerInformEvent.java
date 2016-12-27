@@ -39,6 +39,6 @@ import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequest
  * It thus offers much greater flexibility than a {@link PlayerInputRequestEvent}, which allows only one type of
  * {@link ResponseRequestEvent} back from the client, and is used for non-optional game states.
  */
-public interface PlayerInformEvent extends DirectPlayerNotificationEvent
+public interface PlayerInformEvent extends DirectPlayerNotificationEvent, PlayerInputEvent
 {
 }

@@ -21,6 +21,7 @@ package com.forerunnergames.peril.server.communicators;
 import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.events.internal.interfaces.InternalRequestEvent;
@@ -28,6 +29,7 @@ import com.forerunnergames.peril.core.events.internal.interfaces.InternalRespons
 import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerInformRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerResponseRequestEvent;
+import com.forerunnergames.peril.core.events.internal.player.NotifyPlayerInputTimeoutEvent;
 import com.forerunnergames.peril.core.events.internal.player.SendGameStateRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent;
 import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent.ResponseCode;
@@ -85,6 +87,12 @@ public class DefaultCoreCommunicator implements CoreCommunicator
     if (!responseEvent.isPresent ()) return;
     final SendGameStateResponseEvent sendGameStateResponse = (SendGameStateResponseEvent) responseEvent.get ();
     assert sendGameStateResponse.getResponse () == ResponseCode.OK;
+  }
+
+  @Override
+  public void notifyInputEventTimedOut (final PlayerInputEvent event)
+  {
+    eventBus.publish (new NotifyPlayerInputTimeoutEvent (event));
   }
 
   @Override

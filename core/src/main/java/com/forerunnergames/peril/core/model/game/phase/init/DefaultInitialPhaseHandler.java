@@ -26,7 +26,6 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforc
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.game.GameModelConfiguration;
-import com.forerunnergames.peril.core.model.game.GamePhaseEventFactory;
 import com.forerunnergames.peril.core.model.game.phase.AbstractGamePhaseHandler;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
 import com.forerunnergames.peril.core.model.state.annotations.StateEntryAction;
@@ -55,14 +54,9 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
 {
   private static final Logger log = LoggerFactory.getLogger (DefaultInitialPhaseHandler.class);
 
-  private final GamePhaseEventFactory sharedEventFactory;
-
-  public DefaultInitialPhaseHandler (final GameModelConfiguration gameModelConfig,
-                                     final GamePhaseEventFactory sharedEventFactory)
+  public DefaultInitialPhaseHandler (final GameModelConfiguration gameModelConfig)
   {
     super (gameModelConfig);
-
-    this.sharedEventFactory = sharedEventFactory;
   }
 
   @Override
@@ -244,7 +238,7 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
     if (currentPlayer.getArmiesInHand () == 0)
     {
       log.info ("Player [{}] has no armies. Skipping...", currentPlayer);
-      publish (new SkipPlayerTurnEvent (currentPlayer));
+      publish (new SkipPlayerTurnEvent (currentPlayer, SkipPlayerTurnEvent.Reason.NO_INPUT_REQUIRED));
       return;
     }
 
@@ -335,7 +329,7 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
     if (playerModel.getArmiesInHand (playerId) == 0)
     {
       log.trace ("Player [{}] has no armies remaining in hand. Skipping...", playerPacket);
-      publish (new SkipPlayerTurnEvent (playerPacket));
+      publish (new SkipPlayerTurnEvent (playerPacket, SkipPlayerTurnEvent.Reason.NO_INPUT_REQUIRED));
       return;
     }
 
@@ -406,14 +400,22 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
   }
 
   @Override
+  public void advancePlayerTurn ()
+  {
+    playerTurnModel.advance ();
+  }
+
+  @Override
   protected void onBegin ()
   {
-    log.trace ("Enter InitialPhaseHandler");
+    log.trace ("Begin InitialPhaseHandler");
+
+    playerTurnModel.setRoundIncreasing (false);
   }
 
   @Override
   protected void onEnd ()
   {
-    log.trace ("Exit InitialPhaseHandler");
+    log.trace ("End InitialPhaseHandler");
   }
 }
