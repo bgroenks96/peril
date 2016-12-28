@@ -29,6 +29,7 @@ import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.Strings;
+import com.forerunnergames.tools.common.Utils;
 import com.forerunnergames.tools.net.client.Client;
 import com.forerunnergames.tools.net.client.remote.RemoteServer;
 import com.forerunnergames.tools.net.client.remote.RemoteServerListener;
@@ -41,6 +42,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
@@ -49,6 +51,7 @@ import org.slf4j.LoggerFactory;
 
 public final class KryonetClient extends com.esotericsoftware.kryonet.Client implements Client
 {
+  private static final int TIME_BETWEEN_CONNECTION_ATTEMPTS_SECONDS = 2;
   private static final Logger log = LoggerFactory.getLogger (KryonetClient.class);
   private final Map <Integer, RemoteServer> connectionIdsToRemoteServers = new HashMap <> ();
   private final Map <RemoteServerListener, Listener> remoteServerToKryonetListeners = new HashMap <> ();
@@ -243,14 +246,7 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
 
       result = connectNow (config.getAddress (), config.getPort (), timeoutMs);
 
-      try
-      {
-        Thread.sleep (1000);
-      }
-      catch (final InterruptedException e)
-      {
-        e.printStackTrace ();
-      }
+      if (result.failed ()) Utils.sleep (TimeUnit.SECONDS.toMillis (TIME_BETWEEN_CONNECTION_ATTEMPTS_SECONDS));
     }
     while (result.failed () && connectionAttempts < maxAttempts);
 
