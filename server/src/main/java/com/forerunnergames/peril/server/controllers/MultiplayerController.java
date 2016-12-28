@@ -47,6 +47,8 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInput
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerDisconnectEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ResumeGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SuspendGameEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
@@ -329,6 +331,9 @@ public final class MultiplayerController extends ControllerAdapter
 
     log.trace ("Received [{}] from player [{}]", event, event.getPlayerName ());
 
+    // add player to pending join request cache
+    eventCache.addPendingPlayerJoin (event.getPlayerName (), client);
+
     // if the join request includes a player server id, process as a rejoin attempt;
     // otherwise, forward the request to core as a new join attempt
     if (event.hasSecretId ())
@@ -337,8 +342,7 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    // add player to pending join request cache and forward event to core module
-    eventCache.addPendingPlayerJoin (event.getPlayerName (), client);
+    // forward event to Core
     eventBus.publish (event);
   }
 
@@ -668,15 +672,12 @@ public final class MultiplayerController extends ControllerAdapter
     final boolean isUnexpectedDisconnect = playerQuery.isPresent ();
     if (isUnexpectedDisconnect)
     {
-      final PlayerPacket disconnectedPlayer = playerQuery.get ();
-      final PlayerDisconnectEvent disconnectEvent = new PlayerDisconnectEvent (disconnectedPlayer);
-      sendToAllPlayersExcept (disconnectedPlayer, disconnectEvent);
-      sendToAllSpectators (disconnectEvent);
+      handlePlayerDisconnect (playerQuery.get (), client);
     }
 
     // NOTE: this is no longer necessary (I *think*) because this is an expected case when a player quits
     // voluntarily... processing of PlayerQuitGameRequestEvent will finish before this handler is executed
-    // if client is neither a player nor a spectator, log a warning
+    //
     // if (!playerQuery.isPresent () && !spectatorQuery.isPresent ())
     // {
     // log.warn ("Client [{}] disconnected but did not exist as a player or spectator.", client);
@@ -1072,6 +1073,11 @@ public final class MultiplayerController extends ControllerAdapter
     sendToAllSpectators (message);
   }
 
+  private void publish (final Event event)
+  {
+    eventBus.publish (event);
+  }
+
   private void remove (final RemoteClient client)
   {
     clientsInServer.remove (client);
@@ -1159,6 +1165,22 @@ public final class MultiplayerController extends ControllerAdapter
     return new DefaultSpectatorPacket (name, UUID.randomUUID ());
   }
 
+  private void handlePlayerDisconnect (final PlayerPacket player, final RemoteClient client)
+  {
+    final PlayerPacket disconnectedPlayer = player;
+    log.warn ("Client [{}] for player [{}] disconnected unexpectedly!", disconnectedPlayer, client);
+    final PlayerDisconnectEvent disconnectEvent = new PlayerDisconnectEvent (disconnectedPlayer);
+    sendToAllPlayersExcept (disconnectedPlayer, disconnectEvent);
+    sendToAllSpectators (disconnectEvent);
+
+    if (!eventCache.hasPendingEvents (disconnectedPlayer))
+    {
+      return;
+    }
+
+    publish (new SuspendGameEvent (SuspendGameEvent.Reason.PLAYER_UNAVAILABLE));
+  }
+
   private void handlePlayerRejoinAttempt (final RemoteClient client, final PlayerJoinGameRequestEvent event)
   {
     assert event.hasSecretId ();
@@ -1166,7 +1188,8 @@ public final class MultiplayerController extends ControllerAdapter
     // check if address is valid or not
     if (!NetworkTools.isValidIpAddress (client.getAddress ()))
     {
-      sendToClient (client, new PlayerJoinGameDeniedEvent (event.getPlayerName (),
+      log.warn ("Client [{}] does not have a valid IP address for reconnection.", client);
+      eventBus.publish (new PlayerJoinGameDeniedEvent (event.getPlayerName (),
               PlayerJoinGameDeniedEvent.Reason.INVALID_ADDRESS));
       return;
     }
@@ -1175,7 +1198,9 @@ public final class MultiplayerController extends ControllerAdapter
     final Optional <PlayerPacket> mappedPlayerMaybe = clientsToPlayers.playerFor (playerServerId);
     if (!mappedPlayerMaybe.isPresent ())
     {
-      sendToClient (client, new PlayerJoinGameDeniedEvent (event.getPlayerName (),
+      log.warn ("Received unrecognized server ID [{}] from client [{}]. Aborting reconnection attempt.", playerServerId,
+                client);
+      eventBus.publish (new PlayerJoinGameDeniedEvent (event.getPlayerName (),
               PlayerJoinGameDeniedEvent.Reason.INVALID_ID));
       return;
     }
@@ -1183,7 +1208,9 @@ public final class MultiplayerController extends ControllerAdapter
     final PlayerPacket mappedPlayer = mappedPlayerMaybe.get ();
     if (!mappedPlayer.hasName (event.getPlayerName ()))
     {
-      sendToClient (client, new PlayerJoinGameDeniedEvent (event.getPlayerName (),
+      log.warn ("Unexpected name '{}' for player [{}] with server ID [{}]. Aborting reconnection attempt.",
+                event.getPlayerName (), mappedPlayer, playerServerId);
+      eventBus.publish (new PlayerJoinGameDeniedEvent (event.getPlayerName (),
               PlayerJoinGameDeniedEvent.Reason.NAME_MISMATCH));
       return;
     }
@@ -1214,6 +1241,8 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
+    // resume game and republish pending input events
+    publish (new ResumeGameEvent ());
     resendPendingInputEventsFor (updatedPlayer);
   }
 

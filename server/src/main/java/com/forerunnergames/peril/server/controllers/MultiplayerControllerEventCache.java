@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Timer;
@@ -165,6 +166,21 @@ final class MultiplayerControllerEventCache
     addTimerTaskFor (inputEvent);
   }
 
+  void cancelAllTimersFor (final PlayerPacket player)
+  {
+    Arguments.checkIsNotNull (player, "player");
+
+    if (playerInputRequestEventCache.containsKey (player))
+    {
+      cancelAll (playerInputRequestEventCache.get (player));
+    }
+
+    if (playerInformEventCache.containsKey (player))
+    {
+      cancelAll (playerInformEventCache.get (player));
+    }
+  }
+
   private void addTimerTaskFor (final PlayerInputEvent inputEvent)
   {
     assert inputEvent != null;
@@ -184,7 +200,7 @@ final class MultiplayerControllerEventCache
     return inputEventTimeouts.remove (inputEvent).cancel ();
   }
 
-  private <T extends PlayerInputEvent> ImmutableSet <T> cancelAll (final ImmutableSet <T> inputEvents)
+  private <T extends PlayerInputEvent> ImmutableSet <T> cancelAll (final Collection <T> inputEvents)
   {
     assert inputEvents != null;
 
@@ -193,7 +209,7 @@ final class MultiplayerControllerEventCache
       cancelTimerTaskFor (next);
     }
 
-    return inputEvents;
+    return ImmutableSet.copyOf (inputEvents);
   }
 
   interface PlayerInputEventTimeoutCallback

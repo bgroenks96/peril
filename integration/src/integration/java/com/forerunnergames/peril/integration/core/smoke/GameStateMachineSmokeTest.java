@@ -25,12 +25,12 @@ import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ResumeGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SuspendGameEvent;
 import com.forerunnergames.peril.core.model.game.GameModel;
 import com.forerunnergames.peril.core.model.game.GameModelConfiguration;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
-import com.forerunnergames.peril.core.model.state.events.ResumeGameEvent;
-import com.forerunnergames.peril.core.model.state.events.SuspendGameEvent;
 import com.forerunnergames.peril.integration.core.CoreFactory;
 import com.forerunnergames.peril.integration.core.CoreFactory.GameStateMachineConfig;
 import com.forerunnergames.peril.integration.core.StateMachineMonitor;
@@ -120,14 +120,14 @@ public class GameStateMachineSmokeTest
     final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor ();
     try
     {
-      final CompletableFuture <String> initialState = new CompletableFuture<> ();
+      final CompletableFuture <String> initialState = new CompletableFuture <> ();
       executor.schedule (new Runnable ()
       {
         @Override
         public void run ()
         {
           initialState.complete (gameStateMachine.getCurrentGameStateName ());
-          eventBus.publish (new SuspendGameEvent ());
+          eventBus.publish (new SuspendGameEvent (SuspendGameEvent.Reason.REQUESTED_BY_HOST));
         }
       }, eventDelay, TimeUnit.SECONDS);
 

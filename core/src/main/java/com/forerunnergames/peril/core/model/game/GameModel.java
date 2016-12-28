@@ -289,8 +289,6 @@ public final class GameModel extends AbstractGamePhaseHandler
     playerTurnModel.resetAll ();
 
     publish (new BeginGameEvent ());
-
-    // TODO Reset entire game state.
   }
 
   private void endGame ()

@@ -171,11 +171,11 @@
                 type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent"/>
       </event>
       <event id="onSuspendGameEvent">
-        <parameter type="com.forerunnergames.peril.core.model.state.events.SuspendGameEvent"
+        <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.SuspendGameEvent"
                    name="event"/>
       </event>
       <event id="onResumeGameEvent">
-        <parameter type="com.forerunnergames.peril.core.model.state.events.ResumeGameEvent"
+        <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.ResumeGameEvent"
                    name="event"/>
       </event>
       <event id="onEndGameEvent">

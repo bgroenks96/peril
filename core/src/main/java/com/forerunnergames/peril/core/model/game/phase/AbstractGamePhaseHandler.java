@@ -15,7 +15,9 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPl
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndRoundEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ResumeGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SuspendGameEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -52,6 +54,7 @@ import com.google.common.collect.Sets;
 import javax.annotation.Nullable;
 
 import net.engio.mbassy.bus.MBassador;
+import net.engio.mbassy.listener.Handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +78,8 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   protected final InternalCommunicationHandler internalCommHandler;
   protected final MBassador <Event> eventBus;
 
-  private boolean active;
+  private boolean isActive;
+  private boolean isSuspended;
 
   protected AbstractGamePhaseHandler (final GameModelConfiguration gameModelConfig)
   {
@@ -101,16 +105,28 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     continentOwnerModel = playMapModel.getContinentOwnerModel ();
   }
 
+  /**
+   * Called when the state machine enters this game phase.
+   */
+  protected abstract void onBegin ();
+
+  /**
+   * Called when the state machine exits this game phase.
+   */
+  protected abstract void onEnd ();
+
   @StateEntryAction
   @Override
   public void begin ()
   {
-    if (active)
+    if (isActive || isSuspended)
     {
       return;
     }
 
-    active = true;
+    isActive = true;
+    // subscribe to event bus so we can be notified about suspend/resume events
+    eventBus.subscribe (this);
     onBegin ();
   }
 
@@ -118,19 +134,22 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   @Override
   public void end ()
   {
-    if (!active)
+    if (!isActive || isSuspended)
     {
       return;
     }
 
-    active = false;
+    isActive = false;
+    eventBus.unsubscribe (this);
     onEnd ();
   }
+
+  // ------ Shared State Machine Accessible Methods ------- //
 
   @Override
   public boolean isActive ()
   {
-    return active;
+    return isActive;
   }
 
   @Override
@@ -223,6 +242,30 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     playerTurnModel.resetCurrentTurn ();
   }
 
+  // ------ Suspend/Resume Event Handlers ------ //
+
+  @Handler
+  void onEvent (final SuspendGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]");
+
+    isSuspended = true;
+  }
+
+  @Handler
+  void onEvent (final ResumeGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]");
+
+    isSuspended = false;
+  }
+
+  // ------ Shared Game Phase Handler Utility Methods ------ //
+
   protected boolean isCurrentPlayer (final Id playerId)
   {
     Arguments.checkIsNotNull (playerId, "playerId");
@@ -230,7 +273,9 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     return getCurrentPlayerId ().is (playerId);
   }
 
-  // checks whether or not a player has won or lost the game in the current game state
+  /**
+   * Checks whether or not a player has won or lost the game in the current game state
+   */
   protected void checkPlayerGameStatus (final Id playerId)
   {
     final int playerCountryCount = countryOwnerModel.countCountriesOwnedBy (playerId);
@@ -377,10 +422,6 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
       turnDataCache.clear (key);
     }
   }
-
-  protected abstract void onBegin ();
-
-  protected abstract void onEnd ();
 
   protected static ImmutableMap <CountryPacket, PlayerPacket> buildPlayMapViewFrom (final PlayerModel playerModel,
                                                                                     final PlayMapModel playMapModel)
