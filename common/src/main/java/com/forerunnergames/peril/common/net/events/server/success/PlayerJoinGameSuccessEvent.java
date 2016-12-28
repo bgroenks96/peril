@@ -144,11 +144,6 @@ public final class PlayerJoinGameSuccessEvent extends AbstractPersonJoinGameSucc
   @Override
   public String toString ()
   {
-    if (!this.hasSecretId ())
-    {
-      return super.toString ();
-    }
-
     return Strings.format ("{} | PlayerSecretId: {}", super.toString (), playerSecretId);
   }
 

@@ -179,10 +179,7 @@ final class MultiplayerControllerEventCache
   {
     assert inputEvent != null;
 
-    if (!inputEventTimeouts.containsKey (inputEvent))
-    {
-      return false;
-    }
+    if (!inputEventTimeouts.containsKey (inputEvent)) return false;
 
     return inputEventTimeouts.remove (inputEvent).cancel ();
   }

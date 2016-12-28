@@ -174,7 +174,7 @@ public class PlayerTurnModelTest
   }
 
   @Test
-  public void testRounStartsAtDefault ()
+  public void testRoundStartsAtDefault ()
   {
     assertEquals (START_ROUND, turnModel.getRound ());
     assertTrue (turnModel.isFirstTurn ());
@@ -218,7 +218,7 @@ public class PlayerTurnModelTest
     advanceToTurn (turnModel.getLastTurn ());
     assertEquals (START_ROUND, turnModel.getRound ());
 
-    // advance to next turn, cycling to next round
+    // advance to next turn, should NOT cycle to next round
     turnModel.advance ();
     assertEquals (START_ROUND, turnModel.getRound ());
     assertTrue (turnModel.isFirstTurn ());
