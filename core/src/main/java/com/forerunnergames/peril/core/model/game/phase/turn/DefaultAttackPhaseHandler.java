@@ -12,6 +12,7 @@ import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountr
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndAttackPhaseEvent;
@@ -22,6 +23,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.
 import com.forerunnergames.peril.common.net.events.server.notify.direct.EndPlayerTurnAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueAttackOrderEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerInputCanceledEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerDefendCountryResponseSuccessEvent;
@@ -233,11 +235,22 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
 
     // Use the maximum dice since the player did not choose a die count in time.
     final int dieCount = rules.getMaxAttackerDieCount (attackingCountry.getArmyCount ());
+    final DataResult <AttackOrder, Reason> result = battleModel.newPlayerAttackOrder (attackVector, dieCount);
+    if (result.failed ())
+    {
+      // if this happens, there is something very, very wrong!
+      Exceptions.throwIllegalState ("Failed to create default attack order! Reason: {}", result.getFailureReason ());
+    }
 
+    turnDataCache.put (CacheKey.BATTLE_ATTACK_ORDER, result.getReturnValue ());
     turnDataCache.put (CacheKey.FINAL_BATTLE_ACTOR_ATTACKER, createFinalAttacker (attackVector, dieCount));
 
-    // TODO: Core needs some mechanism of telling server to clear stale response-request cache entries
-    // fix for this would be related to PERIL-372
+    final Optional <PlayerIssueAttackOrderEvent> staleEvent = internalCommHandler
+            .lastOutboundEventOfType (PlayerIssueAttackOrderEvent.class);
+    if (staleEvent.isPresent ())
+    {
+      publish (new PlayerInputCanceledEvent (staleEvent.get ()));
+    }
 
     return turnDataCache.isSet (CacheKey.FINAL_BATTLE_ACTOR_DEFENDER);
   }
@@ -256,10 +269,15 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
 
     turnDataCache.put (CacheKey.FINAL_BATTLE_ACTOR_DEFENDER, createFinalDefender (attackVector, dieCount));
 
-    // TODO: Core needs some mechanism of telling server to clear stale response-request cache entries
-    // fix for this would be related to PERIL-372
+    final Optional <PlayerDefendCountryRequestEvent> staleEvent = internalCommHandler
+            .lastOutboundEventOfType (PlayerDefendCountryRequestEvent.class);
+    if (staleEvent.isPresent ())
+    {
+      publish (new PlayerInputCanceledEvent (staleEvent.get ()));
+    }
 
-    return turnDataCache.isSet (CacheKey.FINAL_BATTLE_ACTOR_ATTACKER);
+    return turnDataCache.isSet (CacheKey.FINAL_BATTLE_ACTOR_ATTACKER)
+            && turnDataCache.isSet (CacheKey.BATTLE_ATTACK_ORDER);
   }
 
   @Override

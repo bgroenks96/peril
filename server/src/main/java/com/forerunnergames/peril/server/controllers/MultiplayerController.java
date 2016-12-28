@@ -49,6 +49,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Playe
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ResumeGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SuspendGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerInputCanceledEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
@@ -854,6 +855,15 @@ public final class MultiplayerController extends ControllerAdapter
     // publish suspend game event for new input events that come in while no client
     // is present for the player
     publish (new SuspendGameEvent (SuspendGameEvent.Reason.PLAYER_UNAVAILABLE));
+  }
+
+  void onEvent (final PlayerInputCanceledEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    eventCache.remove (event.getOriginalInputEvent ());
+
+    // let direct player event handler publish the event
   }
 
   @Handler (priority = Integer.MIN_VALUE)

@@ -31,7 +31,6 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGame
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
-import com.forerunnergames.peril.core.events.internal.player.NotifyPlayerInputTimeoutEvent;
 import com.forerunnergames.peril.core.events.internal.player.SendGameStateRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent;
 import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent.ResponseCode;
@@ -115,6 +114,21 @@ public final class GameModel extends AbstractGamePhaseHandler
   public void resumeGame ()
   {
     log.info ("Resuming game...");
+  }
+
+  @StateTransitionCondition
+  public boolean skipPlayerTurn (final SkipPlayerTurnEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    if (getCurrentPlayerPacket ().isNot (event.getPerson ()))
+    {
+      return false;
+    }
+
+    log.info ("Skipping turn for player [{}].", event.getPersonName ());
+
+    return true;
   }
 
   @StateTransitionAction
@@ -220,18 +234,6 @@ public final class GameModel extends AbstractGamePhaseHandler
     }
 
     publish (new EndPlayerTurnDeniedEvent (getCurrentPlayerPacket (), EndPlayerTurnDeniedEvent.Reason.ACTION_REQUIRED));
-  }
-
-  @Handler
-  void onEvent (final NotifyPlayerInputTimeoutEvent event)
-  {
-    final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
-    if (event.getPlayer ().isNot (currentPlayer))
-    {
-      return;
-    }
-
-    publish (new SkipPlayerTurnEvent (currentPlayer, SkipPlayerTurnEvent.Reason.PLAYER_INPUT_TIMED_OUT));
   }
 
   @Handler
