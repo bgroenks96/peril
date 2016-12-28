@@ -50,6 +50,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialo
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.AttackerBattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.BattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.DefenderBattleResultDialog;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.error.PlayScreenErrorDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.notification.NotificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.quit.PlayScreenQuitDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.intelbox.DefaultIntelBox;
@@ -60,6 +61,7 @@ import com.forerunnergames.peril.client.ui.widgets.AbstractWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListener;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogListener;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.DialogStyle;
 import com.forerunnergames.peril.common.game.rules.GameRules;
@@ -89,6 +91,15 @@ public final class ClassicModePlayScreenWidgetFactory extends AbstractWidgetFact
     Arguments.checkIsNotNull (listener, "listener");
 
     return new PlayScreenQuitDialog (this, message, 587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284, stage, listener);
+  }
+
+  @Override
+  public Dialog createErrorDialog (final Stage stage, final DialogListener listener)
+  {
+    Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return new PlayScreenErrorDialog (this, 587, ScreenSettings.REFERENCE_SCREEN_HEIGHT - 284, stage, listener);
   }
 
   @Override

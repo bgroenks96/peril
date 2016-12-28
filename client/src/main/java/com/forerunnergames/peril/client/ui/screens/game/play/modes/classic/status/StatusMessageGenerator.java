@@ -54,7 +54,6 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndIn
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndRoundEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
@@ -751,16 +750,6 @@ public final class StatusMessageGenerator
     log.debug ("Event received [{}].", event);
 
     everyone ("End of round {}.", event.getRound ());
-  }
-
-  @Handler
-  void onEvent (final PlayerLeaveGameEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    everyoneElse (event.getPerson (), "{} left the game.", event.getPersonName ());
   }
 
   @Handler

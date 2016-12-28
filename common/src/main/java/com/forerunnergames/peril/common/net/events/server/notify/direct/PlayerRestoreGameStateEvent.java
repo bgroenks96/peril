@@ -1,3 +1,20 @@
+/*
+ * Copyright © 2016 Forerunner Games, LLC.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.forerunnergames.peril.common.net.events.server.notify.direct;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
@@ -5,6 +22,7 @@ import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Exceptions;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.DirectNotificiationEvent;
@@ -12,49 +30,48 @@ import com.forerunnergames.tools.net.events.remote.origin.server.DirectNotificia
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
+import java.util.Map;
+
 public final class PlayerRestoreGameStateEvent extends AbstractPlayerEvent implements DirectNotificiationEvent
 {
-  private final PlayerPacket currentPlayerInTurn;
+  private final PlayerPacket currentPlayer;
   private final int currentRound;
-  private final ImmutableMap <CountryPacket, PlayerPacket> countriesToPlayers;
   private final CardSetPacket cardsInHand;
   private final ImmutableSet <CardSetPacket> availableTradeIns;
+  private final ImmutableMap <CountryPacket, PlayerPacket> countriesToPlayers;
 
-  public PlayerRestoreGameStateEvent (final PlayerPacket player,
-                                      final PlayerPacket currentPlayerInTurn,
+  public PlayerRestoreGameStateEvent (final PlayerPacket selfPlayer,
+                                      final PlayerPacket currentPlayer,
                                       final int currentRound,
-                                      final ImmutableMap <CountryPacket, PlayerPacket> countriesToPlayers,
                                       final CardSetPacket cardsInHand,
-                                      final ImmutableSet <CardSetPacket> availableTradeIns)
+                                      final ImmutableSet <CardSetPacket> availableTradeIns,
+                                      final ImmutableMap <CountryPacket, PlayerPacket> countriesToPlayers)
   {
-    super (player);
+    super (selfPlayer);
 
-    Arguments.checkIsNotNull (currentPlayerInTurn, "currentPlayerInTurn");
+    Arguments.checkIsNotNull (currentPlayer, "currentPlayer");
     Arguments.checkIsNotNegative (currentRound, "currentRound");
-    Arguments.checkIsNotNull (countriesToPlayers, "countriesToPlayers");
     Arguments.checkIsNotNull (cardsInHand, "cardsInHand");
     Arguments.checkIsNotNull (availableTradeIns, "availableTradeIns");
+    Arguments.checkHasNoNullElements (availableTradeIns, "availableTradeIns");
+    Arguments.checkIsNotNull (countriesToPlayers, "countriesToPlayers");
+    Arguments.checkHasNoNullKeysOrValues (countriesToPlayers, "countriesToPlayers");
 
-    this.currentPlayerInTurn = currentPlayerInTurn;
+    this.currentPlayer = currentPlayer;
     this.currentRound = currentRound;
-    this.countriesToPlayers = countriesToPlayers;
     this.cardsInHand = cardsInHand;
     this.availableTradeIns = availableTradeIns;
+    this.countriesToPlayers = countriesToPlayers;
   }
 
-  public PlayerPacket getCurrentPlayerInTurn ()
+  public PlayerPacket getCurrentPlayer ()
   {
-    return currentPlayerInTurn;
+    return currentPlayer;
   }
 
   public int getCurrentRound ()
   {
     return currentRound;
-  }
-
-  public ImmutableMap <CountryPacket, PlayerPacket> getCountriesToPlayers ()
-  {
-    return countriesToPlayers;
   }
 
   public CardSetPacket getCardsInHand ()
@@ -67,27 +84,52 @@ public final class PlayerRestoreGameStateEvent extends AbstractPlayerEvent imple
     return availableTradeIns;
   }
 
-  public PlayerPacket getOwner (final CountryPacket country)
+  public ImmutableMap <CountryPacket, PlayerPacket> getCountriesToPlayers ()
   {
-    return countriesToPlayers.get (country);
+    return countriesToPlayers;
+  }
+
+  public ImmutableSet <Map.Entry <CountryPacket, PlayerPacket>> getCountriesToPlayerEntries ()
+  {
+    return countriesToPlayers.entrySet ();
+  }
+
+  public int getSelfOwnedCountryCount ()
+  {
+    return countriesToPlayers.asMultimap ().inverse ().get (getPerson ()).size ();
+  }
+
+  public PlayerPacket getOwnerOf (final CountryPacket country)
+  {
+    Arguments.checkIsNotNull (country, "country");
+
+    final PlayerPacket owner = countriesToPlayers.get (country);
+
+    if (owner == null)
+    {
+      Exceptions.throwIllegalArg ("Cannot find owner of country: [{}]", country);
+    }
+
+    return owner;
   }
 
   @Override
   public String toString ()
   {
     return Strings.format (
-                           "{} | CurrentPlayer: [{}] | CurrentRoun: {} | CountriesToPlayers: [{}] | CardsInHand: [{}] | AvailableTradeIns: [{}]",
-                           super.toString (), currentPlayerInTurn, currentRound, countriesToPlayers, cardsInHand,
-                           availableTradeIns);
+                           "{} | CurrentPlayer: [{}] | CurrentRound: [{}] | CardsInHand: [{}] | "
+                                   + "AvailableTradeIns: [{}] | CountriesToPlayers: [{}] ",
+                           super.toString (), currentPlayer, currentRound, cardsInHand, availableTradeIns,
+                           countriesToPlayers);
   }
 
   @RequiredForNetworkSerialization
   private PlayerRestoreGameStateEvent ()
   {
-    currentPlayerInTurn = null;
+    currentPlayer = null;
     currentRound = 0;
-    countriesToPlayers = null;
     cardsInHand = null;
     availableTradeIns = null;
+    countriesToPlayers = null;
   }
 }

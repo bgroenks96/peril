@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,11 +17,20 @@
 
 package com.forerunnergames.peril.client.ui.widgets.dialogs;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 
-public class ConfirmationDialog extends OkCancelDialog
+/**
+ * Simple message dialog for presenting important binary choices.<br/>
+ * <br/>
+ * Requires the user to choose either "YES" or "NO".<br/>
+ * <br/>
+ * There is no ESCAPE key shortcut for the "NO" choice because it is important for the user to acknowledge one of the
+ * choices, in a scenario where choosing "NO" could have some permanent consequence.
+ */
+public final class ConfirmationDialog extends OkCancelDialog
 {
   public ConfirmationDialog (final WidgetFactory widgetFactory,
                              final String title,
@@ -60,7 +68,17 @@ public class ConfirmationDialog extends OkCancelDialog
             stage, listener);
     // @formatter:on
 
-    changeButtonText ("OK", "YES PLEASE");
-    changeButtonText ("CANCEL", "NO THANKS");
+    changeButtonText ("OK", "YES");
+    changeButtonText ("CANCEL", "NO");
+  }
+
+  @Override
+  protected void addKeys ()
+  {
+    // This override without any call to super gets rid of the ESCAPE key for the "NO" choice,
+    // which is inherited from OkCancelDialog. We want the user to be required to press "YES" or "NO".
+
+    // Since we're also inadvertently overriding OkDialog, add back the ENTER key for the "YES" choice.
+    addKey (Input.Keys.ENTER, DialogAction.SUBMIT_AND_HIDE);
   }
 }

@@ -32,6 +32,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.forerunnergames.peril.client.events.DisconnectFromServerEvent;
 import com.forerunnergames.peril.client.events.PlayGameEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
+import com.forerunnergames.peril.client.events.RejoinGameErrorEvent;
 import com.forerunnergames.peril.client.events.UnloadPlayMapRequestEvent;
 import com.forerunnergames.peril.client.events.UnloadPlayScreenAssetsRequestEvent;
 import com.forerunnergames.peril.client.input.MouseInput;
@@ -82,6 +83,7 @@ import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListenerAdapter;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CompositeDialog;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
+import com.forerunnergames.peril.client.ui.widgets.dialogs.ErrorDialog;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
@@ -112,11 +114,14 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndIn
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerDisconnectEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ResumeGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SuspendGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerRestoreGameStateEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseSuccessEvent;
@@ -126,12 +131,17 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInC
 import com.forerunnergames.peril.common.net.events.server.success.SpectatorJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
+import com.forerunnergames.tools.net.events.local.ServerDisconnectionEvent;
 
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nullable;
@@ -205,6 +215,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
       {
         // TODO Implement detailed report button.
 
+        // TODO Production: Remove.
         publish (new DisconnectFromServerEvent ());
 
         log.debug ("Clicked detailed report button");
@@ -322,8 +333,9 @@ public final class ClassicModePlayScreen extends AbstractScreen
     final PlayScreenCancellableDialogListener fortificationDialogListener = new FortificationDialogListener (allDialogs, playMap, mouseInput);
     final PlayScreenDialogListener notificationDialogListener = new DefaultPlayScreenDialogListener (allDialogs, mouseInput, playMap);
     final PlayScreenCancellableDialogListener quitDialogListener = new QuitDialogListener (allDialogs, playMap, mouseInput);
+    final PlayScreenDialogListener errorDialogListener = new DefaultPlayScreenDialogListener (allDialogs, mouseInput, playMap);
     allDialogListeners.add (attackDialogListener, defendDialogListener, attackerBattleResultDialogListener, defenderBattleResultDialogListener,
-            occupationDialogListener, fortificationDialogListener, notificationDialogListener, quitDialogListener);
+            occupationDialogListener, fortificationDialogListener, notificationDialogListener, quitDialogListener, errorDialogListener);
 
     final Dialog attackerBattleResultDialog = widgetFactory.createAttackerBattleResultDialog (getStage (), attackerBattleResultDialogListener);
     final Dialog defenderBattleResultDialog = widgetFactory.createDefenderBattleResultDialog (getStage (), defenderBattleResultDialogListener);
@@ -331,9 +343,10 @@ public final class ClassicModePlayScreen extends AbstractScreen
     final FortificationDialog fortificationDialog = widgetFactory.createFortificationDialog (getStage (), fortificationDialogListener);
     final ReinforcementDialog reinforcementDialog = widgetFactory.createReinforcementDialog (getStage (), personBox, new ReinforcementDialogListener ());
     final Dialog quitDialog = widgetFactory.createQuitDialog ("", getStage (), quitDialogListener);
+    final Dialog errorDialog = widgetFactory.createErrorDialog (getStage (), errorDialogListener);
     notificationDialog = widgetFactory.createNotificationDialog (widgetFactory, getStage (), notificationDialogListener);
     allDialogs.add (attackerBattleResultDialog, defenderBattleResultDialog, occupationDialog, fortificationDialog, reinforcementDialog,
-            notificationDialog, quitDialog);
+            notificationDialog, quitDialog, errorDialog);
 
     reinforcementPhaseHandler = new ReinforcementPhaseHandler (playMap, reinforcementDialog, eventBus);
     manualCountryAssignmentPhaseHandler = new ManualCountryAssignmentPhaseHandler (playMap, eventBus);
@@ -472,6 +485,24 @@ public final class ClassicModePlayScreen extends AbstractScreen
   }
 
   @Handler
+  public void onEvent (final ServerDisconnectionEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event [{}] received.", event);
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        notificationDialog.setTitle ("Disconnected");
+        notificationDialog.show ("You have been disconnected from the server. Attempting to reconnect you...");
+      }
+    });
+  }
+
+  @Handler
   void onEvent (final PlayGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -576,10 +607,34 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     log.debug ("Event received [{}].", event);
 
-    // See the PlayGameEvent handler for the self player.
-    // This event handler is only for third parties;
-    // It will also be called on reconnect!
-    // assert !event.hasIdentity (PersonIdentity.SELF);
+    // This event is only called for the self-player when reconnecting to the server while this screen is still active.
+    // It will not be called for the self-player when rejoining a game from the main menu.
+    // See the PlayGameEvent handler for the self-player when joining a game for the first time, or
+    // rejoining a game from the main menu.
+    if (event.hasIdentity (PersonIdentity.SELF))
+    {
+      log.info ("Successfully rejoined the game. SuccessEvent: [{}].", event);
+
+      isSpectating.set (false);
+      intelBox.setSelf (event.getPerson ());
+      controlRoomBox.setSelf (event.getPerson ());
+      gamePhaseHandlers.setSelfPlayer (event.getPerson ());
+      notificationDialog.setSelf (event.getPerson ());
+      debugEventGenerator.makePlayersUnavailable (event.getPlayersInGame ());
+
+      Gdx.app.postRunnable (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          personBox.setPlayers (event.getPlayersInGame ());
+        }
+      });
+
+      return;
+    }
+
+    debugEventGenerator.makePlayerUnavailable (event.getPerson ());
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -587,7 +642,6 @@ public final class ClassicModePlayScreen extends AbstractScreen
       public void run ()
       {
         personBox.addPlayer (event.getPerson ());
-        debugEventGenerator.makePlayerUnavailable (event.getPerson ());
       }
     });
   }
@@ -659,7 +713,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.debug ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -681,7 +735,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.debug ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -698,7 +752,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.debug ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -716,7 +770,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.debug ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -734,7 +788,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}].", event);
+    log.debug ("Event received [{}].", event);
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -1189,46 +1243,6 @@ public final class ClassicModePlayScreen extends AbstractScreen
   }
 
   @Handler
-  void onEvent (final PlayerLeaveGameEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    Gdx.app.postRunnable (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        personBox.removePlayer (event.getPerson ());
-        debugEventGenerator.makePlayerAvailable (event.getPerson ());
-      }
-    });
-  }
-
-  @Handler
-  void onEvent (final QuitGameEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    isGameInProgress.set (false);
-
-    Gdx.app.postRunnable (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        notificationDialog.setTitle ("Disconnected");
-        notificationDialog.show ("You have been disconnected from the server.");
-        controlRoomBox.setButtonText (ControlRoomBox.Button.QUIT,
-                                      getQuitButtonText (isGameInProgress.get (), isSpectating.get ()));
-      }
-    });
-  }
-
-  @Handler
   void onEvent (final EndGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -1251,6 +1265,116 @@ public final class ClassicModePlayScreen extends AbstractScreen
                                       getQuitButtonText (isGameInProgress.get (), isSpectating.get ()));
       }
     });
+  }
+
+  @Handler
+  void onEvent (final PlayerDisconnectEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    notificationDialog.setTitle ("Ahem, General");
+    notificationDialog.show (Strings.format (
+                                             "{} has been disconnected from the server. We will try to reconnect "
+                                                     + "them now. Thank you for your gracious patience, General.",
+                                             event.getPlayerName ()));
+  }
+
+  @Handler
+  void onEvent (final SuspendGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    notificationDialog.setTitle ("Ahem, General");
+
+    final String message;
+
+    switch (event.getReason ())
+    {
+      case PLAYER_UNAVAILABLE:
+      {
+        message = "The game has been paused because a player has become unavailable.";
+        break;
+      }
+      case REQUESTED_BY_HOST:
+      {
+        message = "The game has been paused by the host.";
+        break;
+      }
+      default:
+      {
+        throw new IllegalStateException (Strings
+                .format ("Unrecognized {}: [{}]", event.getReason ().getClass ().getSimpleName (), event.getReason ()));
+      }
+    }
+
+    notificationDialog.show (message);
+  }
+
+  @Handler
+  void onEvent (final ResumeGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    notificationDialog.setTitle ("Ahem, General");
+    notificationDialog.show ("The game has been unpaused and can continue normally.");
+  }
+
+  @Handler
+  void onEvent (final PlayerRestoreGameStateEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+    log.info ("Restoring game state after rejoining game...");
+
+    // TODO Restore game phase handlers based on current game phase and current player...
+    // TODO ...when Brian Groenke adds GamePhase enum to PlayerRestoreGameStateEvent.
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        // TODO Uncomment when Brian Groenke adds GamePhase enum to PlayerRestoreGameStateEvent.
+        // intelBox.setGamePhase (event.getGamePhase ());
+        intelBox.setGameRound (event.getCurrentRound ());
+        intelBox.setOwnedCountriesForSelf (event.getSelfOwnedCountryCount (), event.getPerson ());
+
+        playMap.reset ();
+
+        for (final Map.Entry <CountryPacket, PlayerPacket> playMapEntry : event.getCountriesToPlayerEntries ())
+        {
+          playMap.setCountryState (playMapEntry.getKey ().getName (),
+                                   CountryPrimaryImageState.fromPlayerColor (playMapEntry.getValue ().getColor ()));
+          playMap.setArmies (playMapEntry.getKey ().getArmyCount (), playMapEntry.getKey ().getName ());
+
+        }
+
+        log.info ("Finished restoring game state after rejoining game.");
+
+        notificationDialog.setTitle ("Reconnected");
+        notificationDialog.show ("You have been reconnected to the server.");
+      }
+    });
+  }
+
+  @Handler
+  void onEvent (final RejoinGameErrorEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+    log.warn ("Could not rejoin game. Reason: [{}]", event.getErrorMessage ());
+
+    final Dialog errorDialog = allDialogs.get (ErrorDialog.class);
+    errorDialog.setMessage (new DefaultMessage (event.getErrorMessage ()));
+    errorDialog.show ();
   }
 
   private static String getDenialMessage (final SpectatorJoinGameDeniedEvent event)

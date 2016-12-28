@@ -28,6 +28,7 @@ import com.forerunnergames.peril.client.events.CreateGameEvent;
 import com.forerunnergames.peril.client.events.JoinGameEvent;
 import com.forerunnergames.peril.client.events.PlayGameEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
+import com.forerunnergames.peril.client.events.ReJoinGameEvent;
 import com.forerunnergames.peril.client.events.UnloadPlayMapRequestEvent;
 import com.forerunnergames.peril.client.events.UnloadPlayScreenAssetsRequestEvent;
 import com.forerunnergames.peril.client.input.MouseInput;
@@ -68,6 +69,7 @@ import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -85,8 +87,8 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
   private static final Logger log = LoggerFactory.getLogger (MenuToPlayLoadingScreen.class);
   private static final String QUIT_DIALOG_MESSAGE = "Are you sure you want to quit the current game?";
   private final ResetProgressListener goToPlayToMenuLoadingScreenListener = new GoToPlayToMenuLoadingScreenListener ();
-  private final Collection <ServerEvent> unhandledServerEvents = new ArrayList <> ();
-  private final Set <PlayerPacket> players = new HashSet <> ();
+  private final Collection <ServerEvent> unhandledServerEvents = new ArrayList<> ();
+  private final Set <PlayerPacket> players = new HashSet<> ();
   private final PlayMapFactory playMapFactory;
   private final JoinGameServerHandler joinGameServerHandler;
   private final CreateGameServerHandler createGameServerHandler;
@@ -100,8 +102,6 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
   private ClientConfiguration clientConfiguration;
   @Nullable
   private PlayerPacket selfPlayer;
-  @Nullable
-  private UUID selfPlayerSecretId;
 
   public MenuToPlayLoadingScreen (final LoadingScreenWidgetFactory widgetFactory,
                                   final ScreenChanger screenChanger,
@@ -223,6 +223,25 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     });
   }
 
+  @Handler
+  void onEvent (final ReJoinGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        createdGameFirst = false;
+        joinGameServerHandler.join (event.getPlayerName (), event.getServerAddress (),
+                                    new RejoinGameServerListener (event.getPlayerSecretId ()));
+      }
+    });
+  }
+
   // After having joined the game, server events start arriving intended for the play screen,
   // while the play map is still loading on this screen (play screen not active yet - cannot receive events).
   // Collect unhandled server events, which will be published after the play screen is active.
@@ -301,7 +320,7 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
                  Throwables.getRootCause (e).getMessage (), Strings.toString (e));
   }
 
-  private final class DefaultCreateGameServerListener implements CreateGameServerListener
+  private class DefaultCreateGameServerListener implements CreateGameServerListener
   {
     @Override
     public void onCreateStart (final String playerName, final GameServerConfiguration config)
@@ -493,10 +512,8 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
                  gameServerConfig, ClientConfiguration.class.getSimpleName (), clientConfig, players);
 
       assert event.hasIdentity (PersonIdentity.SELF);
-      assert event.hasSecretId ();
 
       selfPlayer = event.getPerson ();
-      selfPlayerSecretId = event.getPlayerSecretId ();
 
       gameServerConfiguration = gameServerConfig;
       playMapMetadata = gameServerConfig.getPlayMapMetadata ();
@@ -559,6 +576,38 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     }
   }
 
+  private final class RejoinGameServerListener extends DefaultCreateGameServerListener
+  {
+    private final UUID playerSecretId;
+
+    @Override
+    public void onJoinGameServerSuccess (final String playerName, final JoinGameServerSuccessEvent event)
+    {
+      Arguments.checkIsNotNull (playerName, "playerName");
+      Arguments.checkIsNotNull (event, "event");
+
+      log.trace ("onJoinGameServerSuccess: PlayerName: [{}], Event: [{}]", playerName, event);
+
+      publishAsync (new HumanPlayerJoinGameRequestEvent (playerName, playerSecretId));
+
+      Gdx.app.postRunnable (new Runnable ()
+      {
+        @Override
+        public void run ()
+        {
+          increaseProgressBy (ONE_SIXTH);
+        }
+      });
+    }
+
+    private RejoinGameServerListener (final UUID playerSecretId)
+    {
+      Arguments.checkIsNotNull (playerSecretId, "playerSecretId");
+
+      this.playerSecretId = playerSecretId;
+    }
+  }
+
   private final class GoToPlayScreenListener implements ResetProgressListener
   {
     private final PlayMap playMap;
@@ -573,7 +622,7 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
     @Override
     public void onResetProgressComplete ()
     {
-      if (playMap.equals (PlayMap.NULL))
+      if (Objects.equals (playMap, PlayMap.NULL))
       {
         log.warn ("Not going to play screen. {} is [{}].", PlayMap.class.getSimpleName (),
                   playMap.getClass ().getSimpleName ());
@@ -583,13 +632,12 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
       assert gameServerConfiguration != null;
       assert clientConfiguration != null;
       assert selfPlayer != null;
-      assert selfPlayerSecretId != null;
 
       // gameServerConfiguration, clientConfiguration, selfPlayer must be used here because
       // they will be made null in #hide during the call to #toScreen.
       // unhandledServerEvents will also be cleared, so make a defensive copy.
       final PlayGameEvent playGameEvent = new PlayGameEvent (gameServerConfiguration, clientConfiguration, selfPlayer,
-              selfPlayerSecretId, ImmutableSet.copyOf (players), playMap);
+              ImmutableSet.copyOf (players), playMap);
       final ScreenId playScreen = ScreenId.fromGameMode (gameServerConfiguration.getGameMode ());
       final ImmutableList <ServerEvent> unhandledServerEventsCopy = ImmutableList.copyOf (unhandledServerEvents);
 

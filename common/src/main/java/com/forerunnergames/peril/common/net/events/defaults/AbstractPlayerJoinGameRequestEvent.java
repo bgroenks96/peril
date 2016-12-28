@@ -41,7 +41,7 @@ public abstract class AbstractPlayerJoinGameRequestEvent implements PlayerJoinGa
 
     this.playerName = playerName;
     this.playerSentience = playerSentience;
-    this.playerSecretId = null;
+    playerSecretId = null;
   }
 
   protected AbstractPlayerJoinGameRequestEvent (final String playerName,
@@ -85,7 +85,7 @@ public abstract class AbstractPlayerJoinGameRequestEvent implements PlayerJoinGa
   }
 
   @Override
-  public boolean hasSecretId ()
+  public boolean hasPlayerSecretId ()
   {
     return playerSecretId != null;
   }
@@ -93,10 +93,7 @@ public abstract class AbstractPlayerJoinGameRequestEvent implements PlayerJoinGa
   @Override
   public String toString ()
   {
-    return hasSecretId ()
-            ? Strings.format ("{}: PlayerName: [{}] | PlayerSentience: [{}] | PlayerSecretId: [{}]",
-                              getClass ().getSimpleName (), playerName, playerSentience, playerSecretId)
-            : Strings.format ("{}: PlayerName: [{}] | PlayerSentience: [{}]", getClass ().getSimpleName (), playerName,
-                              playerSentience);
+    return Strings.format ("{}: PlayerName: [{}] | PlayerSentience: [{}] | PlayerSecretId: [{}]",
+                           getClass ().getSimpleName (), playerName, playerSentience, playerSecretId);
   }
 }

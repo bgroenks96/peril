@@ -305,14 +305,15 @@ public abstract class AbstractScreen extends AbstractScreenInputAdapter
     return widgetFactory.createQuitDialog (message, stage, listener);
   }
 
-  protected final Dialog createConfirmDialog (final String title,
-                                              final String message,
-                                              final CancellableDialogListener listener)
+  protected final Dialog createConfirmationDialog (final String title,
+                                                   final String message,
+                                                   final CancellableDialogListener listener)
   {
+    Arguments.checkIsNotNull (title, "title");
     Arguments.checkIsNotNull (message, "message");
     Arguments.checkIsNotNull (listener, "listener");
 
-    return widgetFactory.createConfirmDialog (title, message, stage, listener);
+    return widgetFactory.createConfirmationDialog (title, message, stage, listener);
   }
 
   protected final Dialog createErrorDialog (final DialogListener listener)

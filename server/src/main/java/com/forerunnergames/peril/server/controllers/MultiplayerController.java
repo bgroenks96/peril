@@ -336,7 +336,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     // if the join request includes a player server id, process as a rejoin attempt;
     // otherwise, forward the request to core as a new join attempt
-    if (event.hasSecretId ())
+    if (event.hasPlayerSecretId ())
     {
       handlePlayerRejoinAttempt (client, event);
       return;
@@ -1198,7 +1198,7 @@ public final class MultiplayerController extends ControllerAdapter
 
   private void handlePlayerRejoinAttempt (final RemoteClient client, final PlayerJoinGameRequestEvent event)
   {
-    assert event.hasSecretId ();
+    assert event.hasPlayerSecretId ();
 
     // check if address is valid or not
     if (!NetworkTools.isValidIpAddress (client.getAddress ()))

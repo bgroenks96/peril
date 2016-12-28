@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,10 +17,29 @@
 
 package com.forerunnergames.peril.client.events;
 
-public final class JoinGameEvent extends AbstractJoinGameEvent
+import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
+import com.forerunnergames.tools.net.events.local.LocalEvent;
+
+public final class RejoinGameErrorEvent implements LocalEvent
 {
-  public JoinGameEvent (final String playerName, final String serverAddress)
+  private final String errorMessage;
+
+  public RejoinGameErrorEvent (final String errorMessage)
   {
-    super (playerName, serverAddress);
+    Arguments.checkIsNotNull (errorMessage, "errorMessage");
+
+    this.errorMessage = errorMessage;
+  }
+
+  public String getErrorMessage ()
+  {
+    return errorMessage;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{}: ErrorMessage: [{}]", getClass ().getSimpleName (), errorMessage);
   }
 }

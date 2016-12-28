@@ -303,18 +303,23 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   }
 
   @Override
-  public Dialog createConfirmDialog (final String title,
-                                     final String message,
-                                     final Stage stage,
-                                     final CancellableDialogListener listener)
-  {
-    return new ConfirmationDialog (this, title, message, stage, listener);
-  }
-
-  @Override
   public Dialog createQuitDialog (final String message, final Stage stage, final CancellableDialogListener listener)
   {
     return new QuitDialog (this, message, stage, listener);
+  }
+
+  @Override
+  public Dialog createConfirmationDialog (final String title,
+                                          final String message,
+                                          final Stage stage,
+                                          final CancellableDialogListener listener)
+  {
+    Arguments.checkIsNotNull (title, "title");
+    Arguments.checkIsNotNull (message, "message");
+    Arguments.checkIsNotNull (stage, "stage");
+    Arguments.checkIsNotNull (listener, "listener");
+
+    return new ConfirmationDialog (this, title, message, stage, listener);
   }
 
   @Override
@@ -470,7 +475,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   {
     Arguments.checkIsNotNull (style, "style");
 
-    return new SelectBox <> (style);
+    return new SelectBox<> (style);
   }
 
   @Override
@@ -531,7 +536,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     Arguments.checkIsNotNegative (rowLabelAlignment, "rowLabelAlignment");
     Arguments.checkIsNotNull (scrollbarStyle, "scrollbarStyle");
 
-    return new DefaultMessageBox <> (new MessageBoxStyle (scrollPaneStyle, scrollbarStyle,
+    return new DefaultMessageBox<> (new MessageBoxStyle (scrollPaneStyle, scrollbarStyle,
             new MessageBoxRowStyle (rowLabelStyle, rowLabelAlignment, DEFAULT_MESSAGE_BOX_ROW_HEIGHT,
                     DEFAULT_MESSAGE_BOX_ROW_HORIZONTAL_PADDING),
             DEFAULT_MESSAGE_BOX_SCROLL_V_PADDING, DEFAULT_MESSAGE_BOX_ABSOLUTE_V_PADDING), this);
@@ -540,7 +545,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
   @Override
   public MessageBox <StatusBoxRow> createStatusBox ()
   {
-    return new DefaultMessageBox <> (STATUS_BOX_STYLE, this);
+    return new DefaultMessageBox<> (STATUS_BOX_STYLE, this);
   }
 
   @Override
@@ -735,7 +740,7 @@ public abstract class AbstractWidgetFactory implements WidgetFactory
     Arguments.checkIsNotNull (message, "message");
     Arguments.checkIsNotNull (rowStyle, "rowStyle");
 
-    return new LabelMessageBoxRow <> (message, rowStyle, this);
+    return new LabelMessageBoxRow<> (message, rowStyle, this);
   }
 
   @Override

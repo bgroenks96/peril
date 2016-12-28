@@ -20,12 +20,14 @@ package com.forerunnergames.peril.common.net.events.server.success;
 
 import com.forerunnergames.peril.common.game.PersonLimits;
 import com.forerunnergames.peril.common.game.PlayerColor;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPersonJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Preconditions;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
@@ -40,13 +42,12 @@ import javax.annotation.Nullable;
 public final class PlayerJoinGameSuccessEvent extends AbstractPersonJoinGameSuccessEvent <PlayerPacket>
         implements PlayerEvent
 {
-  // only present if identity = self
   @Nullable
-  private final UUID playerSecretId;
+  private final UUID selfPlayerSecretId;
 
   /**
-   * Convenience constructor for when person identity is unknown or not cared about, and there are no spectators in game
-   * or spectators in game are unknown or not cared about.
+   * Convenience constructor for when person identity & self player secret id are unknown or not cared about, and there
+   * are no spectators in game or spectators in game are unknown or not cared about.
    */
   public PlayerJoinGameSuccessEvent (final PlayerPacket player,
                                      final ImmutableSet <PlayerPacket> playersInGame,
@@ -54,11 +55,13 @@ public final class PlayerJoinGameSuccessEvent extends AbstractPersonJoinGameSucc
   {
     super (player, playersInGame, personLimits);
 
-    playerSecretId = null;
+    selfPlayerSecretId = null;
   }
 
   /**
-   * Convenience constructor for when person identity is unknown or not cared about.
+   * Convenience constructor for when person identity & self player secret id are unknown or not cared about.
+   * {@link #hasSelfPlayerSecretId()} will always return false. {@link #getSelfPlayerSecretId()} will always return
+   * {@code null}.
    */
   public PlayerJoinGameSuccessEvent (final PlayerPacket player,
                                      final ImmutableSet <PlayerPacket> playersInGame,
@@ -67,9 +70,22 @@ public final class PlayerJoinGameSuccessEvent extends AbstractPersonJoinGameSucc
   {
     super (player, playersInGame, spectatorsInGame, personLimits);
 
-    playerSecretId = null;
+    selfPlayerSecretId = null;
   }
 
+  /**
+   * Constructor for {@link PersonIdentity#NON_SELF}, which cannot have a self player secret id.
+   * {@link #hasSelfPlayerSecretId()} will always return false. {@link #getSelfPlayerSecretId()} will always return
+   * {@code null}.
+   *
+   * Note: This constructor will also accept {@link PersonIdentity#UNKNOWN}, i.e., any value other than
+   * {@link PersonIdentity#SELF}.
+   *
+   * @param identity
+   *          Must not be {@link PersonIdentity#SELF}. See
+   *          {@link #PlayerJoinGameSuccessEvent(PlayerPacket, UUID, ImmutableSet, ImmutableSet, PersonLimits)} for
+   *          setting {@code PersonIdentity#SELF}, which must be accompanied by a self player secret id.
+   */
   public PlayerJoinGameSuccessEvent (final PlayerPacket player,
                                      final PersonIdentity identity,
                                      final ImmutableSet <PlayerPacket> playersInGame,
@@ -78,20 +94,33 @@ public final class PlayerJoinGameSuccessEvent extends AbstractPersonJoinGameSucc
   {
     super (player, identity, playersInGame, spectatorsInGame, personLimits);
 
-    playerSecretId = null;
+    Preconditions
+            .checkIsTrue (identity != PersonIdentity.SELF,
+                          "Cannot use this constructor for self player (i.e., PersonIdentity#SELF); secret id would not be set.");
+
+    selfPlayerSecretId = null;
   }
 
+  /**
+   * Constructor for PersonIdentity#SELF, which must have a self player secret id. {@link #hasSelfPlayerSecretId()} will
+   * always return true. {@link #getSelfPlayerSecretId()} will always return the specified {@code UUID}.
+   *
+   * @param selfPlayerSecretId
+   *          Unique identifier used for rejoining a player to the game via
+   *          {@link PlayerJoinGameRequestEvent#getPlayerSecretId()} if ever disconnected from the server. Must not be
+   *          null.
+   */
   public PlayerJoinGameSuccessEvent (final PlayerPacket player,
-                                     final UUID playerSecretId,
+                                     final UUID selfPlayerSecretId,
                                      final ImmutableSet <PlayerPacket> playersInGame,
                                      final ImmutableSet <SpectatorPacket> spectatorsInGame,
                                      final PersonLimits personLimits)
   {
     super (player, PersonIdentity.SELF, playersInGame, spectatorsInGame, personLimits);
 
-    Arguments.checkIsNotNull (playerSecretId, "playerSecretId");
+    Arguments.checkIsNotNull (selfPlayerSecretId, "selfPlayerSecretId");
 
-    this.playerSecretId = playerSecretId;
+    this.selfPlayerSecretId = selfPlayerSecretId;
   }
 
   @Override
@@ -131,25 +160,25 @@ public final class PlayerJoinGameSuccessEvent extends AbstractPersonJoinGameSucc
   }
 
   @Nullable
-  public UUID getPlayerSecretId ()
+  public UUID getSelfPlayerSecretId ()
   {
-    return playerSecretId;
+    return selfPlayerSecretId;
   }
 
-  public boolean hasSecretId ()
+  public boolean hasSelfPlayerSecretId ()
   {
-    return playerSecretId != null && getIdentity () == PersonIdentity.SELF;
+    return selfPlayerSecretId != null;
   }
 
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | PlayerSecretId: {}", super.toString (), playerSecretId);
+    return Strings.format ("{} | SelfPlayerSecretId: [{}]", super.toString (), selfPlayerSecretId);
   }
 
   @RequiredForNetworkSerialization
   private PlayerJoinGameSuccessEvent ()
   {
-    playerSecretId = null;
+    selfPlayerSecretId = null;
   }
 }

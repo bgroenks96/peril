@@ -22,13 +22,33 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import com.forerunnergames.peril.client.ui.widgets.WidgetFactory;
 
-public final class ErrorDialog extends OkDialog
+public class ErrorDialog extends OkDialog
 {
+  public ErrorDialog (final WidgetFactory widgetFactory,
+                      final Stage stage,
+                      final String submitButtonText,
+                      final DialogListener listener)
+  {
+    this (widgetFactory, stage, listener);
+
+    changeButtonText ("OK", submitButtonText);
+  }
+
   public ErrorDialog (final WidgetFactory widgetFactory, final Stage stage, final DialogListener listener)
+  {
+    this (widgetFactory, DialogStyle.AUTO_H_CENTER, DialogStyle.AUTO_V_CENTER, stage, listener);
+  }
+
+  public ErrorDialog (final WidgetFactory widgetFactory,
+                      final int positionUpperLeftReferenceScreenSpaceX,
+                      final int positionUpperLeftReferenceScreenSpacey,
+                      final Stage stage,
+                      final DialogListener listener)
   {
     // @formatter:off
     super (widgetFactory,
             DialogStyle.builder ()
+                    .position (positionUpperLeftReferenceScreenSpaceX, positionUpperLeftReferenceScreenSpacey)
                     .size (650, 388)
                     .title ("ERROR")
                     .titleHeight (51)
@@ -42,15 +62,5 @@ public final class ErrorDialog extends OkDialog
                     .build (),
             stage, listener);
     // @formatter:on
-  }
-
-  public ErrorDialog (final WidgetFactory widgetFactory,
-                      final Stage stage,
-                      final String submitButtonText,
-                      final DialogListener listener)
-  {
-    this (widgetFactory, stage, listener);
-
-    changeButtonText ("OK", submitButtonText);
   }
 }

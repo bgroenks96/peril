@@ -58,11 +58,13 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndIn
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndRoundEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLeaveGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerDisconnectEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ResumeGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SuspendGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginAttackWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginFortificationWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginReinforcementWaitEvent;
@@ -661,7 +663,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final PlayerLeaveGameEvent event)
+  void onEvent (final EndGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -669,11 +671,27 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final EndGameEvent event)
+  void onEvent (final PlayerDisconnectEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.debug ("[{}] received event: [{}].", getPlayerName (), event);
+    log.debug ("Event received [{}].", event);
+  }
+
+  @Handler
+  void onEvent (final SuspendGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+  }
+
+  @Handler
+  void onEvent (final ResumeGameEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
   }
 
   @Handler

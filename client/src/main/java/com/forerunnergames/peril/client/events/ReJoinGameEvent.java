@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,10 +17,32 @@
 
 package com.forerunnergames.peril.client.events;
 
-public final class JoinGameEvent extends AbstractJoinGameEvent
+import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
+
+import java.util.UUID;
+
+public final class ReJoinGameEvent extends AbstractJoinGameEvent
 {
-  public JoinGameEvent (final String playerName, final String serverAddress)
+  private final UUID playerSecretId;
+
+  public ReJoinGameEvent (final String playerName, final String serverAddress, final UUID playerSecretId)
   {
     super (playerName, serverAddress);
+
+    Arguments.checkIsNotNull (playerSecretId, "playerSecretId");
+
+    this.playerSecretId = playerSecretId;
+  }
+
+  public UUID getPlayerSecretId ()
+  {
+    return playerSecretId;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{} | PlayerSecretId: [{}]]", getClass ().getSimpleName (), playerSecretId);
   }
 }

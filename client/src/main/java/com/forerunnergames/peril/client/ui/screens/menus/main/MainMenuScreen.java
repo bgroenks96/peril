@@ -25,9 +25,10 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 
+import com.forerunnergames.peril.client.events.ReJoinGameEvent;
 import com.forerunnergames.peril.client.input.MouseInput;
-import com.forerunnergames.peril.client.io.GameServerCacheManager;
-import com.forerunnergames.peril.client.io.GameServerCacheManager.CachedGameSession;
+import com.forerunnergames.peril.client.io.CachedGameSessionManager;
+import com.forerunnergames.peril.client.io.CachedGameSessionManager.CachedGameSession;
 import com.forerunnergames.peril.client.ui.screens.ScreenChanger;
 import com.forerunnergames.peril.client.ui.screens.ScreenId;
 import com.forerunnergames.peril.client.ui.screens.ScreenSize;
@@ -35,14 +36,23 @@ import com.forerunnergames.peril.client.ui.screens.menus.AbstractMenuScreen;
 import com.forerunnergames.peril.client.ui.screens.menus.MenuScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.CancellableDialogListenerAdapter;
 import com.forerunnergames.peril.client.ui.widgets.dialogs.Dialog;
+import com.forerunnergames.tools.common.DataResult;
+import com.forerunnergames.tools.common.DefaultMessage;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.common.Strings;
+
+import com.google.common.base.Throwables;
 
 import net.engio.mbassy.bus.MBassador;
 
 public final class MainMenuScreen extends AbstractMenuScreen
 {
+  private static final String QUIT_DIALOG_MESSAGE = "Are you sure you want to quit Peril?";
+  private static final String RECONNECTION_DIALOG_TITLE = "REJOIN GAME?";
+  private static final String RECONNECTION_DIALOG_MESSAGE = "It looks like you were in the middle of a game! Would you like to rejoin it?";
+  private final Dialog errorDialog;
   private final Dialog quitDialog;
-  private final Dialog reconnectDialog;
+  private final Dialog reconnectionDialog;
 
   public MainMenuScreen (final MenuScreenWidgetFactory widgetFactory,
                          final ScreenChanger screenChanger,
@@ -52,32 +62,10 @@ public final class MainMenuScreen extends AbstractMenuScreen
                          final MBassador <Event> eventBus)
   {
     super (widgetFactory, screenChanger, screenSize, mouseInput, batch, eventBus);
-
-    quitDialog = createQuitDialog ("Are you sure you want to quit Peril?", new CancellableDialogListenerAdapter ()
-    {
-      @Override
-      public void onSubmit ()
-      {
-        Gdx.app.exit ();
-      }
-    });
-
-    reconnectDialog = createConfirmDialog ("RECONNECT?",
-                                           "It looks like you were in the middle of a game! Would you like to return to the control room, general?",
-                                           new CancellableDialogListenerAdapter ()
-                                           {
-                                             @Override
-                                             public void onSubmit ()
-                                             {
-                                               final CachedGameSession session = GameServerCacheManager
-                                                       .readFromCache ();
-
-                                               GameServerCacheManager.deleteCache ();
-
-                                               // TODO: launch loading screen with reconnect join game handling instead
-                                               // of normal handling
-                                             }
-                                           });
+    errorDialog = createErrorDialog ();
+    quitDialog = createQuitDialog (QUIT_DIALOG_MESSAGE, new QuitDialogListener ());
+    reconnectionDialog = createConfirmationDialog (RECONNECTION_DIALOG_TITLE, RECONNECTION_DIALOG_MESSAGE,
+                                                   new ReconnectionDialogListener ());
 
     addTitle ("MAIN MENU", Align.left, 60);
 
@@ -118,12 +106,15 @@ public final class MainMenuScreen extends AbstractMenuScreen
   @Override
   public void show ()
   {
-    if (GameServerCacheManager.existsCachedSession ())
-    {
-      reconnectDialog.show ();
-    }
-
     super.show ();
+    if (CachedGameSessionManager.existsSession ()) reconnectionDialog.show ();
+  }
+
+  @Override
+  protected boolean onEscape ()
+  {
+    if (!super.onEscape ()) quitDialog.show ();
+    return true;
   }
 
   @Override
@@ -133,10 +124,49 @@ public final class MainMenuScreen extends AbstractMenuScreen
     quitDialog.update (delta);
   }
 
-  @Override
-  protected boolean onEscape ()
+  private static final class QuitDialogListener extends CancellableDialogListenerAdapter
   {
-    if (!super.onEscape ()) quitDialog.show ();
-    return true;
+    @Override
+    public void onSubmit ()
+    {
+      Gdx.app.exit ();
+    }
+  }
+
+  private final class ReconnectionDialogListener extends CancellableDialogListenerAdapter
+  {
+    @Override
+    public void onCancel ()
+    {
+      // You only get one chance to rejoin a game.
+      CachedGameSessionManager.deleteSession ();
+    }
+
+    @Override
+    public void onSubmit ()
+    {
+      final DataResult <CachedGameSession, Exception> result = CachedGameSessionManager.loadSession ();
+      CachedGameSessionManager.deleteSession ();
+
+      if (result.failed ())
+      {
+        errorDialog
+                .setMessage (new DefaultMessage (
+                        Strings.format ("An error occurred while attempting to rejoin the game.\n\n"
+                                + "Problem:\n\n{}\n\nDetails:\n\n{}",
+                                        Throwables.getRootCause (result.getFailureReason ()).getMessage (),
+                                        Strings.toString (result.getFailureReason ()))));
+        return;
+      }
+
+      toScreen (ScreenId.MENU_TO_PLAY_LOADING);
+
+      // The menu-to-play loading screen is now active & can therefore receive events.
+
+      final CachedGameSession gameSession = result.getReturnValue ();
+
+      publishAsync (new ReJoinGameEvent (gameSession.getPlayerName (), gameSession.getServerAddress (),
+              gameSession.getPlayerSecretId ()));
+    }
   }
 }

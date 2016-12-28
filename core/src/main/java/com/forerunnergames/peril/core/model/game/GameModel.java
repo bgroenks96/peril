@@ -268,8 +268,8 @@ public final class GameModel extends AbstractGamePhaseHandler
     final CardSetPacket cardsInHand = CardPackets.fromCards (cardModel.getCardsInHand (targetPlayerId));
     final ImmutableSet <CardSetPacket> availableTradeIns = CardPackets
             .fromCardMatchSet (cardModel.computeMatchesFor (targetPlayerId));
-    publish (new PlayerRestoreGameStateEvent (event.getTargetPlayer (), currentPlayer, currentRoundNumber,
-            countriesToPlayers, cardsInHand, availableTradeIns));
+    publish (new PlayerRestoreGameStateEvent (event.getTargetPlayer (), currentPlayer, currentRoundNumber, cardsInHand,
+            availableTradeIns, countriesToPlayers));
     publish (new SendGameStateResponseEvent (ResponseCode.OK, event.getEventId ()));
   }
 

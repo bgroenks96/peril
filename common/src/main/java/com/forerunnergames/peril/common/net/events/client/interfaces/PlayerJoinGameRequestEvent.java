@@ -22,13 +22,16 @@ import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEv
 
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 public interface PlayerJoinGameRequestEvent extends ClientRequestEvent
 {
   String getPlayerName ();
 
   PersonSentience getPlayerSentience ();
 
+  @Nullable
   UUID getPlayerSecretId ();
 
-  boolean hasSecretId ();
+  boolean hasPlayerSecretId ();
 }
