@@ -29,7 +29,7 @@ public final class NetworkSettings
   public static final int DEFAULT_TCP_PORT = 55555;
   public static final int CLIENT_CONNECTION_TIMEOUT_MS = 10000;
   public static final int SERVER_CONNECTION_TIMEOUT_MS = 1000;
-  public static final int SERVER_REQUEST_TIMEOUT_MS = 60000;
+  public static final int SERVER_REQUEST_TIMEOUT_MS = 300000;
   public static final int MAX_SERVER_CONNECTION_ATTEMPTS = 1000; // TODO Reduce to 10 after implementing server process
                                                                  // listener.
   public static final String SERVER_JAR_NAME = "peril-server-0.1-SNAPSHOT.jar"; // TODO This is bad...
