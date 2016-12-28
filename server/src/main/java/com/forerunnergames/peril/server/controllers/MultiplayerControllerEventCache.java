@@ -122,6 +122,25 @@ final class MultiplayerControllerEventCache
     return playerJoinGameRequestCache.remove (playerName);
   }
 
+  void remove (final PlayerInputEvent inputEvent)
+  {
+    Arguments.checkIsNotNull (inputEvent, "inputEvent");
+
+    cancelTimerTaskFor (inputEvent);
+
+    // we don't know the specific type of the event, so try to remove from both caches
+    final PlayerPacket player = inputEvent.getPerson ();
+    if (playerInformEventCache.containsKey (inputEvent))
+    {
+      playerInformEventCache.remove (player, inputEvent);
+    }
+
+    if (playerInformEventCache.containsKey (inputEvent))
+    {
+      playerInputRequestEventCache.remove (player, inputEvent);
+    }
+  }
+
   ImmutableSet <PlayerInputRequestEvent> removeAllInputRequestsFor (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");

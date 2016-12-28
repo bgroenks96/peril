@@ -21,10 +21,12 @@ package com.forerunnergames.peril.core.model.game;
 import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.events.internal.player.InboundPlayerInformRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.InboundPlayerRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.InboundPlayerResponseRequestEvent;
+import com.forerunnergames.peril.core.events.internal.player.NotifyPlayerInputTimeoutEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.events.remote.RequestEvent;
@@ -164,6 +166,17 @@ public class InternalCommunicationHandler
 
     log.debug ("Pruned outbound event cache [New Size: {}]; Discarded {} old events.", outboundEventCache.size (),
                currentCacheSize - targetCacheSize);
+  }
+
+  @Handler
+  void onEvent (final NotifyPlayerInputTimeoutEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}]", event);
+
+    // GameModel will verify whether or not the skip player turn event is valid
+    eventBus.publish (new SkipPlayerTurnEvent (event.getPlayer (), SkipPlayerTurnEvent.Reason.PLAYER_INPUT_TIMED_OUT));
   }
 
   @Handler (priority = 1)

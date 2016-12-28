@@ -3,6 +3,7 @@ package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
@@ -28,6 +29,12 @@ public final class SkipPlayerTurnEvent extends AbstractPlayerEvent implements Br
   public Reason getReason ()
   {
     return reason;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{} | Reason: {}", super.toString (), reason);
   }
 
   @RequiredForNetworkSerialization

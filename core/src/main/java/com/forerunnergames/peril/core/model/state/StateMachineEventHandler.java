@@ -514,11 +514,6 @@ public final class StateMachineEventHandler
     context.onResumeGameEvent (event);
   }
 
-  private void dumpStateMachineDiagnosticInfo ()
-  {
-
-  }
-
   private class CompositeStateMachineListener implements StateMachineListener
   {
     private final List <StateMachineListener> stateMachineListeners = new CopyOnWriteArrayList <> ();

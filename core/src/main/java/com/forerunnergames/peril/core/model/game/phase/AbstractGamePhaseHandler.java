@@ -16,7 +16,6 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndRo
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ResumeGameEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SuspendGameEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -149,14 +148,6 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   public boolean isActive ()
   {
     return isActive;
-  }
-
-  @Override
-  public void skipPlayerTurn (final SkipPlayerTurnEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.info ("Skipping turn for player [{}].", event.getPersonName ());
   }
 
   @Override

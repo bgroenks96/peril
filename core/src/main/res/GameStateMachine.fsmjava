@@ -282,7 +282,7 @@
                                 nextState="WaitForPlayersToClaimInitialCountries"/>
                     <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="InitialReinforcementPhase"/>
                     <transition event="onSkipPlayerTurnEvent"
-                                action="initialPhase.skipPlayerTurn(event)"
+                                condition="gameModel.skipPlayerTurn(event)"
                                 nextState="WaitForPlayersToReinforceInitialCountries"/>
                   </state>
                 </state>
@@ -294,7 +294,7 @@
                   <onEntry action="initialPhase.waitForPlayersToReinforceInitialCountries()"/>
                   <onExit action="initialPhase.advancePlayerTurn()"/>
                   <transition event="onSkipPlayerTurnEvent"
-                              action="initialPhase.skipPlayerTurn(event)"
+                              condition="gameModel.skipPlayerTurn(event)"
                               nextState="WaitForPlayersToReinforceInitialCountries"/>
                   <transition event="onPlayerReinforceCountryRequestEvent"
                               condition="initialPhase.verifyPlayerInitialCountryReinforcements(event)"
@@ -310,7 +310,7 @@
               <state name="PlayerTurn">
                 <onEntry action="turnPhase.beginPlayerTurn()"/>
                 <transition event="onSkipPlayerTurnEvent"
-                            action="turnPhase.skipPlayerTurn(event)"
+                            condition="gameModel.skipPlayerTurn(event)"
                             nextState="AdvancePlayerTurn"/>
                 <state name="ReinforcementPhase">
                   <onEntry action="reinforcePhase.begin()"/>
