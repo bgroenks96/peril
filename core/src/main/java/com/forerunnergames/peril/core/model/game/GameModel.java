@@ -54,13 +54,8 @@ import com.google.common.collect.ImmutableSet;
 
 import net.engio.mbassy.listener.Handler;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public final class GameModel extends AbstractGamePhaseHandler
 {
-  private static final Logger log = LoggerFactory.getLogger (GameModel.class);
-
   GameModel (final GameModelConfiguration gameModelConfig)
   {
     super (gameModelConfig);

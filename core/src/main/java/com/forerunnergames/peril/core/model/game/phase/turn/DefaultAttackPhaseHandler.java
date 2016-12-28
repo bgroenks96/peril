@@ -66,12 +66,8 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler implements AttackPhaseHandler
 {
-  private static final Logger log = LoggerFactory.getLogger (DefaultAttackPhaseHandler.class);
   private static final long BATTLE_RESPONSE_TIMEOUT_MS = (long) GameSettings.BATTLE_RESPONSE_TIMEOUT_SECONDS * 1000;
 
   public DefaultAttackPhaseHandler (final GameModelConfiguration gameModelConfig)

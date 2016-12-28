@@ -61,8 +61,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
 {
-  private static final Logger log = LoggerFactory.getLogger (AbstractGamePhaseHandler.class);
-
+  protected final Logger log = LoggerFactory.getLogger (getClass ());
   protected final GameModelConfiguration gameModelConfig;
   protected final PlayerModel playerModel;
   protected final PlayMapModel playMapModel;
@@ -249,7 +248,7 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}]");
+    log.trace ("Event received [{}]", event);
 
     isSuspended = true;
   }
@@ -259,7 +258,7 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Event received [{}]");
+    log.trace ("Event received [{}]", event);
 
     isSuspended = false;
   }

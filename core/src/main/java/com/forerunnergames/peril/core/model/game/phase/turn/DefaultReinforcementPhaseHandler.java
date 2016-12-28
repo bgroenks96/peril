@@ -13,7 +13,6 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.ContinentPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.game.GameModelConfiguration;
-import com.forerunnergames.peril.core.model.game.GamePhaseEventFactory;
 import com.forerunnergames.peril.core.model.game.phase.AbstractGamePhaseHandler;
 import com.forerunnergames.peril.core.model.state.annotations.StateEntryAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateExitAction;
@@ -26,25 +25,17 @@ import com.forerunnergames.tools.common.id.Id;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public final class DefaultReinforcementPhaseHandler extends AbstractGamePhaseHandler
         implements ReinforcementPhaseHandler
 {
-  private static final Logger log = LoggerFactory.getLogger (DefaultReinforcementPhaseHandler.class);
-
   private final TurnPhaseHandler turnPhaseHandler;
-  private final GamePhaseEventFactory gamePhaseEventFactory;
 
   public DefaultReinforcementPhaseHandler (final GameModelConfiguration gameModelConfig,
-                                           final TurnPhaseHandler turnPhaseHandler,
-                                           final GamePhaseEventFactory gamePhaseEventFactory)
+                                           final TurnPhaseHandler turnPhaseHandler)
   {
     super (gameModelConfig);
 
     this.turnPhaseHandler = turnPhaseHandler;
-    this.gamePhaseEventFactory = gamePhaseEventFactory;
   }
 
   @Override
@@ -205,6 +196,7 @@ public final class DefaultReinforcementPhaseHandler extends AbstractGamePhaseHan
     return true;
   }
 
+  @Override
   public void endReinforcementPhase ()
   {
     final Id playerId = getCurrentPlayerId ();

@@ -42,7 +42,7 @@ public class GamePhaseHandlers
             gameModelConfig.getRules ());
     final TurnPhaseHandler defaultTurnPhaseHandler = new DefaultTurnPhaseHandler (gameModelConfig, defaultEventFactory);
     return new GamePhaseHandlers (new DefaultInitialPhaseHandler (gameModelConfig), defaultTurnPhaseHandler,
-            new DefaultReinforcementPhaseHandler (gameModelConfig, defaultTurnPhaseHandler, defaultEventFactory),
+            new DefaultReinforcementPhaseHandler (gameModelConfig, defaultTurnPhaseHandler),
             new DefaultAttackPhaseHandler (gameModelConfig), new DefaultFortifyPhaseHandler (gameModelConfig));
   }
 

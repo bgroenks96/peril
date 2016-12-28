@@ -841,6 +841,21 @@ public final class MultiplayerController extends ControllerAdapter
     // let handler for direct player event handle forwarding the event
   }
 
+  @Handler
+  void onEvent (final PlayerInputEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    if (clientsToPlayers.existsClientFor (event.getPerson ()))
+    {
+      return;
+    }
+
+    // publish suspend game event for new input events that come in while no client
+    // is present for the player
+    publish (new SuspendGameEvent (SuspendGameEvent.Reason.PLAYER_UNAVAILABLE));
+  }
+
   @Handler (priority = Integer.MIN_VALUE)
   void onEvent (final BroadcastEvent event)
   {

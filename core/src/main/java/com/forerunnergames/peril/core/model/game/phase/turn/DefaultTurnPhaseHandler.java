@@ -24,13 +24,8 @@ import com.forerunnergames.tools.common.id.Id;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public final class DefaultTurnPhaseHandler extends AbstractGamePhaseHandler implements TurnPhaseHandler
 {
-  private static final Logger log = LoggerFactory.getLogger (DefaultTurnPhaseHandler.class);
-
   protected final GamePhaseEventFactory gamePhaseEventFactory;
 
   public DefaultTurnPhaseHandler (final GameModelConfiguration gameModelConfig,

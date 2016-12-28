@@ -50,8 +50,8 @@ import org.slf4j.LoggerFactory;
 public final class KryonetClient extends com.esotericsoftware.kryonet.Client implements Client
 {
   private static final Logger log = LoggerFactory.getLogger (KryonetClient.class);
-  private final Map <Integer, RemoteServer> connectionIdsToRemoteServers = new HashMap<> ();
-  private final Map <RemoteServerListener, Listener> remoteServerToKryonetListeners = new HashMap<> ();
+  private final Map <Integer, RemoteServer> connectionIdsToRemoteServers = new HashMap <> ();
+  private final Map <RemoteServerListener, Listener> remoteServerToKryonetListeners = new HashMap <> ();
   private final ExecutorService executorService = Executors.newSingleThreadExecutor ();
   private final Kryo kryo;
   private boolean isRunning = false;
@@ -242,6 +242,15 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
       log.info ("[{}] connection attempt...", Strings.toMixedOrdinal (connectionAttempts));
 
       result = connectNow (config.getAddress (), config.getPort (), timeoutMs);
+
+      try
+      {
+        Thread.sleep (1000);
+      }
+      catch (final InterruptedException e)
+      {
+        e.printStackTrace ();
+      }
     }
     while (result.failed () && connectionAttempts < maxAttempts);
 
@@ -280,7 +289,7 @@ public final class KryonetClient extends com.esotericsoftware.kryonet.Client imp
       connect (timeoutMs, address, port);
 
       // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic <String> type.
-      return isConnected () ? Result.<String> success () : Result.failure ("Unknown");
+      return isConnected () ? Result. <String>success () : Result.failure ("Unknown");
     }
     catch (final IOException e)
     {

@@ -52,7 +52,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
   protected void setupTest ()
   {
     turnPhaseHandler = new DefaultTurnPhaseHandler (gameModelConfig, eventFactory);
-    reinforcementPhase = new DefaultReinforcementPhaseHandler (gameModelConfig, turnPhaseHandler, eventFactory);
+    reinforcementPhase = new DefaultReinforcementPhaseHandler (gameModelConfig, turnPhaseHandler);
   }
 
   @Test

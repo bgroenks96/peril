@@ -38,13 +38,8 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public final class DefaultFortifyPhaseHandler extends AbstractGamePhaseHandler implements FortifyPhaseHandler
 {
-  private static final Logger log = LoggerFactory.getLogger (DefaultFortifyPhaseHandler.class);
-
   public DefaultFortifyPhaseHandler (final GameModelConfiguration gameModelConfig)
   {
     super (gameModelConfig);
