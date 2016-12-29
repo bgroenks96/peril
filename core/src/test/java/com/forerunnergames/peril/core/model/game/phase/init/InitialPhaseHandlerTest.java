@@ -23,7 +23,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Deter
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginReinforcementWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerReinforceCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -408,7 +408,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     initialPhase.waitForPlayersToReinforceInitialCountries ();
     assertTrue (eventHandler.thirdToLastEventWasType (PlayerReinforceCountryEvent.class));
-    assertTrue (eventHandler.secondToLastEventWasType (PlayerBeginReinforcementWaitEvent.class));
+    assertTrue (eventHandler.secondToLastEventWasType (PlayerReinforceCountryWaitEvent.class));
     assertTrue (eventHandler.lastEventWasType (ActivePlayerChangedEvent.class));
 
     eventHandler.clearEvents ();
@@ -416,7 +416,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     initialPhase.waitForPlayersToReinforceInitialCountries ();
     assertTrue (eventHandler.wasNeverFired (PlayerReinforceCountryEvent.class));
-    assertTrue (eventHandler.wasNeverFired (PlayerBeginReinforcementWaitEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerReinforceCountryWaitEvent.class));
     assertTrue (eventHandler.wasNeverFired (ActivePlayerChangedEvent.class));
     assertTrue (eventHandler.lastEventWasType (SkipPlayerTurnEvent.class));
 
@@ -424,7 +424,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     advancePlayerTurn ();
     initialPhase.waitForPlayersToReinforceInitialCountries ();
     assertTrue (eventHandler.thirdToLastEventWasType (PlayerReinforceCountryEvent.class));
-    assertTrue (eventHandler.secondToLastEventWasType (PlayerBeginReinforcementWaitEvent.class));
+    assertTrue (eventHandler.secondToLastEventWasType (PlayerReinforceCountryWaitEvent.class));
     assertTrue (eventHandler.lastEventWasType (ActivePlayerChangedEvent.class));
   }
 }

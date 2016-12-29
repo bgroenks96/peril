@@ -59,13 +59,13 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Resum
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SuspendGameEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginAttackWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginFortificationWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginReinforcementWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerSelectAttackVectorWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerSelectFortifyVectorWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerReinforceCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerClaimCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerDefendCountryWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueAttackOrderWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueFortifyOrderWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerAttackCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerFortifyCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerOccupyCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
@@ -213,7 +213,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final PlayerBeginReinforcementWaitEvent event)
+  void onEvent (final PlayerReinforceCountryWaitEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -309,7 +309,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final PlayerBeginAttackWaitEvent event)
+  void onEvent (final PlayerSelectAttackVectorWaitEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -333,7 +333,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final PlayerIssueAttackOrderWaitEvent event)
+  void onEvent (final PlayerAttackCountryWaitEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -477,7 +477,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final PlayerBeginFortificationWaitEvent event)
+  void onEvent (final PlayerSelectFortifyVectorWaitEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -493,7 +493,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final PlayerIssueFortifyOrderWaitEvent event)
+  void onEvent (final PlayerFortifyCountryWaitEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

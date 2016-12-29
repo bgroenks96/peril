@@ -14,8 +14,8 @@ import com.forerunnergames.peril.common.net.events.server.inform.PlayerSelectFor
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginFortificationWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueFortifyOrderWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerSelectFortifyVectorWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerFortifyCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerCancelFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectFortifyVectorSuccessEvent;
@@ -112,7 +112,7 @@ public final class DefaultFortifyPhaseHandler extends AbstractGamePhaseHandler i
             .get (CacheKey.FORTIFY_VALID_VECTORS, ImmutableMultimap.class);
 
     publish (new PlayerSelectFortifyVectorEvent (player, validFortifyVectors));
-    publish (new PlayerBeginFortificationWaitEvent (player));
+    publish (new PlayerSelectFortifyVectorWaitEvent (player));
     publish (new PlayerEndTurnAvailableEvent (player));
   }
 
@@ -198,7 +198,7 @@ public final class DefaultFortifyPhaseHandler extends AbstractGamePhaseHandler i
     publish (new PlayerSelectFortifyVectorSuccessEvent (playerPacket, sourceCountryPacket, targetCountryPacket));
     publish (new PlayerFortifyCountryEvent (playerPacket, sourceCountryPacket, targetCountryPacket, minDeltaArmyCount,
             maxDeltaArmyCount));
-    publish (new PlayerIssueFortifyOrderWaitEvent (playerPacket, sourceCountryPacket, targetCountryPacket,
+    publish (new PlayerFortifyCountryWaitEvent (playerPacket, sourceCountryPacket, targetCountryPacket,
             minDeltaArmyCount, maxDeltaArmyCount));
 
     turnDataCache.put (CacheKey.FORTIFY_SOURCE_COUNTRY_ID, sourceCountryId);

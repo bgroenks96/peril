@@ -20,9 +20,9 @@ import com.forerunnergames.peril.common.net.events.server.inform.PlayerEndTurnAv
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerSelectAttackVectorEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndAttackPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginAttackWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerSelectAttackVectorWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerDefendCountryWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueAttackOrderWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerAttackCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerOccupyCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerInputCanceledEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
@@ -111,7 +111,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     final PlayerPacket playerPacket = getCurrentPlayerPacket ();
 
     publish (new PlayerSelectAttackVectorEvent (playerPacket, builder.build ()));
-    publish (new PlayerBeginAttackWaitEvent (playerPacket));
+    publish (new PlayerSelectAttackVectorWaitEvent (playerPacket));
     publish (new PlayerEndTurnAvailableEvent (playerPacket));
   }
 
@@ -173,7 +173,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     final PendingBattleActorPacket defender = createPendingDefenderPacket (vector);
 
     publish (new PlayerAttackCountryEvent (attacker, defender));
-    publish (new PlayerIssueAttackOrderWaitEvent (attacker.getPlayer (), attacker, defender));
+    publish (new PlayerAttackCountryWaitEvent (attacker.getPlayer (), attacker, defender));
 
     publish (new PlayerDefendCountryRequestEvent (attacker, defender));
     publish (new PlayerDefendCountryWaitEvent (defender.getPlayer (), attacker, defender));

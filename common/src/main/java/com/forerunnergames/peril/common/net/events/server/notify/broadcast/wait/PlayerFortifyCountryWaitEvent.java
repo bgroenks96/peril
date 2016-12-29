@@ -17,20 +17,25 @@
 
 package com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerFortifyCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerWaitEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public class PlayerBeginReinforcementWaitEvent extends AbstractPlayerEvent implements PlayerWaitEvent
+public final class PlayerFortifyCountryWaitEvent extends AbstractPlayerFortifyCountryEvent implements PlayerWaitEvent
 {
-  public PlayerBeginReinforcementWaitEvent (final PlayerPacket player)
+  public PlayerFortifyCountryWaitEvent (final PlayerPacket player,
+                                           final CountryPacket sourceCountry,
+                                           final CountryPacket targetCountry,
+                                           final int minDeltaArmyCount,
+                                           final int maxDeltaArmyCount)
   {
-    super (player);
+    super (player, sourceCountry, targetCountry, minDeltaArmyCount, maxDeltaArmyCount);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerBeginReinforcementWaitEvent ()
+  private PlayerFortifyCountryWaitEvent ()
   {
   }
 }

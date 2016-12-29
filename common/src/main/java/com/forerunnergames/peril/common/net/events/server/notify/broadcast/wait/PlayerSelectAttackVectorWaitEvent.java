@@ -22,15 +22,15 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerWaitE
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerBeginFortificationWaitEvent extends AbstractPlayerEvent implements PlayerWaitEvent
+public final class PlayerSelectAttackVectorWaitEvent extends AbstractPlayerEvent implements PlayerWaitEvent
 {
-  public PlayerBeginFortificationWaitEvent (final PlayerPacket player)
+  public PlayerSelectAttackVectorWaitEvent (final PlayerPacket currentPlayer)
   {
-    super (player);
+    super (currentPlayer);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerBeginFortificationWaitEvent ()
+  private PlayerSelectAttackVectorWaitEvent ()
   {
   }
 }

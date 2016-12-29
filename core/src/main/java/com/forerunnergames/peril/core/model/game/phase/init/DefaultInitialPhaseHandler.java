@@ -19,7 +19,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Distr
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginReinforcementWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerReinforceCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerClaimCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
@@ -336,7 +336,7 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
 
     publish (new PlayerReinforceCountryEvent (playerPacket, getValidCountriesForReinforcement (playerId),
             rules.getMinReinforcementsPlacedPerCountry (), rules.getMaxArmiesOnCountry ()));
-    publish (new PlayerBeginReinforcementWaitEvent (playerPacket));
+    publish (new PlayerReinforceCountryWaitEvent (playerPacket));
     publish (new ActivePlayerChangedEvent (playerPacket));
   }
 

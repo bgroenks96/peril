@@ -8,7 +8,7 @@ import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforce
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipReinforcementPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginReinforcementWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerReinforceCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.ContinentPacket;
@@ -77,7 +77,7 @@ public final class DefaultReinforcementPhaseHandler extends AbstractGamePhaseHan
     publish (new BeginReinforcementPhaseEvent (playerPacket, countryReinforcementBonus, continentReinforcementBonus));
     publish (new PlayerReinforceCountryEvent (playerPacket, validCountries,
             rules.getMinReinforcementsPlacedPerCountry (), rules.getMaxArmiesOnCountry ()));
-    publish (new PlayerBeginReinforcementWaitEvent (playerPacket));
+    publish (new PlayerReinforceCountryWaitEvent (playerPacket));
     turnPhaseHandler.publishTradeInEventIfNecessary ();
   }
 
@@ -117,7 +117,7 @@ public final class DefaultReinforcementPhaseHandler extends AbstractGamePhaseHan
 
     publish (new PlayerReinforceCountryEvent (playerPacket, validCountries,
             rules.getMinReinforcementsPlacedPerCountry (), rules.getMaxArmiesOnCountry ()));
-    publish (new PlayerBeginReinforcementWaitEvent (playerPacket));
+    publish (new PlayerReinforceCountryWaitEvent (playerPacket));
     log.info ("Waiting for player [{}] to place reinforcements...", playerPacket);
   }
 
