@@ -15,13 +15,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.core.events.internal.player;
+package com.forerunnergames.peril.common.net.events.client.request.inform;
 
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
-import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerInformRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueFortifyOrderEvent;
 
-public interface InboundPlayerResponseRequestEvent <T extends ResponseRequestEvent, R extends PlayerInputRequestEvent>
-        extends InboundPlayerRequestEvent <T>
+public final class PlayerCancelFortifyRequestEvent implements PlayerInformRequestEvent <PlayerIssueFortifyOrderEvent>
 {
-  R getOriginalRequestEvent ();
+  @Override
+  public Class <PlayerIssueFortifyOrderEvent> getQuestionType ()
+  {
+    return PlayerIssueFortifyOrderEvent.class;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return getClass ().getSimpleName ();
+  }
 }

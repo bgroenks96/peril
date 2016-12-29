@@ -2,6 +2,7 @@ package com.forerunnergames.peril.core.model.game.phase;
 
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerCardsChangedEvent;
@@ -42,7 +43,6 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Exceptions;
 import com.forerunnergames.tools.common.id.Id;
-import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -340,10 +340,10 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   }
 
   @Nullable
-  protected <T extends PlayerInputRequestEvent> T getOriginalRequestFor (final ResponseRequestEvent event,
+  protected <T extends PlayerInputRequestEvent> T getOriginalRequestFor (final PlayerResponseRequestEvent <T> event,
                                                                          final Class <T> originalRequestType)
   {
-    final Optional <PlayerInputRequestEvent> originalRequest = internalCommHandler.inputRequestFor (event);
+    final Optional <T> originalRequest = internalCommHandler.inputRequestFor (event, originalRequestType);
     if (!originalRequest.isPresent ())
     {
       log.warn ("Unable to find request event matching response [{}].", event);
@@ -351,18 +351,6 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     }
 
     return originalRequestType.cast (originalRequest.get ());
-  }
-
-  protected void republishRequestFor (final ResponseRequestEvent event)
-  {
-    final Optional <PlayerInputRequestEvent> originalRequest = internalCommHandler.inputRequestFor (event);
-    if (!originalRequest.isPresent ())
-    {
-      log.warn ("Unable to find request event matching response [{}].", event);
-      return;
-    }
-
-    publish (originalRequest.get ());
   }
 
   protected ImmutableSet <CountryPacket> getValidCountriesForReinforcement (final Id playerId)

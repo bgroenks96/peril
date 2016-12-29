@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderFortifyRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectFortifyVectorRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderFortifyRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectFortifyVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderFortifyDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectFortifyVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;

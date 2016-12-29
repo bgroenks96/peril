@@ -16,16 +16,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.client.request;
+package com.forerunnergames.peril.common.net.events.client.request.inform;
 
-import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerInformRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginFortificationEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerSelectFortifyVectorRequestEvent implements InformRequestEvent
+public final class PlayerSelectFortifyVectorRequestEvent
+        implements PlayerInformRequestEvent <PlayerBeginFortificationEvent>
 {
   private final String sourceCountry;
   private final String targetCountry;
@@ -40,7 +40,7 @@ public final class PlayerSelectFortifyVectorRequestEvent implements InformReques
   }
 
   @Override
-  public Class <? extends PlayerInformEvent> getInformType ()
+  public Class <PlayerBeginFortificationEvent> getQuestionType ()
   {
     return PlayerBeginFortificationEvent.class;
   }

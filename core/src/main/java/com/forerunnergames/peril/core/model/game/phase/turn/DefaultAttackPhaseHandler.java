@@ -2,10 +2,10 @@ package com.forerunnergames.peril.core.model.game.phase.turn;
 
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.DieRange;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderAttackRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderRetreatRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectAttackVectorRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndAttackPhaseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderAttackRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderRetreatRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectAttackVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
@@ -20,10 +20,10 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerDefendCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueAttackOrderWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerOccupyCountryWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.EndPlayerTurnAvailableEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerEndTurnAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueAttackOrderEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerInputCanceledEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueAttackOrderEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerDefendCountryResponseSuccessEvent;
@@ -110,7 +110,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
 
     publish (new PlayerBeginAttackEvent (playerPacket, builder.build ()));
     publish (new PlayerBeginAttackWaitEvent (playerPacket));
-    publish (new EndPlayerTurnAvailableEvent (playerPacket));
+    publish (new PlayerEndTurnAvailableEvent (playerPacket));
   }
 
   @Override
@@ -175,7 +175,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
 
     publish (new PlayerDefendCountryRequestEvent (attacker, defender));
     publish (new PlayerDefendCountryWaitEvent (defender.getPlayer (), attacker, defender));
-    publish (new EndPlayerTurnAvailableEvent (getCurrentPlayerPacket ()));
+    publish (new PlayerEndTurnAvailableEvent (getCurrentPlayerPacket ()));
   }
 
   @Override
@@ -371,7 +371,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     {
       publish (new PlayerDefendCountryResponseDeniedEvent (sender.get (),
               PlayerDefendCountryResponseDeniedEvent.Reason.INVALID_DIE_COUNT));
-      republishRequestFor (event);
+      internalCommHandler.republishFor (event);
       return false;
     }
 
@@ -508,7 +508,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
       publish (new PlayerOccupyCountryResponseDeniedEvent (player,
               PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_UNDERFLOW,
               getOriginalRequestFor (event, PlayerOccupyCountryRequestEvent.class), event));
-      republishRequestFor (event);
+      internalCommHandler.republishFor (event);
       return false;
     }
 
@@ -517,7 +517,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
       publish (new PlayerOccupyCountryResponseDeniedEvent (player,
               PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_OVERFLOW,
               getOriginalRequestFor (event, PlayerOccupyCountryRequestEvent.class), event));
-      republishRequestFor (event);
+      internalCommHandler.republishFor (event);
       return false;
     }
 
@@ -533,7 +533,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     {
       publish (new PlayerOccupyCountryResponseDeniedEvent (player, failure.get ().getFailureReason (),
               getOriginalRequestFor (event, PlayerOccupyCountryRequestEvent.class), event));
-      republishRequestFor (event);
+      internalCommHandler.republishFor (event);
       return false;
     }
 

@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.server.controllers;
 
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputInformEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -30,7 +30,7 @@ final class MultiplayerControllerEventCache
 
   private final Timer inputEventTimer;
   private final Multimap <PlayerPacket, PlayerInputRequestEvent> playerInputRequestEventCache;
-  private final Multimap <PlayerPacket, PlayerInformEvent> playerInformEventCache;
+  private final Multimap <PlayerPacket, PlayerInputInformEvent> playerInformEventCache;
   private final Map <String, RemoteClient> playerJoinGameRequestCache;
   private final Map <PlayerInputEvent, TimerTask> inputEventTimeouts;
 
@@ -59,7 +59,7 @@ final class MultiplayerControllerEventCache
     return playerInputRequestEventCache.put (player, inputRequest);
   }
 
-  boolean add (final PlayerPacket player, final PlayerInformEvent informEvent)
+  boolean add (final PlayerPacket player, final PlayerInputInformEvent informEvent)
   {
     Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNull (informEvent, "informEvent");
@@ -83,7 +83,7 @@ final class MultiplayerControllerEventCache
     return ImmutableSet.copyOf (playerInputRequestEventCache.get (player));
   }
 
-  ImmutableSet <PlayerInformEvent> informEventsFor (final PlayerPacket player)
+  ImmutableSet <PlayerInputInformEvent> informEventsFor (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
 
@@ -106,7 +106,7 @@ final class MultiplayerControllerEventCache
     return playerInputRequestEventCache.remove (player, inputRequest);
   }
 
-  boolean remove (final PlayerPacket player, final PlayerInformEvent informEvent)
+  boolean remove (final PlayerPacket player, final PlayerInputInformEvent informEvent)
   {
     Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNull (informEvent, "informEvent");
@@ -148,7 +148,7 @@ final class MultiplayerControllerEventCache
     return cancelAll (ImmutableSet.copyOf (playerInputRequestEventCache.removeAll (player)));
   }
 
-  ImmutableSet <PlayerInformEvent> removeAllInformEventsFor (final PlayerPacket player)
+  ImmutableSet <PlayerInputInformEvent> removeAllInformEventsFor (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
 

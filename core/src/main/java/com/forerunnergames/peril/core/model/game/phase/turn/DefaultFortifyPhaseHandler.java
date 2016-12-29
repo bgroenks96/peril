@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.core.model.game.phase.turn;
 
-import com.forerunnergames.peril.common.net.events.client.request.PlayerCancelFortifyRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderFortifyRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectFortifyVectorRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerCancelFortifyRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderFortifyRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectFortifyVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerCancelFortifyDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderFortifyDeniedEvent;
@@ -12,7 +12,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndFo
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginFortificationWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueFortifyOrderWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.EndPlayerTurnAvailableEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerEndTurnAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginFortificationEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueFortifyOrderEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerCancelFortifySuccessEvent;
@@ -110,7 +110,7 @@ public final class DefaultFortifyPhaseHandler extends AbstractGamePhaseHandler i
 
     publish (new PlayerBeginFortificationEvent (player, validFortifyVectors));
     publish (new PlayerBeginFortificationWaitEvent (player));
-    publish (new EndPlayerTurnAvailableEvent (player));
+    publish (new PlayerEndTurnAvailableEvent (player));
   }
 
   @Override

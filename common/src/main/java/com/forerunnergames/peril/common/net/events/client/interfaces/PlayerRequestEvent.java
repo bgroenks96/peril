@@ -19,6 +19,7 @@
 package com.forerunnergames.peril.common.net.events.client.interfaces;
 
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
+import com.forerunnergames.tools.net.events.remote.origin.client.InformRequestEvent;
 
 /**
  * Represents request events sent by a client to the server after successfully joining the game as a player. Should be

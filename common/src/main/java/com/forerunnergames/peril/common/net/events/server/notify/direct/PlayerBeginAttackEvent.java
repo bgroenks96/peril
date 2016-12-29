@@ -19,14 +19,14 @@
 package com.forerunnergames.peril.common.net.events.server.notify.direct;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerSelectCountryVectorEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputInformEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 import com.google.common.collect.ImmutableMultimap;
 
-public final class PlayerBeginAttackEvent extends AbstractPlayerSelectCountryVectorEvent implements PlayerInformEvent
+public final class PlayerBeginAttackEvent extends AbstractPlayerSelectCountryVectorEvent implements PlayerInputInformEvent
 {
   public PlayerBeginAttackEvent (final PlayerPacket currentPlayer,
                                  final ImmutableMultimap <CountryPacket, CountryPacket> validAttackVectors)

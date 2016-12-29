@@ -30,7 +30,7 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
-import com.forerunnergames.peril.common.net.events.server.denied.EndPlayerTurnDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerEndTurnDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerCancelFortifyDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
@@ -68,7 +68,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.success.EndPlayerTurnSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerEndTurnSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerCancelFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
@@ -703,7 +703,7 @@ public final class StatusMessageGenerator
   }
 
   @Handler
-  void onEvent (final EndPlayerTurnSuccessEvent event)
+  void onEvent (final PlayerEndTurnSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -713,7 +713,7 @@ public final class StatusMessageGenerator
   }
 
   @Handler
-  void onEvent (final EndPlayerTurnDeniedEvent event)
+  void onEvent (final PlayerEndTurnDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

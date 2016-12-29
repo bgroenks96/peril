@@ -90,8 +90,8 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBo
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
-import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndTurnRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
@@ -255,7 +255,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
       {
         log.debug ("Clicked end turn button");
 
-        publish (new EndPlayerTurnRequestEvent ());
+        publish (new PlayerEndTurnRequestEvent ());
         controlRoomBox.disableButton (ControlRoomBox.Button.FORTIFY);
         controlRoomBox.disableButton (ControlRoomBox.Button.END_TURN);
       }

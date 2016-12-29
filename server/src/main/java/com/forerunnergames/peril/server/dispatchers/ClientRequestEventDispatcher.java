@@ -19,9 +19,10 @@
 package com.forerunnergames.peril.server.dispatchers;
 
 import com.forerunnergames.peril.common.net.dispatchers.AbstractNetworkEventDispatcher;
-import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerInformRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.AiJoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
@@ -29,7 +30,6 @@ import com.forerunnergames.peril.common.net.events.client.request.PlayerQuitGame
 import com.forerunnergames.peril.common.net.events.client.request.SpectatorJoinGameRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
-import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 
 import net.engio.mbassy.bus.error.IPublicationErrorHandler;
 import net.engio.mbassy.listener.Handler;
@@ -125,7 +125,7 @@ public final class ClientRequestEventDispatcher extends AbstractNetworkEventDisp
   }
 
   @Handler
-  void onEvent (final ResponseRequestEvent event)
+  void onEvent (final PlayerResponseRequestEvent <?> event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -135,7 +135,7 @@ public final class ClientRequestEventDispatcher extends AbstractNetworkEventDisp
   }
 
   @Handler
-  void onEvent (final InformRequestEvent event)
+  void onEvent (final PlayerInformRequestEvent <?> event)
   {
     Arguments.checkIsNotNull (event, "event");
 

@@ -23,6 +23,8 @@ import static com.forerunnergames.peril.integration.TestUtil.withDefaultHandler;
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.GameServerType;
+import com.forerunnergames.peril.core.events.DefaultEventRegistry;
+import com.forerunnergames.peril.core.events.EventRegistry;
 import com.forerunnergames.peril.core.model.game.GameModel;
 import com.forerunnergames.peril.core.model.game.GameModelConfiguration;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
@@ -56,6 +58,7 @@ public class DedicatedGameSession implements TestSession
   private final NetworkPortPool portPool = NetworkPortPool.getInstance ();
   private final AtomicBoolean isShutDown = new AtomicBoolean ();
   private final MBassador <Event> eventBus = EventBusFactory.create (withDefaultHandler ());
+  private final EventRegistry eventRegistry = new DefaultEventRegistry (eventBus);
   private final GameRules gameRules;
   private final String serverAddress;
   private final String internalServerAddress;
@@ -153,7 +156,8 @@ public class DedicatedGameSession implements TestSession
     gameModel = GameModel.create (gameModelConfig);
     final GameStateMachineConfig config = CoreFactory.createDefaultConfigurationFrom (gameModel);
     stateMachine = CoreFactory.createGameStateMachine (config);
-    serverApplication = TestServerApplicationFactory.createTestServer (eventBus, GameServerType.DEDICATED, gameRules,
+    serverApplication = TestServerApplicationFactory.createTestServer (eventBus, eventRegistry,
+                                                                       GameServerType.DEDICATED, gameRules,
                                                                        stateMachine, serverAddress, serverPort);
     log.trace ("Starting server application [{}] on port {}", serverAddress, serverPort);
     serverApplication.start ();

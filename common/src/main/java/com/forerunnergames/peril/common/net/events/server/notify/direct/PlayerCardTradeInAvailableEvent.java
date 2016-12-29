@@ -18,7 +18,7 @@
 package com.forerunnergames.peril.common.net.events.server.notify.direct;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputInformEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
@@ -27,7 +27,7 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import com.google.common.collect.ImmutableSet;
 
-public class PlayerCardTradeInAvailableEvent extends AbstractPlayerEvent implements PlayerInformEvent
+public class PlayerCardTradeInAvailableEvent extends AbstractPlayerEvent implements PlayerInputInformEvent
 {
   private final int nextTradeInBonus;
   private final ImmutableSet <CardSetPacket> tradeInMatches;

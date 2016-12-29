@@ -24,9 +24,9 @@ import com.forerunnergames.peril.client.events.SelectFortifySourceCountryRequest
 import com.forerunnergames.peril.client.events.SelectFortifyTargetCountryRequestEvent;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerCancelFortifyRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderFortifyRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectFortifyVectorRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerCancelFortifyRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderFortifyRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectFortifyVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerCancelFortifyDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderFortifyDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectFortifyVectorDeniedEvent;

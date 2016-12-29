@@ -23,7 +23,7 @@ import static org.testng.Assert.assertTrue;
 
 import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DistributeInitialArmiesCompleteEvent;
@@ -230,7 +230,7 @@ public final class InitialGamePhaseController implements TestPhaseController
 
     processor.start (EndInitialReinforcementPhaseEvent.class, monitor);
 
-    monitor.awaitCompletion ();
+    monitor.awaitCompletion (10000000);
   }
 
   private void sendForAllClientsJoinGameRequest ()

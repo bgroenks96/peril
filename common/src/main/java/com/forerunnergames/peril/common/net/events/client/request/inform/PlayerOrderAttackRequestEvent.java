@@ -1,13 +1,13 @@
-package com.forerunnergames.peril.common.net.events.client.request;
+package com.forerunnergames.peril.common.net.events.client.request.inform;
 
 import com.forerunnergames.peril.common.net.events.client.interfaces.BattleRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerInformRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueAttackOrderEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
-public final class PlayerOrderAttackRequestEvent implements BattleRequestEvent, InformRequestEvent
+public final class PlayerOrderAttackRequestEvent
+        implements BattleRequestEvent, PlayerInformRequestEvent <PlayerIssueAttackOrderEvent>
 {
   private final int dieCount;
 
@@ -25,7 +25,7 @@ public final class PlayerOrderAttackRequestEvent implements BattleRequestEvent, 
   }
 
   @Override
-  public Class <? extends PlayerInformEvent> getInformType ()
+  public Class <PlayerIssueAttackOrderEvent> getQuestionType ()
   {
     return PlayerIssueAttackOrderEvent.class;
   }

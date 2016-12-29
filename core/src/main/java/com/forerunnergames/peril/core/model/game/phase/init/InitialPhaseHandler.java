@@ -1,6 +1,6 @@
 package com.forerunnergames.peril.core.model.game.phase.init;
 
-import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.core.model.game.phase.GamePhaseHandler;
 import com.forerunnergames.peril.core.model.state.annotations.StateEntryAction;

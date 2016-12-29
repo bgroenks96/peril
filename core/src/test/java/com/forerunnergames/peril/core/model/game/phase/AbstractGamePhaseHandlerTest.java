@@ -10,14 +10,15 @@ import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.eventbus.EventBusHandler;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
-import com.forerunnergames.peril.core.events.internal.player.DefaultInboundPlayerResponseRequestEvent;
+import com.forerunnergames.peril.core.events.DefaultEventRegistry;
+import com.forerunnergames.peril.core.events.EventRegistry;
 import com.forerunnergames.peril.core.model.battle.BattleModel;
 import com.forerunnergames.peril.core.model.battle.DefaultBattleModel;
 import com.forerunnergames.peril.core.model.card.Card;
@@ -48,9 +49,8 @@ import com.forerunnergames.tools.common.Randomness;
 import com.forerunnergames.tools.common.graph.DefaultGraph;
 import com.forerunnergames.tools.common.graph.Graph;
 import com.forerunnergames.tools.common.id.Id;
-import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
+import com.forerunnergames.tools.net.events.remote.RemoteEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
@@ -71,6 +71,7 @@ public abstract class AbstractGamePhaseHandlerTest
   protected final int defaultTestCountryCount = 30;
   protected final ImmutableList <String> defaultTestCountries = generateTestCountryNames (defaultTestCountryCount);
   protected MBassador <Event> eventBus;
+  protected EventRegistry eventRegistry;
   protected EventBusHandler eventHandler;
   protected int playerLimit;
   protected int initialArmies;
@@ -133,6 +134,7 @@ public abstract class AbstractGamePhaseHandlerTest
   public void setup ()
   {
     eventBus = EventBusFactory.create (ImmutableSet.of (EventBusHandler.createEventBusFailureHandler ()));
+    eventRegistry = new DefaultEventRegistry (eventBus);
     eventHandler = new EventBusHandler ();
     eventHandler.subscribe (eventBus);
     // crate default play map + game model
@@ -202,21 +204,28 @@ public abstract class AbstractGamePhaseHandlerTest
   /**
    * Publish the internal response request event so that it gets registered with InternalCommunicationHandler.
    */
-  protected <T extends ResponseRequestEvent> void publishInternalResponseRequestEvent (final T event)
+  protected <U extends PlayerInputRequestEvent, T extends PlayerResponseRequestEvent <U>> void publishResponseRequest (final T event)
   {
-    // this is so nasty... but it works for some reason O_o
+    eventBus.publish (event);
+  }
+
+  /**
+   * Yes, I know this is nasty, but we need a way to "mock" concrete event types in some cases. Luckily, our private
+   * serialization constructors provide us with a convenient way to do this... via reflection hacks!
+   */
+  protected <T extends RemoteEvent> T createDefault (final Class <T> type)
+  {
     try
     {
-      final Class <? extends ServerRequestEvent> requestType = event.getRequestType ();
-      final Constructor <? extends ServerRequestEvent> ctor = requestType.getDeclaredConstructor ();
+      final Constructor <T> ctor = type.getDeclaredConstructor ();
       ctor.setAccessible (true);
-      eventBus.publish (new DefaultInboundPlayerResponseRequestEvent<> (mock (PlayerPacket.class), event,
-              (PlayerInputRequestEvent) ctor.newInstance ()));
+      return ctor.newInstance ();
     }
     catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException
             | IllegalArgumentException | InvocationTargetException e)
     {
       fail (e.toString ());
+      return null; // fail will kill the test before we reach this statement
     }
   }
 
@@ -279,9 +288,9 @@ public abstract class AbstractGamePhaseHandlerTest
     initialArmies = gameRules.getInitialArmies ();
     playerLimit = playerModel.getPlayerLimit ();
     maxPlayers = gameRules.getMaxTotalPlayers ();
-    gameModelConfig = GameModelConfiguration.builder (gameRules).eventBus (eventBus).playMapModel (playMapModel)
-            .battleModel (battleModel).playerModel (playerModel).playerTurnModel (playerTurnModel).cardModel (cardModel)
-            .internalComms (mockCommHandler).build ();
+    gameModelConfig = GameModelConfiguration.builder (gameRules).eventBus (eventBus).eventRegistry (eventRegistry)
+            .playMapModel (playMapModel).battleModel (battleModel).playerModel (playerModel)
+            .playerTurnModel (playerTurnModel).cardModel (cardModel).internalComms (mockCommHandler).build ();
     gameModel = GameModel.create (gameModelConfig);
   }
 

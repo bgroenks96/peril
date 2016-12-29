@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 
 import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.game.TurnPhase;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;

@@ -32,6 +32,8 @@ import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.io.PlayMapMetadataFinder;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
+import com.forerunnergames.peril.core.events.DefaultEventRegistry;
+import com.forerunnergames.peril.core.events.EventRegistry;
 import com.forerunnergames.peril.core.model.battle.BattleModel;
 import com.forerunnergames.peril.core.model.battle.DefaultBattleModel;
 import com.forerunnergames.peril.core.model.card.Card;
@@ -91,6 +93,8 @@ public final class ServerApplicationFactory
 
     final MBassador <Event> serverEventBus = EventBusFactory.create ();
 
+    final EventRegistry eventRegistry = new DefaultEventRegistry (serverEventBus);
+
     final Server server = new KryonetServer ();
 
     final AsyncExecution mainThreadExecutor = new AsyncExecution ();
@@ -131,7 +135,7 @@ public final class ServerApplicationFactory
 
     final GameModelConfiguration gameModelConfig = GameModelConfiguration.builder (gameRules)
             .playMapModel (playMapModel).playerModel (playerModel).cardModel (cardModel).battleModel (battleModel)
-            .playerTurnModel (playerTurnModel).eventBus (serverEventBus).build ();
+            .playerTurnModel (playerTurnModel).eventRegistry (eventRegistry).eventBus (serverEventBus).build ();
 
     final GameModel gameModel = GameModel.create (gameModelConfig);
     final GamePhaseHandlers gamePhaseHandlers = GamePhaseHandlers.createDefault (gameModelConfig);
@@ -153,7 +157,7 @@ public final class ServerApplicationFactory
             new HumanPlayerCommunicator (serverController),
             new AiPlayerCommunicator (new AiClientCommunicator (aiEventBus)),
             new DefaultSpectatorCommunicator (serverController), new DefaultCoreCommunicator (serverEventBus),
-            serverEventBus);
+            eventRegistry, serverEventBus);
 
     final AiApplication aiApplication = new AiApplication (gameServerConfig, serverEventBus, aiEventBus,
             mainThreadExecutor);

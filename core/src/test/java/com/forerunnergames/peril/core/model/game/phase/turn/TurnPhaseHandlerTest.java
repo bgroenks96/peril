@@ -5,8 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import static org.mockito.Mockito.when;
 
-import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.success.EndPlayerTurnSuccessEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndTurnRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerEndTurnSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.model.game.phase.AbstractGamePhaseHandlerTest;
 import com.forerunnergames.peril.core.model.people.player.PlayerTurnOrder;
@@ -31,11 +31,11 @@ public class TurnPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     addMaxPlayers ();
 
     final PlayerPacket player = playerModel.playerPacketWith (PlayerTurnOrder.FIRST);
-    final EndPlayerTurnRequestEvent endTurnRequest = new EndPlayerTurnRequestEvent ();
+    final PlayerEndTurnRequestEvent endTurnRequest = new PlayerEndTurnRequestEvent ();
     when (mockCommHandler.senderOf (endTurnRequest)).thenReturn (Optional.of (player));
 
     assertTrue (turnPhase.verifyPlayerEndTurnRequest (endTurnRequest));
-    assertTrue (eventHandler.wasFiredExactlyOnce (EndPlayerTurnSuccessEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerEndTurnSuccessEvent.class));
   }
 
   @Test
@@ -44,10 +44,10 @@ public class TurnPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     addMaxPlayers ();
 
     final PlayerPacket player = playerModel.playerPacketWith (PlayerTurnOrder.SECOND);
-    final EndPlayerTurnRequestEvent endTurnRequest = new EndPlayerTurnRequestEvent ();
+    final PlayerEndTurnRequestEvent endTurnRequest = new PlayerEndTurnRequestEvent ();
     when (mockCommHandler.senderOf (endTurnRequest)).thenReturn (Optional.of (player));
 
     assertFalse (turnPhase.verifyPlayerEndTurnRequest (endTurnRequest));
-    assertTrue (eventHandler.wasNeverFired (EndPlayerTurnSuccessEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerEndTurnSuccessEvent.class));
   }
 }

@@ -28,7 +28,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
@@ -55,7 +54,6 @@ import com.forerunnergames.peril.common.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.AiJoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.AiPlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
@@ -66,7 +64,6 @@ import com.forerunnergames.peril.common.net.events.client.request.response.Playe
 import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerDisconnectEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
@@ -81,6 +78,8 @@ import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.common.playmap.DefaultPlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.settings.GameSettings;
+import com.forerunnergames.peril.core.events.DefaultEventRegistry;
+import com.forerunnergames.peril.core.events.EventRegistry;
 import com.forerunnergames.peril.server.communicators.AiPlayerCommunicator;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.peril.server.communicators.DefaultSpectatorCommunicator;
@@ -97,7 +96,6 @@ import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientEvent;
-import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 import com.forerunnergames.tools.net.server.configuration.DefaultServerConfiguration;
 import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
@@ -122,8 +120,6 @@ import org.junit.Test;
 
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 public class MultiplayerControllerTest
 {
@@ -149,6 +145,7 @@ public class MultiplayerControllerTest
                                                                    aiPlayerCommunicator, spectatorCommunicator,
                                                                    mockCoreCommunicator);
   private int clientCount = 0;
+  private EventRegistry eventRegistry;
   private MBassador <Event> eventBus;
 
   // convenience method for fetching a new MultiplayerControllerBuilder
@@ -173,6 +170,7 @@ public class MultiplayerControllerTest
   public void setup ()
   {
     eventBus = EventBusFactory.create (ImmutableSet.of (EventBusHandler.createEventBusFailureHandler ()));
+    eventRegistry = new DefaultEventRegistry (eventBus);
     eventHandler.subscribe (eventBus);
     // default mock for core communicator - returns empty player data
     mockCoreCommunicatorPlayersWith ();
@@ -188,7 +186,7 @@ public class MultiplayerControllerTest
   @Test
   public void testSuccessfulHostClientJoinGameServer ()
   {
-    mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
+    mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventRegistry, eventBus);
 
     final RemoteClient host = createHumanHost ();
     connect (host);
@@ -202,7 +200,7 @@ public class MultiplayerControllerTest
   @Test
   public void testSuccessfulHumanClientJoinGameServer ()
   {
-    mpcBuilder.build (eventBus);
+    mpcBuilder.build (eventRegistry, eventBus);
 
     final RemoteClient client = createHumanClient ();
     connect (client);
@@ -217,7 +215,7 @@ public class MultiplayerControllerTest
   @Test
   public void testSuccessfulAiClientJoinGameServer ()
   {
-    mpcBuilder.aiPlayerLimit (1).build (eventBus);
+    mpcBuilder.aiPlayerLimit (1).build (eventRegistry, eventBus);
 
     final RemoteClient client = createAiClient (GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1"));
     connect (client);
@@ -232,7 +230,7 @@ public class MultiplayerControllerTest
   @Test
   public void testTwoHumanClientsJoinGameServerSimultaneously ()
   {
-    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.build (eventRegistry, eventBus);
 
     final RemoteClient client1 = joinHumanClientToGameServer ();
     final RemoteClient client2 = joinHumanClientToGameServer ();
@@ -272,7 +270,7 @@ public class MultiplayerControllerTest
   @Test
   public void testTwoAiClientsJoinGameServerSimultaneously ()
   {
-    final MultiplayerController mpc = mpcBuilder.aiPlayerLimit (2).build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.aiPlayerLimit (2).build (eventRegistry, eventBus);
 
     final RemoteClient client1 = joinAiClientToGameServer (GameSettings
             .getAiPlayerNameWithMandatoryClanTag ("TestPlayer1"));
@@ -314,7 +312,7 @@ public class MultiplayerControllerTest
   @Test
   public void testHumanClientJoinRequestBeforeHostDenied ()
   {
-    mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
+    mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventRegistry, eventBus);
 
     final RemoteClient client = addHumanClient ();
 
@@ -326,7 +324,7 @@ public class MultiplayerControllerTest
   @Test
   public void testAiClientJoinRequestBeforeHostSuccessful ()
   {
-    mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).aiPlayerLimit (1).build (eventBus);
+    mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).aiPlayerLimit (1).build (eventRegistry, eventBus);
 
     final RemoteClient client = addAiClient (GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1"));
 
@@ -338,7 +336,7 @@ public class MultiplayerControllerTest
   @Test
   public void testHostClientJoinDedicatedGameServerDenied ()
   {
-    mpcBuilder.gameServerType (GameServerType.DEDICATED).build (eventBus);
+    mpcBuilder.gameServerType (GameServerType.DEDICATED).build (eventRegistry, eventBus);
 
     final RemoteClient host = createHumanHost ();
     connect (host);
@@ -352,7 +350,7 @@ public class MultiplayerControllerTest
   @Test
   public void testNonHostClientJoinGameServerAfterHostSuccessful ()
   {
-    mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
+    mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventRegistry, eventBus);
 
     final RemoteClient host = createHumanHost ();
     connect (host);
@@ -369,7 +367,7 @@ public class MultiplayerControllerTest
   public void testHostClientJoinGameServerAfterHostDenied ()
   {
     // MPC still needs to be built in order to register the event bus
-    mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventBus);
+    mpcBuilder.gameServerType (GameServerType.HOST_AND_PLAY).build (eventRegistry, eventBus);
 
     final RemoteClient host = createHumanHost ();
     connect (host);
@@ -387,7 +385,7 @@ public class MultiplayerControllerTest
   @Test
   public void testHumanClientJoinRequestDeniedBecauseInvalidIpEmpty ()
   {
-    mpcBuilder.build (eventBus);
+    mpcBuilder.build (eventRegistry, eventBus);
 
     final RemoteClient client = addHumanClientWithAddress ("");
 
@@ -399,7 +397,7 @@ public class MultiplayerControllerTest
   @Test
   public void testClientJoinRequestDeniedBecauseMatchesServerIp ()
   {
-    mpcBuilder.serverAddress ("1.2.3.4").build (eventBus);
+    mpcBuilder.serverAddress ("1.2.3.4").build (eventRegistry, eventBus);
 
     final RemoteClient client = addHumanClientWithAddress ("1.2.3.4");
 
@@ -411,7 +409,7 @@ public class MultiplayerControllerTest
   @Test
   public void testValidHumanPlayerJoinGameRequestPublished ()
   {
-    mpcBuilder.build (eventBus);
+    mpcBuilder.build (eventRegistry, eventBus);
 
     final RemoteClient client = addHumanClient ();
     verify (mockHumanClientCommunicator, only ()).sendTo (eq (client), isA (JoinGameServerSuccessEvent.class));
@@ -425,7 +423,7 @@ public class MultiplayerControllerTest
   @Test
   public void testValidAiPlayerJoinGameRequestPublished ()
   {
-    mpcBuilder.aiPlayerLimit (1).build (eventBus);
+    mpcBuilder.aiPlayerLimit (1).build (eventRegistry, eventBus);
 
     final String playerName = GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1");
     final RemoteClient client = addAiClient (playerName);
@@ -439,7 +437,7 @@ public class MultiplayerControllerTest
   @Test
   public void testIgnoreHumanPlayerJoinGameRequestBeforeJoiningGameServer ()
   {
-    mpcBuilder.build (eventBus);
+    mpcBuilder.build (eventRegistry, eventBus);
 
     // Connect client to server, but do not join client to game server.
     final RemoteClient client = createHumanClient ();
@@ -458,7 +456,7 @@ public class MultiplayerControllerTest
   @Test
   public void testIgnoreAiPlayerJoinGameRequestBeforeJoiningGameServer ()
   {
-    mpcBuilder.aiPlayerLimit (1).build (eventBus);
+    mpcBuilder.aiPlayerLimit (1).build (eventRegistry, eventBus);
 
     // Connect client to server, but do not join client to game server.
     final String playerName = GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1");
@@ -479,7 +477,7 @@ public class MultiplayerControllerTest
   @Test
   public void testPlayerJoinGameSuccessForTwoHumanClients ()
   {
-    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.build (eventRegistry, eventBus);
     final String playerName1 = "TestPlayer1";
     final String playerName2 = "TestPlayer2";
 
@@ -506,7 +504,7 @@ public class MultiplayerControllerTest
   @Test
   public void testPlayerJoinGameSuccessForTwoAiClients ()
   {
-    final MultiplayerController mpc = mpcBuilder.aiPlayerLimit (2).build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.aiPlayerLimit (2).build (eventRegistry, eventBus);
     final String playerName1 = GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1");
     final String playerName2 = GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer2");
 
@@ -530,7 +528,7 @@ public class MultiplayerControllerTest
   @Test
   public void testHumanPlayerJoinGameDenied ()
   {
-    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.build (eventRegistry, eventBus);
     final RemoteClient client = joinHumanClientToGameServer ();
 
     final String playerName = "TestPlayer1";
@@ -549,7 +547,7 @@ public class MultiplayerControllerTest
   @Test
   public void testAiPlayerJoinGameDenied ()
   {
-    final MultiplayerController mpc = mpcBuilder.aiPlayerLimit (1).build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.aiPlayerLimit (1).build (eventRegistry, eventBus);
     final String playerName = GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1");
     final RemoteClient client = joinAiClientToGameServer (playerName);
 
@@ -568,7 +566,7 @@ public class MultiplayerControllerTest
   @Test
   public void testHumanPlayerDisconnected ()
   {
-    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.build (eventRegistry, eventBus);
     final ClientPlayerTuple clientPlayer1 = addHumanClientAndMockPlayerToGameServer ("TestPlayer1", mpc);
     final ClientPlayerTuple clientPlayer2 = addHumanClientAndMockPlayerToGameServer ("TestPlayer2", mpc);
 
@@ -588,7 +586,7 @@ public class MultiplayerControllerTest
   @Test
   public void testHumanPlayerRejoinSucceedsWithValidId ()
   {
-    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.build (eventRegistry, eventBus);
     final String playerName1 = "TestPlayer1";
     final String playerName2 = "TestPlayer2";
     final ClientPlayerTuple clientPlayer1 = addHumanClientAndMockPlayerToGameServer (playerName1, mpc);
@@ -626,7 +624,7 @@ public class MultiplayerControllerTest
   @Test
   public void testHumanPlayerRejoinFailsWithInvalidId ()
   {
-    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.build (eventRegistry, eventBus);
     final String playerName1 = "TestPlayer1";
     final String playerName2 = "TestPlayer2";
     final ClientPlayerTuple clientPlayer1 = addHumanClientAndMockPlayerToGameServer (playerName1, mpc);
@@ -667,7 +665,7 @@ public class MultiplayerControllerTest
   @Test
   public void testHumanPlayerRejoinFailsWithNameMismatch ()
   {
-    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.build (eventRegistry, eventBus);
     final String playerName1 = "TestPlayer1";
     final String playerName2 = "TestPlayer2";
     final String playerReconnectName = "SomeOtherName";
@@ -711,7 +709,7 @@ public class MultiplayerControllerTest
   @Test
   public void testAiPlayerQuitGame ()
   {
-    final MultiplayerController mpc = mpcBuilder.aiPlayerLimit (1).build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.aiPlayerLimit (1).build (eventRegistry, eventBus);
     final String playerName1 = GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1");
     final String playerName2 = "TestPlayer2";
     final ClientPlayerTuple clientPlayer1 = addAiClientAndMockPlayerToGameServer (playerName1, mpc);
@@ -730,7 +728,7 @@ public class MultiplayerControllerTest
   @Test
   public void testHumanPlayerQuitGame ()
   {
-    final MultiplayerController mpc = mpcBuilder.aiPlayerLimit (1).build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.aiPlayerLimit (1).build (eventRegistry, eventBus);
     final String playerName1 = GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1");
     final String playerName2 = "TestPlayer2";
     final ClientPlayerTuple clientPlayer1 = addAiClientAndMockPlayerToGameServer (playerName1, mpc);
@@ -749,7 +747,8 @@ public class MultiplayerControllerTest
   @Test
   public void testSpectatorJoinGameSuccess ()
   {
-    final MultiplayerController mpc = mpcBuilder.spectatorLimit (ClassicGameRules.MAX_SPECTATOR_LIMIT).build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.spectatorLimit (ClassicGameRules.MAX_SPECTATOR_LIMIT)
+            .build (eventRegistry, eventBus);
     final ClientPlayerTuple clientPlayer = addHumanClientAndMockPlayerToGameServer ("TestPlayer", mpc);
     final RemoteClient spectatorClient = addHumanClient ();
     addMockSpectatorToGameWithName ("TestSpectator", spectatorClient, mpc);
@@ -762,7 +761,8 @@ public class MultiplayerControllerTest
   @Test
   public void testSpectatorJoinGameDeniedDuplicatesPlayerName ()
   {
-    final MultiplayerController mpc = mpcBuilder.spectatorLimit (ClassicGameRules.MAX_SPECTATOR_LIMIT).build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.spectatorLimit (ClassicGameRules.MAX_SPECTATOR_LIMIT)
+            .build (eventRegistry, eventBus);
     final ClientPlayerTuple clientPlayer = addHumanClientAndMockPlayerToGameServer ("TestPlayer", mpc);
     final RemoteClient spectatorClient = addHumanClient ();
 
@@ -778,7 +778,8 @@ public class MultiplayerControllerTest
   @Test
   public void testSpectatorJoinGameDeniedDuplicatesSpectatorName ()
   {
-    final MultiplayerController mpc = mpcBuilder.spectatorLimit (ClassicGameRules.MAX_SPECTATOR_LIMIT).build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.spectatorLimit (ClassicGameRules.MAX_SPECTATOR_LIMIT)
+            .build (eventRegistry, eventBus);
     addHumanClientAndMockPlayerToGameServer ("TestPlayer", mpc);
 
     final RemoteClient spectatorClient1 = addHumanClient ();
@@ -795,7 +796,7 @@ public class MultiplayerControllerTest
   @Test
   public void testSpectatorJoinGameDeniedMaxSpectatorCountReached ()
   {
-    final MultiplayerController mpc = mpcBuilder.spectatorLimit (1).build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.spectatorLimit (1).build (eventRegistry, eventBus);
     addHumanClientAndMockPlayerToGameServer ("TestPlayer", mpc);
 
     final RemoteClient spectatorClient1 = addHumanClient ();
@@ -812,7 +813,7 @@ public class MultiplayerControllerTest
   @Test
   public void testSpectatorJoinGameDeniedSpectatingDisabled ()
   {
-    final MultiplayerController mpc = mpcBuilder.spectatorLimit (0).build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.spectatorLimit (0).build (eventRegistry, eventBus);
     addHumanClientAndMockPlayerToGameServer ("TestPlayer", mpc);
 
     final RemoteClient spectatorClient = addHumanClient ();
@@ -828,7 +829,7 @@ public class MultiplayerControllerTest
   {
     // Create a game server with manual initial country assignment.
     final MultiplayerController mpc = mpcBuilder.initialCountryAssignment (InitialCountryAssignment.MANUAL)
-            .build (eventBus);
+            .build (eventRegistry, eventBus);
 
     final ClientPlayerTuple clientPlayer = addHumanClientAndMockPlayerToGameServer ("TestPlayer1", mpc);
 
@@ -853,7 +854,7 @@ public class MultiplayerControllerTest
   public void testInvalidPlayerClaimCountryResponseRequestEventIgnoredBecauseClientIsNotAPlayer ()
   {
     // Create a game server with manual initial country assignment.
-    mpcBuilder.initialCountryAssignment (InitialCountryAssignment.MANUAL).build (eventBus);
+    mpcBuilder.initialCountryAssignment (InitialCountryAssignment.MANUAL).build (eventRegistry, eventBus);
 
     final RemoteClient client = joinHumanClientToGameServer ();
 
@@ -870,7 +871,7 @@ public class MultiplayerControllerTest
   {
     // Create a game server with manual initial country assignment.
     final MultiplayerController mpc = mpcBuilder.initialCountryAssignment (InitialCountryAssignment.MANUAL)
-            .build (eventBus);
+            .build (eventRegistry, eventBus);
 
     final ClientPlayerTuple first = addHumanClientAndMockPlayerToGameServer ("TestPlayer1", mpc);
     final ClientPlayerTuple second = addHumanClientAndMockPlayerToGameServer ("TestPlayer2", mpc);
@@ -894,7 +895,7 @@ public class MultiplayerControllerTest
   {
     // Create a game server with manual initial country assignment.
     final MultiplayerController mpc = mpcBuilder.initialCountryAssignment (InitialCountryAssignment.MANUAL)
-            .build (eventBus);
+            .build (eventRegistry, eventBus);
 
     final ClientPlayerTuple first = addHumanClientAndMockPlayerToGameServer ("TestPlayer1", mpc);
     final ClientPlayerTuple second = addHumanClientAndMockPlayerToGameServer ("TestPlayer2", mpc);
@@ -974,7 +975,7 @@ public class MultiplayerControllerTest
   {
     // Create a game server with manual initial country assignment.
     final MultiplayerController mpc = mpcBuilder.initialCountryAssignment (InitialCountryAssignment.MANUAL)
-            .build (eventBus);
+            .build (eventRegistry, eventBus);
 
     final ClientPlayerTuple first = addHumanClientAndMockPlayerToGameServer ("TestPlayer1", mpc);
 
@@ -991,12 +992,12 @@ public class MultiplayerControllerTest
   @Test
   public void testStalePlayerPacketDataIsUpdatedOnAccess ()
   {
-    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.build (eventRegistry, eventBus);
 
     final String playerName = "TestPlayer";
     addHumanClientAndMockPlayerToGameServer (playerName, mpc);
 
-    final PlayerPacket player = createMockHumanPlayer (playerName);
+    // final PlayerPacket player = createMockHumanPlayer (playerName);
     final PlayerPacket updatedPlayer = createMockHumanPlayer (playerName);
 
     // here's the updated part
@@ -1010,7 +1011,7 @@ public class MultiplayerControllerTest
   @Test
   public void testHumanClientDisconnectAfterSendingPlayerJoinGameRequest ()
   {
-    final MultiplayerController mpc = mpcBuilder.build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.build (eventRegistry, eventBus);
     final RemoteClient client = joinHumanClientToGameServer ();
     final String playerName = "TestPlayer";
     final PlayerPacket player = createMockHumanPlayer (playerName);
@@ -1027,7 +1028,7 @@ public class MultiplayerControllerTest
   @Test
   public void testAiClientDisconnectAfterSendingPlayerJoinGameRequest ()
   {
-    final MultiplayerController mpc = mpcBuilder.aiPlayerLimit (1).build (eventBus);
+    final MultiplayerController mpc = mpcBuilder.aiPlayerLimit (1).build (eventRegistry, eventBus);
     final String playerName = GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer");
     final RemoteClient client = joinAiClientToGameServer (playerName);
     final PlayerPacket player = createMockAiPlayer (playerName);
@@ -1168,29 +1169,29 @@ public class MultiplayerControllerTest
   {
     when (mockCoreCommunicator.fetchCurrentPlayerData ()).thenReturn (ImmutableSet.copyOf (players));
     // mock core communicator request publishing
-    doAnswer (new Answer <InvocationOnMock> ()
-    {
-      @Override
-      public InvocationOnMock answer (final InvocationOnMock invocation) throws Throwable
-      {
-        eventBus.publish ((Event) invocation.getArguments () [1]);
-        return null;
-      }
-    }).when (mockCoreCommunicator).publishPlayerResponseRequestEvent (any (PlayerPacket.class),
-                                                                      any (ResponseRequestEvent.class),
-                                                                      any (PlayerInputRequestEvent.class));
-    doAnswer (new Answer <InvocationOnMock> ()
-    {
-      @Override
-      public InvocationOnMock answer (final InvocationOnMock invocation) throws Throwable
-      {
-        eventBus.publish ((Event) invocation.getArguments () [1]);
-        return null;
-      }
-    }).when (mockCoreCommunicator).publishPlayerRequestEvent (any (PlayerPacket.class), any (PlayerRequestEvent.class));
+    // doAnswer (new Answer <InvocationOnMock> ()
+    // {
+    // @Override
+    // public InvocationOnMock answer (final InvocationOnMock invocation) throws Throwable
+    // {
+    // eventBus.publish ((Event) invocation.getArguments () [1]);
+    // return null;
+    // }
+    // }).when (mockCoreCommunicator).publishPlayerResponseRequestEvent (any (PlayerPacket.class),
+    // any (PlayerResponseRequestEvent.class),
+    // any (PlayerInputRequestEvent.class));
+    // doAnswer (new Answer <InvocationOnMock> ()
+    // {
+    // @Override
+    // public InvocationOnMock answer (final InvocationOnMock invocation) throws Throwable
+    // {
+    // eventBus.publish ((Event) invocation.getArguments () [1]);
+    // return null;
+    // }
+    // }).when (mockCoreCommunicator).publishPlayerRequestEvent (any (PlayerPacket.class), any
+    // (PlayerRequestEvent.class));
   }
 
-  @SuppressWarnings ("unused")
   private void assertLastEventWasType (final Class <?> eventType)
   {
     assertTrue ("Expected last event was type [" + eventType.getSimpleName () + "], but was ["
@@ -1431,8 +1432,9 @@ public class MultiplayerControllerTest
       return this;
     }
 
-    MultiplayerController build (final MBassador <Event> eventBus)
+    MultiplayerController build (final EventRegistry eventRegistry, final MBassador <Event> eventBus)
     {
+      Arguments.checkIsNotNull (eventRegistry, "eventRegistry");
       Arguments.checkIsNotNull (eventBus, "eventBus");
 
       final GameRules gameRules = GameRulesFactory.create (gameMode, personLimitsBuilder.build (), winPercent,
@@ -1444,7 +1446,8 @@ public class MultiplayerControllerTest
               gameServerType, gameConfig, serverConfig, DEFAULT_TEST_REQUEST_TIMEOUT);
 
       final MultiplayerController controller = new MultiplayerController (gameServerConfig, connector,
-              humanPlayerCommunicator, aiPlayerCommunicator, spectatorCommunicator, coreCommunicator, eventBus);
+              humanPlayerCommunicator, aiPlayerCommunicator, spectatorCommunicator, coreCommunicator, eventRegistry,
+              eventBus);
 
       controller.initialize ();
 

@@ -36,6 +36,8 @@ import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.common.playmap.DefaultPlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.settings.GameSettings;
+import com.forerunnergames.peril.core.events.DefaultEventRegistry;
+import com.forerunnergames.peril.core.events.EventRegistry;
 import com.forerunnergames.peril.core.model.battle.BattleModel;
 import com.forerunnergames.peril.core.model.battle.DefaultBattleModel;
 import com.forerunnergames.peril.core.model.game.GameModel;
@@ -103,14 +105,16 @@ public class TestServerApplicationFactory
     final ContinentGraphModel continentGraphModel = ContinentGraphModel.disjointContinentGraphFrom (continents, countryGraphModel);
     final PlayMapModel playMapModel = playMapModelFactory.create (countryGraphModel, continentGraphModel);
     final BattleModel battleModel = new DefaultBattleModel(playMapModel);
-    final GameModelConfiguration gameModelConfig = GameModelConfiguration.builder (gameRules).playMapModel (playMapModel).battleModel (battleModel).eventBus (eventBus).build ();
+    final EventRegistry eventRegistry = new DefaultEventRegistry (eventBus);
+    final GameModelConfiguration gameModelConfig = GameModelConfiguration.builder (gameRules).playMapModel (playMapModel).battleModel (battleModel).eventRegistry (eventRegistry).eventBus (eventBus).build ();
     final GameStateMachineConfig config = CoreFactory.createDefaultConfigurationFrom (GameModel.create (gameModelConfig));
     final StateMachineEventHandler stateMachine = CoreFactory.createGameStateMachine (config);
-    return newTestServer (eventBus, type, gameMode, PLAY_MAP_METADATA, gameRules, stateMachine, serverAddress, serverPort);
+    return newTestServer (eventBus, eventRegistry, type, gameMode, PLAY_MAP_METADATA, gameRules, stateMachine, serverAddress, serverPort);
     // @formatter:on
   }
 
   public static TestServerApplication createTestServer (final MBassador <Event> eventBus,
+                                                        final EventRegistry eventRegistry,
                                                         final GameServerType type,
                                                         final GameRules gameRules,
                                                         final StateMachineEventHandler stateMachine,
@@ -124,11 +128,12 @@ public class TestServerApplicationFactory
     Arguments.checkIsNotNull (serverAddress, "serverAddress");
     Arguments.checkIsNotNegative (serverPort, "serverPort");
 
-    return newTestServer (eventBus, type, GameMode.CLASSIC, PLAY_MAP_METADATA, gameRules, stateMachine, serverAddress,
-                          serverPort);
+    return newTestServer (eventBus, eventRegistry, type, GameMode.CLASSIC, PLAY_MAP_METADATA, gameRules, stateMachine,
+                          serverAddress, serverPort);
   }
 
   private static TestServerApplication newTestServer (final MBassador <Event> eventBus,
+                                                      final EventRegistry eventRegistry,
                                                       final GameServerType type,
                                                       final GameMode gameMode,
                                                       final PlayMapMetadata playMapMetadata,
@@ -157,7 +162,8 @@ public class TestServerApplicationFactory
     final MultiplayerController multiplayerController = new MultiplayerController (gameServerConfig, serverController,
             new HumanPlayerCommunicator (serverController),
             new AiPlayerCommunicator (new AiClientCommunicator (aiEventBus)),
-            new DefaultSpectatorCommunicator (serverController), new DefaultCoreCommunicator (eventBus), eventBus);
+            new DefaultSpectatorCommunicator (serverController), new DefaultCoreCommunicator (eventBus), eventRegistry,
+            eventBus);
 
     final AiApplication aiApplication = new AiApplication (gameServerConfig, eventBus, aiEventBus, mainThreadExecutor);
 

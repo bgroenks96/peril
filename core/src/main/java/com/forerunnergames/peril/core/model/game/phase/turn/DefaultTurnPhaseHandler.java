@@ -1,11 +1,11 @@
 package com.forerunnergames.peril.core.model.game.phase.turn;
 
 import com.forerunnergames.peril.common.game.TurnPhase;
-import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndTurnRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerCardsChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.success.EndPlayerTurnSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerEndTurnSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -111,7 +111,7 @@ public final class DefaultTurnPhaseHandler extends AbstractGamePhaseHandler impl
 
   @Override
   @StateTransitionCondition
-  public boolean verifyPlayerEndTurnRequest (final EndPlayerTurnRequestEvent event)
+  public boolean verifyPlayerEndTurnRequest (final PlayerEndTurnRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -125,7 +125,7 @@ public final class DefaultTurnPhaseHandler extends AbstractGamePhaseHandler impl
       return false;
     }
 
-    publish (new EndPlayerTurnSuccessEvent (player));
+    publish (new PlayerEndTurnSuccessEvent (player));
 
     turnDataCache.put (CacheKey.END_PLAYER_TURN_VERIFIED, true);
 

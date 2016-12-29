@@ -18,12 +18,12 @@
 package com.forerunnergames.peril.common.net.events.server.notify.direct;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerFortifyCountryEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputInformEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerIssueFortifyOrderEvent extends AbstractPlayerFortifyCountryEvent implements PlayerInformEvent
+public final class PlayerIssueFortifyOrderEvent extends AbstractPlayerFortifyCountryEvent implements PlayerInputInformEvent
 {
   public PlayerIssueFortifyOrderEvent (final PlayerPacket player,
                                        final CountryPacket sourceCountry,

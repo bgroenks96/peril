@@ -18,14 +18,14 @@
 
 package com.forerunnergames.peril.common.net.events.client.request.response;
 
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
 
-public class PlayerOccupyCountryResponseRequestEvent implements ResponseRequestEvent
+public class PlayerOccupyCountryResponseRequestEvent
+        implements PlayerResponseRequestEvent <PlayerOccupyCountryRequestEvent>
 {
   private final int deltaArmyCount;
 
@@ -37,7 +37,7 @@ public class PlayerOccupyCountryResponseRequestEvent implements ResponseRequestE
   }
 
   @Override
-  public Class <? extends ServerRequestEvent> getRequestType ()
+  public Class <PlayerOccupyCountryRequestEvent> getQuestionType ()
   {
     return PlayerOccupyCountryRequestEvent.class;
   }

@@ -20,8 +20,8 @@ package com.forerunnergames.peril.core.model.game;
 
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.EndPlayerTurnDeniedEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndTurnRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerEndTurnDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
@@ -219,7 +219,7 @@ public final class GameModel extends AbstractGamePhaseHandler
   }
 
   @Handler (priority = Integer.MIN_VALUE)
-  void onEvent (final EndPlayerTurnRequestEvent event)
+  void onEvent (final PlayerEndTurnRequestEvent event)
   {
     if (turnDataCache.isSet (CacheKey.END_PLAYER_TURN_VERIFIED))
     {
@@ -229,11 +229,11 @@ public final class GameModel extends AbstractGamePhaseHandler
     final Optional <PlayerPacket> sender = internalCommHandler.senderOf (event);
     if (!sender.isPresent () || sender.get ().isNot (getCurrentPlayerPacket ()))
     {
-      publish (new EndPlayerTurnDeniedEvent (sender.get (), EndPlayerTurnDeniedEvent.Reason.NOT_IN_TURN));
+      publish (new PlayerEndTurnDeniedEvent (sender.get (), PlayerEndTurnDeniedEvent.Reason.NOT_IN_TURN));
       return;
     }
 
-    publish (new EndPlayerTurnDeniedEvent (getCurrentPlayerPacket (), EndPlayerTurnDeniedEvent.Reason.ACTION_REQUIRED));
+    publish (new PlayerEndTurnDeniedEvent (getCurrentPlayerPacket (), PlayerEndTurnDeniedEvent.Reason.ACTION_REQUIRED));
   }
 
   @Handler

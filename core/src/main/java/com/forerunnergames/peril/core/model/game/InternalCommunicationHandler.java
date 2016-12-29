@@ -18,26 +18,30 @@
 
 package com.forerunnergames.peril.core.model.game;
 
-import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerAnswerEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerInformRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputInformEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.peril.core.events.internal.player.InboundPlayerInformRequestEvent;
-import com.forerunnergames.peril.core.events.internal.player.InboundPlayerRequestEvent;
-import com.forerunnergames.peril.core.events.internal.player.InboundPlayerResponseRequestEvent;
+import com.forerunnergames.peril.core.events.EventRegistry;
 import com.forerunnergames.peril.core.events.internal.player.NotifyPlayerInputTimeoutEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.events.remote.RequestEvent;
-import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
+import com.forerunnergames.tools.net.events.remote.origin.client.InformRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Queues;
 
-import java.util.Deque;
 import java.util.Map;
 
 import net.engio.mbassy.bus.MBassador;
@@ -50,19 +54,22 @@ import org.slf4j.LoggerFactory;
 public class InternalCommunicationHandler
 {
   private static final Logger log = LoggerFactory.getLogger (InternalCommunicationHandler.class);
-  private static final int OUTBOUND_CACHE_MAX_SIZE = 10000;
-  private static final float OUTBOUND_CACHE_LOAD_FACTOR = 0.8f;
+  private final EventRegistry eventRegistry;
   private final MBassador <Event> eventBus;
   private final Map <RequestEvent, PlayerPacket> requestEvents = Maps.newHashMap ();
-  private final Map <ResponseRequestEvent, PlayerInputRequestEvent> responseRequests = Maps.newHashMap ();
-  private final Map <InformRequestEvent, PlayerInformEvent> informRequests = Maps.newHashMap ();
-  private final Deque <ServerEvent> outboundEventCache = Queues.newArrayDeque ();
+  private final BiMap <PlayerInputEvent, PlayerAnswerEvent <?>> inputToAnswerEvents;
 
-  public InternalCommunicationHandler (final MBassador <Event> eventBus)
+  public InternalCommunicationHandler (final EventRegistry eventRegistry, final MBassador <Event> eventBus)
   {
+    Arguments.checkIsNotNull (eventRegistry, "eventRegistry");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
+    this.eventRegistry = eventRegistry;
     this.eventBus = eventBus;
+
+    inputToAnswerEvents = HashBiMap.create ();
+
+    eventRegistry.initialize ();
   }
 
   public boolean isSenderOf (final RequestEvent event, final PlayerPacket player)
@@ -95,43 +102,48 @@ public class InternalCommunicationHandler
   /**
    * Fetches the {@link PlayerInputRequestEvent} corresponding to this ResponseRequestEvent.
    */
-  public Optional <PlayerInputRequestEvent> inputRequestFor (final ResponseRequestEvent event)
+  public <T extends PlayerInputRequestEvent> Optional <T> inputRequestFor (final PlayerResponseRequestEvent <T> event,
+                                                                           final Class <T> inputRequestType)
   {
+    Arguments.checkIsNotNull (inputRequestType, "inputRequestType");
     Arguments.checkIsNotNull (event, "event");
 
-    return Optional.fromNullable (responseRequests.get (event));
+    final PlayerInputRequestEvent inputRequestEvent = (PlayerInputRequestEvent) inputToAnswerEvents.inverse ()
+            .get (event);
+    return Optional.fromNullable (inputRequestType.cast (inputRequestEvent));
   }
 
   /**
-   * Fetches the {@link PlayerInformEvent} corresponding to this {@link InformRequestEvent}.
+   * Fetches the {@link PlayerInputInformEvent} corresponding to this {@link InformRequestEvent}.
    */
-  public Optional <PlayerInformEvent> informEventFor (final InformRequestEvent event)
+  public <T extends PlayerInputInformEvent> Optional <T> informEventFor (final PlayerInformRequestEvent <?> event,
+                                                                         final Class <T> informEventType)
   {
+    Arguments.checkIsNotNull (informEventType, "informEventType");
     Arguments.checkIsNotNull (event, "event");
 
-    return Optional.fromNullable (informRequests.get (event));
+    final PlayerInputRequestEvent inputInformEvent = (PlayerInputRequestEvent) inputToAnswerEvents.inverse ()
+            .get (event);
+    return Optional.fromNullable (informEventType.cast (inputInformEvent));
+  }
+
+  public <T extends PlayerInputEvent> void republishFor (final PlayerAnswerEvent <T> answerEvent)
+  {
+    final PlayerInputEvent inputEvent = inputToAnswerEvents.inverse ().get (answerEvent);
+    if (inputEvent == null)
+    {
+      log.warn ("No event found to republish for [{}]", answerEvent);
+      return;
+    }
+
+    eventBus.publish (inputEvent);
   }
 
   public <T extends ServerEvent> Optional <T> lastOutboundEventOfType (final Class <T> type)
   {
     Arguments.checkIsNotNull (type, "type");
 
-    final Deque <ServerEvent> tempDeque = Queues.newArrayDeque ();
-    Optional <T> maybe = Optional.absent ();
-    while (!maybe.isPresent () && !outboundEventCache.isEmpty ())
-    {
-      final ServerEvent next = outboundEventCache.poll ();
-      tempDeque.push (next);
-      if (next.getClass ().equals (type)) maybe = Optional.of (type.cast (next));
-    }
-
-    // push events back into cache in the same order they were removed
-    for (final ServerEvent next : tempDeque)
-    {
-      outboundEventCache.push (next);
-    }
-
-    return maybe;
+    return eventRegistry.lastOutboundEventOfType (type);
   }
 
   /**
@@ -139,33 +151,62 @@ public class InternalCommunicationHandler
    */
   public void clearEventCache ()
   {
-    log.debug ("Clearing internal event caches [{} RequestEvents] [{} ResponseRequestEvents].", requestEvents.size (),
-               responseRequests.size ());
+    log.debug ("Clearing internal event caches [{} RequestEvents] [{} PlayerAnswerEvents].", requestEvents.size (),
+               inputToAnswerEvents.size ());
 
     requestEvents.clear ();
-    responseRequests.clear ();
-    informRequests.clear ();
+    inputToAnswerEvents.clear ();
   }
 
+  // ------ Outbound Event Handlers ------- //
+
   @Handler
-  void onEvent (final ServerEvent event)
+  void onEvent (final PlayerInputEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    outboundEventCache.offer (event);
-
-    if (outboundEventCache.size () < OUTBOUND_CACHE_MAX_SIZE) return;
-
-    final int currentCacheSize = outboundEventCache.size ();
-    final int targetCacheSize = (int) (OUTBOUND_CACHE_MAX_SIZE * OUTBOUND_CACHE_LOAD_FACTOR);
-    while (outboundEventCache.size () > targetCacheSize)
+    final PlayerAnswerEvent <?> previousValue = inputToAnswerEvents.forcePut (event, null);
+    if (previousValue != null)
     {
-      final ServerEvent discarded = outboundEventCache.poll ();
-      log.trace ("Discarding old event from server revent cache [{}]", discarded);
+      log.warn ("Overwriting previous value for [{}]: {}", event, previousValue);
+    }
+  }
+
+  // ------ Inbound Event Handlers ------- //
+
+  @Handler (priority = Integer.MAX_VALUE)
+  <T extends PlayerInputEvent> void onEvent (final PlayerAnswerEvent <T> event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+
+    final ImmutableSet <T> inputEventMatches = allInputEventsOfType (event.getQuestionType ());
+    if (!inputEventMatches.isEmpty ())
+    {
+      log.warn ("Received answer event with no corresponding outbound event! Event: [{}]", event);
+      return;
     }
 
-    log.debug ("Pruned outbound event cache [New Size: {}]; Discarded {} old events.", outboundEventCache.size (),
-               currentCacheSize - targetCacheSize);
+    // TODO this is broken if there are multiple pending input requests for different players
+    inputToAnswerEvents.forcePut (Iterables.getFirst (inputEventMatches, null), event);
+  }
+
+  @Handler
+  void onEvent (final PlayerRequestEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    final Optional <PlayerPacket> playerMaybe = eventRegistry.playerFor (event);
+    if (!playerMaybe.isPresent ())
+    {
+      log.warn ("Received event [{}] with no playing mapping.", event);
+      return;
+    }
+
+    log.trace ("Event received [{}]", event);
+
+    requestEvents.put (event, playerMaybe.get ());
   }
 
   @Handler
@@ -179,30 +220,8 @@ public class InternalCommunicationHandler
     eventBus.publish (new SkipPlayerTurnEvent (event.getPlayer (), SkipPlayerTurnEvent.Reason.PLAYER_INPUT_TIMED_OUT));
   }
 
-  @Handler (priority = 1)
-  void onEvent (final InboundPlayerResponseRequestEvent <? extends ResponseRequestEvent, ? extends PlayerInputRequestEvent> event)
+  private <T extends PlayerInputEvent> ImmutableSet <T> allInputEventsOfType (final Class <T> inputEventType)
   {
-    Arguments.checkIsNotNull (event, "event");
-
-    responseRequests.put (event.getRequestEvent (), event.getOriginalRequestEvent ());
-  }
-
-  @Handler (priority = 1)
-  void onEvent (final InboundPlayerInformRequestEvent <? extends InformRequestEvent, ? extends PlayerInformEvent> event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    informRequests.put (event.getRequestEvent (), event.getOriginalInformEvent ());
-  }
-
-  @Handler (priority = 0)
-  void onEvent (final InboundPlayerRequestEvent <? extends RequestEvent> event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event received [{}]", event);
-
-    requestEvents.put (event.getRequestEvent (), event.getPlayer ());
-    eventBus.publish (event.getRequestEvent ());
+    return ImmutableSet.copyOf (Iterables.filter (inputToAnswerEvents.keySet (), inputEventType));
   }
 }

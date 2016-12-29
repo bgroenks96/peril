@@ -16,16 +16,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.client.request;
+package com.forerunnergames.peril.common.net.events.client.request.inform;
 
-import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerInformRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
 
-public final class PlayerEndAttackPhaseRequestEvent implements InformRequestEvent
+public final class PlayerEndAttackPhaseRequestEvent implements PlayerInformRequestEvent <PlayerBeginAttackEvent>
 {
   @Override
-  public Class <? extends PlayerInformEvent> getInformType ()
+  public Class <PlayerBeginAttackEvent> getQuestionType ()
   {
     return PlayerBeginAttackEvent.class;
   }

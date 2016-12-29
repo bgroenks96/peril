@@ -19,20 +19,20 @@ package com.forerunnergames.peril.ai.processors;
 
 import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
-import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerCancelFortifyRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderAttackRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderFortifyRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderRetreatRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectAttackVectorRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectFortifyVectorRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerCancelFortifyRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndAttackPhaseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndTurnRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderAttackRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderFortifyRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderRetreatRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectAttackVectorRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectFortifyVectorRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.EndPlayerTurnDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerEndTurnDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerCancelFortifyDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
@@ -83,7 +83,7 @@ import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCou
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.EndPlayerTurnSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerEndTurnSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerCancelFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerDefendCountryResponseSuccessEvent;
@@ -543,7 +543,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
     // Don't ALWAYS fortify... ;-)
     if (!shouldAct (FORTIFY_PROBABILITY))
     {
-      send (new EndPlayerTurnRequestEvent ());
+      send (new PlayerEndTurnRequestEvent ());
       return;
     }
 
@@ -623,7 +623,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final EndPlayerTurnSuccessEvent event)
+  void onEvent (final PlayerEndTurnSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -631,7 +631,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final EndPlayerTurnDeniedEvent event)
+  void onEvent (final PlayerEndTurnDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

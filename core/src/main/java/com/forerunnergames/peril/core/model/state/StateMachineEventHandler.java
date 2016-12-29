@@ -19,16 +19,16 @@
 package com.forerunnergames.peril.core.model.state;
 
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerCancelFortifyRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderAttackRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderFortifyRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderRetreatRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectAttackVectorRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectFortifyVectorRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerCancelFortifyRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndAttackPhaseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndTurnRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderAttackRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderFortifyRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderRetreatRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectAttackVectorRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectFortifyVectorRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
@@ -475,13 +475,13 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onEvent (final EndPlayerTurnRequestEvent event)
+  public void onEvent (final PlayerEndTurnRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onEndPlayerTurnRequestEvent (event);
+    context.onPlayerEndTurnRequestEvent (event);
   }
 
   @Handler

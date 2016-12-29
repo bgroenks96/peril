@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.core.model.game.phase.turn;
 
-import com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndTurnRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.core.model.game.phase.GamePhaseHandler;
 
 public interface TurnPhaseHandler extends GamePhaseHandler
@@ -18,7 +18,7 @@ public interface TurnPhaseHandler extends GamePhaseHandler
    */
   boolean verifyPlayerCardTradeIn (PlayerTradeInCardsRequestEvent event);
 
-  boolean verifyPlayerEndTurnRequest (EndPlayerTurnRequestEvent event);
+  boolean verifyPlayerEndTurnRequest (PlayerEndTurnRequestEvent event);
 
   boolean publishTradeInEventIfNecessary ();
 

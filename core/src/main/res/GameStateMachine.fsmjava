@@ -80,15 +80,15 @@
                 name="event"
                 type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialReinforcementPhaseEvent"/>
       </event>
-      <event id="onEndPlayerTurnRequestEvent">
+      <event id="onPlayerEndTurnRequestEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.EndPlayerTurnRequestEvent"/>
+                type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndTurnRequestEvent"/>
       </event>
       <event id="onPlayerReinforceCountryRequestEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent"/>
+                type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent"/>
       </event>
       <event id="onSkipReinforcementPhaseEvent">
         <parameter
@@ -103,27 +103,27 @@
       <event id="onPlayerTradeInCardsRequestEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.PlayerTradeInCardsRequestEvent"/>
+                type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerTradeInCardsRequestEvent"/>
       </event>
       <event id="onPlayerSelectAttackVectorRequestEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.PlayerSelectAttackVectorRequestEvent"/>
+                type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectAttackVectorRequestEvent"/>
       </event>
       <event id="onPlayerOrderAttackRequestEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.PlayerOrderAttackRequestEvent"/>
+                type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderAttackRequestEvent"/>
       </event>
       <event id="onPlayerOrderRetreatRequestEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.PlayerOrderRetreatRequestEvent"/>
+                type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderRetreatRequestEvent"/>
       </event>
       <event id="onPlayerEndAttackPhaseRequestEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent"/>
+                type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndAttackPhaseRequestEvent"/>
       </event>
       <event id="onPlayerDefendCountryResponseRequestEvent">
         <parameter
@@ -153,17 +153,17 @@
       <event id="onPlayerSelectFortifyVectorRequestEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.PlayerSelectFortifyVectorRequestEvent"/>
+                type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectFortifyVectorRequestEvent"/>
       </event>
       <event id="onPlayerOrderFortifyRequestEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.PlayerOrderFortifyRequestEvent"/>
+                type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderFortifyRequestEvent"/>
       </event>
       <event id="onPlayerCancelFortifyRequestEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.PlayerCancelFortifyRequestEvent"/>
+                type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerCancelFortifyRequestEvent"/>
       </event>
       <event id="onSkipFortifyPhaseEvent">
         <parameter
@@ -347,7 +347,7 @@
                     <transition event="onPlayerEndAttackPhaseRequestEvent"
                                 action="attackPhase.processPlayerEndAttackPhase(event)"
                                 nextState="FortifyPhase"/>
-                    <transition event="onEndPlayerTurnRequestEvent"
+                    <transition event="onPlayerEndTurnRequestEvent"
                                condition="turnPhase.verifyPlayerEndTurnRequest(event)"
                                nextState="AdvancePlayerTurn"/>
                   </state>
@@ -360,7 +360,7 @@
                       <timerStop timer="AttackerResponseTimer"/>
                       <timerStop timer="DefenderResponseTimer"/>
                     </onExit>
-                    <transition event="onEndPlayerTurnRequestEvent"
+                    <transition event="onPlayerEndTurnRequestEvent"
                                condition="turnPhase.verifyPlayerEndTurnRequest(event)"
                                nextState="AdvancePlayerTurn"/>
                     <transition event="onPlayerOrderAttackRequestEvent"
@@ -416,7 +416,7 @@
                   <onExit action="fortifyPhase.end()"/>
                   <transition event="onSkipFortifyPhaseEvent"
                               nextState="AdvancePlayerTurn"/>
-                  <transition event="onEndPlayerTurnRequestEvent"
+                  <transition event="onPlayerEndTurnRequestEvent"
                               condition="turnPhase.verifyPlayerEndTurnRequest(event)"
                               nextState="AdvancePlayerTurn"/>
                   <state name="WaitForPlayerToSelectFortifyVector">

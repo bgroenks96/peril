@@ -24,8 +24,8 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialo
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.BattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.common.net.events.client.interfaces.BattleRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderAttackRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectAttackVectorRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderAttackRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectAttackVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;

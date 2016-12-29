@@ -1,9 +1,9 @@
 package com.forerunnergames.peril.core.model.game.phase.turn;
 
-import com.forerunnergames.peril.common.net.events.client.request.PlayerEndAttackPhaseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderAttackRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerOrderRetreatRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerSelectAttackVectorRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndAttackPhaseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderAttackRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderRetreatRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectAttackVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.core.model.game.phase.GamePhaseHandler;

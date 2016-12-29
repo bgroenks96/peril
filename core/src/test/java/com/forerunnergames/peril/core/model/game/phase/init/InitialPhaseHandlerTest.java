@@ -4,7 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
@@ -13,7 +14,6 @@ import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoi
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerTurnOrderChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ActivePlayerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerCountryAssignmentEvent;
@@ -315,16 +315,16 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     final PlayerClaimCountryResponseRequestEvent responseRequest = new PlayerClaimCountryResponseRequestEvent (
             "Transylvania");
-    when (mockCommHandler.inputRequestFor (responseRequest))
-            .thenReturn (Optional.of (mock (PlayerInputRequestEvent.class)));
-    publishInternalResponseRequestEvent (responseRequest);
+    when (mockCommHandler.inputRequestFor (responseRequest, PlayerClaimCountryRequestEvent.class))
+            .thenReturn (Optional.of (createDefault (PlayerClaimCountryRequestEvent.class)));
+    publishResponseRequest (responseRequest);
     initialPhase.verifyPlayerClaimCountryResponseRequest (responseRequest);
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerClaimCountryResponseDeniedEvent.class));
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerInputRequestEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerClaimCountryResponseSuccessEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerArmiesChangedEvent.class));
+    verify (mockCommHandler).republishFor (eq (responseRequest));
   }
 
   @Test
@@ -339,7 +339,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     final Id country = randomCountry ();
     final PlayerClaimCountryResponseRequestEvent responseRequest = new PlayerClaimCountryResponseRequestEvent (
             countryGraphModel.nameOf (country));
-    publishInternalResponseRequestEvent (responseRequest);
+    publishResponseRequest (responseRequest);
     initialPhase.verifyPlayerClaimCountryResponseRequest (responseRequest);
     // should be successful for first player
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerClaimCountryResponseSuccessEvent.class));
@@ -347,15 +347,19 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     advancePlayerTurn (); // state machine does this as state exit action
 
-    when (mockCommHandler.inputRequestFor (responseRequest))
-            .thenReturn (Optional.of (mock (PlayerInputRequestEvent.class)));
-    publishInternalResponseRequestEvent (responseRequest);
+    final PlayerClaimCountryRequestEvent defaultRequest = createDefault (PlayerClaimCountryRequestEvent.class);
+    when (mockCommHandler.inputRequestFor (responseRequest, PlayerClaimCountryRequestEvent.class))
+            .thenReturn (Optional.of (defaultRequest));
+    publishResponseRequest (responseRequest);
     initialPhase.verifyPlayerClaimCountryResponseRequest (responseRequest);
     // unsuccessful for second player
-    assertTrue (eventHandler.secondToLastEventWasType (PlayerClaimCountryResponseDeniedEvent.class));
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerInputRequestEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerClaimCountryResponseDeniedEvent.class));
+    // make sure success event was not fired again
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerClaimCountryResponseSuccessEvent.class));
     // should not have received any more PlayerArmiesChangedEvents
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
+    // verify that republish was called
+    verify (mockCommHandler).republishFor (eq (responseRequest));
   }
 
   @Test

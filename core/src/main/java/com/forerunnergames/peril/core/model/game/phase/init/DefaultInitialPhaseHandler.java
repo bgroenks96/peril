@@ -1,7 +1,7 @@
 package com.forerunnergames.peril.core.model.game.phase.init;
 
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
-import com.forerunnergames.peril.common.net.events.client.request.PlayerReinforceCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
@@ -260,7 +260,7 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
     {
       publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
               PlayerClaimCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_OVERFLOW));
-      republishRequestFor (event);
+      internalCommHandler.republishFor (event);
       return false;
     }
 
@@ -268,7 +268,7 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
     {
       publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
               PlayerClaimCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
-      republishRequestFor (event);
+      internalCommHandler.republishFor (event);
       return false;
     }
 
@@ -279,7 +279,7 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
     if (res1.failed ())
     {
       publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName, res1.getFailureReason ()));
-      republishRequestFor (event);
+      internalCommHandler.republishFor (event);
       return false;
     }
 
@@ -288,7 +288,7 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
     if (res2.failed ())
     {
       publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName, res2.getFailureReason ()));
-      republishRequestFor (event);
+      internalCommHandler.republishFor (event);
       return false;
     }
 

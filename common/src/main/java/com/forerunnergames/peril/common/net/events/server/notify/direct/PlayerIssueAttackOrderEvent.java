@@ -20,12 +20,12 @@ package com.forerunnergames.peril.common.net.events.server.notify.direct;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractBattleEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.BattleSetupEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputInformEvent;
 import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class PlayerIssueAttackOrderEvent extends AbstractBattleEvent
-        implements BattleSetupEvent, PlayerInformEvent
+        implements BattleSetupEvent, PlayerInputInformEvent
 {
   public PlayerIssueAttackOrderEvent (final PendingBattleActorPacket attacker, final PendingBattleActorPacket defender)
   {

@@ -2,6 +2,8 @@ package com.forerunnergames.peril.core.model.game;
 
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.core.events.DefaultEventRegistry;
+import com.forerunnergames.peril.core.events.EventRegistry;
 import com.forerunnergames.peril.core.model.battle.BattleModel;
 import com.forerunnergames.peril.core.model.battle.DefaultBattleModel;
 import com.forerunnergames.peril.core.model.card.Card;
@@ -32,6 +34,7 @@ public final class GameModelConfiguration
   private final PlayerTurnModel playerTurnModel;
   private final BattleModel battleModel;
   private final GameRules rules;
+  private final EventRegistry eventRegistry;
   private final PlayerTurnDataCache <CacheKey> turnDataCache;
   private final InternalCommunicationHandler internalCommHandler;
   private final MBassador <Event> eventBus;
@@ -42,6 +45,7 @@ public final class GameModelConfiguration
                                  final PlayerTurnModel playerTurnModel,
                                  final BattleModel battleModel,
                                  final GameRules rules,
+                                 final EventRegistry eventRegistry,
                                  final PlayerTurnDataCache <CacheKey> turnDataCache,
                                  final InternalCommunicationHandler internalCommHandler,
                                  final MBassador <Event> eventBus)
@@ -52,6 +56,7 @@ public final class GameModelConfiguration
     Arguments.checkIsNotNull (playerTurnModel, "playerTurnModel");
     Arguments.checkIsNotNull (battleModel, "battleModel");
     Arguments.checkIsNotNull (rules, "rules");
+    Arguments.checkIsNotNull (eventRegistry, "eventRegistry");
     Arguments.checkIsNotNull (turnDataCache, "turnDataCache");
     Arguments.checkIsNotNull (internalCommHandler, "internalCommHandler");
     Arguments.checkIsNotNull (eventBus, "eventBus");
@@ -62,6 +67,7 @@ public final class GameModelConfiguration
     this.playerTurnModel = playerTurnModel;
     this.battleModel = battleModel;
     this.rules = rules;
+    this.eventRegistry = eventRegistry;
     this.turnDataCache = turnDataCache;
     this.internalCommHandler = internalCommHandler;
     this.eventBus = eventBus;
@@ -125,6 +131,7 @@ public final class GameModelConfiguration
     private CardModel cardModel;
     private PlayerTurnModel playerTurnModel;
     private BattleModel battleModel;
+    private EventRegistry eventRegistry;
     private PlayerTurnDataCache <CacheKey> turnDataCache;
     private InternalCommunicationHandler internalCommHandler;
     private MBassador <Event> eventBus = EventBusFactory.create ();
@@ -133,11 +140,11 @@ public final class GameModelConfiguration
     {
       if (internalCommHandler == null)
       {
-        internalCommHandler = new InternalCommunicationHandler (eventBus);
+        internalCommHandler = new InternalCommunicationHandler (eventRegistry, eventBus);
       }
 
       return new GameModelConfiguration (playerModel, playMapModel, cardModel, playerTurnModel, battleModel, gameRules,
-              turnDataCache, internalCommHandler, eventBus);
+              eventRegistry, turnDataCache, internalCommHandler, eventBus);
     }
 
     public Builder playMapModel (final PlayMapModel playMapModel)
@@ -196,6 +203,14 @@ public final class GameModelConfiguration
       return this;
     }
 
+    public Builder eventRegistry (final EventRegistry eventRegistry)
+    {
+      Arguments.checkIsNotNull (eventRegistry, "eventRegistry");
+
+      this.eventRegistry = eventRegistry;
+      return this;
+    }
+
     public Builder eventBus (final MBassador <Event> eventBus)
     {
       Arguments.checkIsNotNull (eventBus, "eventBus");
@@ -208,6 +223,7 @@ public final class GameModelConfiguration
     {
       Arguments.checkIsNotNull (gameRules, "gameRules");
 
+      eventRegistry = new DefaultEventRegistry (eventBus);
       this.gameRules = gameRules;
       final CountryFactory defaultCountryFactory = CountryFactory
               .generateDefaultCountries (gameRules.getTotalCountryCount ());

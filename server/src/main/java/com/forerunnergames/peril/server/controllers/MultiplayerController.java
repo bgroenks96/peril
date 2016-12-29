@@ -28,10 +28,11 @@ import com.forerunnergames.peril.common.game.PersonLimits;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.net.dispatchers.NetworkEventDispatcher;
-import com.forerunnergames.peril.common.net.events.client.interfaces.InformRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.JoinGameServerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerInformRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.AiJoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
@@ -42,8 +43,8 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameD
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerQuitGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInformEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputInformEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerDisconnectEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
@@ -63,6 +64,7 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.peril.common.settings.GameSettings;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
+import com.forerunnergames.peril.core.events.EventRegistry;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
@@ -87,6 +89,7 @@ import com.forerunnergames.tools.net.client.configuration.DefaultClientConfigura
 import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
+import com.forerunnergames.tools.net.events.remote.origin.client.InformRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
@@ -129,6 +132,7 @@ public final class MultiplayerController extends ControllerAdapter
   private final PlayerCommunicator aiPlayerCommunicator;
   private final SpectatorCommunicator spectatorCommunicator;
   private final CoreCommunicator coreCommunicator;
+  private final EventRegistry eventRegistry;
   private final MBassador <Event> eventBus;
   private NetworkEventDispatcher networkEventDispatcher;
   private boolean shouldShutDown = false;
@@ -143,6 +147,7 @@ public final class MultiplayerController extends ControllerAdapter
                                 final PlayerCommunicator aiPlayerCommunicator,
                                 final SpectatorCommunicator spectatorCommunicator,
                                 final CoreCommunicator coreCommunicator,
+                                final EventRegistry eventRegistry,
                                 final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (gameServerConfig, "gameServerConfig");
@@ -151,6 +156,7 @@ public final class MultiplayerController extends ControllerAdapter
     Arguments.checkIsNotNull (aiPlayerCommunicator, "aiPlayerCommunicator");
     Arguments.checkIsNotNull (spectatorCommunicator, "spectatorCommunicator");
     Arguments.checkIsNotNull (coreCommunicator, "coreCommunicator");
+    Arguments.checkIsNotNull (eventRegistry, "eventRegistry");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.gameServerConfig = gameServerConfig;
@@ -159,6 +165,7 @@ public final class MultiplayerController extends ControllerAdapter
     this.aiPlayerCommunicator = aiPlayerCommunicator;
     this.spectatorCommunicator = spectatorCommunicator;
     this.coreCommunicator = coreCommunicator;
+    this.eventRegistry = eventRegistry;
     this.eventBus = eventBus;
 
     eventCache = new MultiplayerControllerEventCache (this,
@@ -490,13 +497,13 @@ public final class MultiplayerController extends ControllerAdapter
       return;
     }
 
-    final PlayerPacket player = playerQuery.get ();
+    eventRegistry.registerTo (playerQuery.get (), event);
 
-    coreCommunicator.publishPlayerRequestEvent (player, event);
+    publish (event);
   }
 
   @Override
-  public void handleEvent (final ResponseRequestEvent event, final RemoteClient client)
+  public void handleEvent (final PlayerResponseRequestEvent <?> event, final RemoteClient client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
@@ -525,18 +532,20 @@ public final class MultiplayerController extends ControllerAdapter
 
     final PlayerPacket player = playerQuery.get ();
 
-    if (!waitingForResponseToInputEventFromPlayer (event.getRequestType (), player))
+    if (!waitingForResponseToInputEventFromPlayer (event.getQuestionType (), player))
     {
       log.warn ("Ignoring event [{}] from player [{}] because no prior corresponding server request of type [{}] was sent to that player.",
-                event, player, event.getRequestType ());
+                event, player, event.getQuestionType ());
       return;
     }
 
-    handlePlayerResponseRequestTo (event.getRequestType (), event, player);
+    eventRegistry.registerTo (player, event);
+
+    handlePlayerResponseRequestTo (event.getQuestionType (), event, player);
   }
 
   @Override
-  public void handleEvent (final InformRequestEvent event, final RemoteClient client)
+  public void handleEvent (final PlayerInformRequestEvent <?> event, final RemoteClient client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
@@ -565,14 +574,16 @@ public final class MultiplayerController extends ControllerAdapter
 
     final PlayerPacket player = playerQuery.get ();
 
-    if (!waitingForRequestToInformEventFromPlayer (event.getInformType (), player))
+    if (!waitingForRequestToInformEventFromPlayer (event.getQuestionType (), player))
     {
       log.warn ("Ignoring event [{}] from player [{}] because no prior corresponding server inform event of type [{}] was sent to that player.",
-                event, player, event.getInformType ());
+                event, player, event.getQuestionType ());
       return;
     }
 
-    handlePlayerInformRequestFor (event.getInformType (), event, player);
+    eventRegistry.registerTo (player, event);
+
+    handlePlayerInformRequestFor (event.getQuestionType (), event, player);
   }
 
   // ---------- Public getters and setters ---------- //
@@ -832,7 +843,7 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  void onEvent (final PlayerInformEvent event)
+  void onEvent (final PlayerInputInformEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -1153,10 +1164,10 @@ public final class MultiplayerController extends ControllerAdapter
     return false;
   }
 
-  private boolean waitingForRequestToInformEventFromPlayer (final Class <? extends PlayerInformEvent> informClass,
+  private boolean waitingForRequestToInformEventFromPlayer (final Class <? extends PlayerInputInformEvent> informClass,
                                                             final PlayerPacket player)
   {
-    for (final PlayerInformEvent informEvent : eventCache.informEventsFor (player))
+    for (final PlayerInputInformEvent informEvent : eventCache.informEventsFor (player))
     {
       if (informClass.isInstance (informEvent)) return true;
     }
@@ -1272,7 +1283,7 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   private void handlePlayerResponseRequestTo (final Class <? extends ServerRequestEvent> requestClass,
-                                              final ResponseRequestEvent responseRequest,
+                                              final PlayerResponseRequestEvent <?> responseRequest,
                                               final PlayerPacket player)
   {
     for (final PlayerInputRequestEvent request : eventCache.inputRequestsFor (player))
@@ -1281,7 +1292,7 @@ public final class MultiplayerController extends ControllerAdapter
       {
         final boolean wasRemoved = eventCache.remove (player, request);
         assert wasRemoved;
-        coreCommunicator.publishPlayerResponseRequestEvent (player, responseRequest, request);
+        publish (responseRequest);
         return;
       }
     }
@@ -1290,17 +1301,17 @@ public final class MultiplayerController extends ControllerAdapter
               responseRequest, player, requestClass);
   }
 
-  private void handlePlayerInformRequestFor (final Class <? extends PlayerInformEvent> informClass,
-                                             final InformRequestEvent informRequest,
+  private void handlePlayerInformRequestFor (final Class <? extends PlayerInputInformEvent> informClass,
+                                             final PlayerInformRequestEvent <?> informRequest,
                                              final PlayerPacket player)
   {
-    for (final PlayerInformEvent informEvent : eventCache.informEventsFor (player))
+    for (final PlayerInputInformEvent informEvent : eventCache.informEventsFor (player))
     {
       if (informClass.isInstance (informEvent))
       {
         final boolean wasRemoved = eventCache.remove (player, informEvent);
         assert wasRemoved;
-        coreCommunicator.publishPlayerInformRequestEvent (player, informRequest, informEvent);
+        publish (informRequest);
         return;
       }
     }
