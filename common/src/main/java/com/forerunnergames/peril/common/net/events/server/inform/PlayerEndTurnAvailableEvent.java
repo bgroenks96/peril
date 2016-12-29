@@ -1,4 +1,4 @@
-package com.forerunnergames.peril.common.net.events.server.notify.direct;
+package com.forerunnergames.peril.common.net.events.server.inform;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputInformEvent;

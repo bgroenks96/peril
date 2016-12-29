@@ -25,7 +25,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.net.events.client.interfaces.BattleRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndAttackPhaseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderRetreatRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerRetreatRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.BattleResultEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.BattleSetupEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
@@ -124,7 +124,7 @@ abstract class AbstractBattlePhaseHandler extends AbstractGamePhaseHandler imple
   @Override
   public void cancel ()
   {
-    publish (new PlayerOrderRetreatRequestEvent ());
+    publish (new PlayerRetreatRequestEvent ());
     reset ();
   }
 

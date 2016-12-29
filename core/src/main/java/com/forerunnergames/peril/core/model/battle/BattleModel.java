@@ -18,7 +18,7 @@
 
 package com.forerunnergames.peril.core.model.battle;
 
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
@@ -41,8 +41,8 @@ public interface BattleModel
                                                                                                final Id sourceCountry,
                                                                                                final Id targetCountry);
 
-  DataResult <AttackOrder, PlayerOrderAttackDeniedEvent.Reason> newPlayerAttackOrder (final AttackVector attackVector,
-                                                                                      final int dieCount);
+  DataResult <AttackOrder, PlayerAttackCountryDeniedEvent.Reason> newPlayerAttackOrder (final AttackVector attackVector,
+                                                                                        final int dieCount);
 
   BattleResult generateResultFor (final AttackOrder attackOrder,
                                   final int defenderDieCount,

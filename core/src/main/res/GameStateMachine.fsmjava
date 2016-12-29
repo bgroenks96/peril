@@ -110,15 +110,15 @@
                 name="event"
                 type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectAttackVectorRequestEvent"/>
       </event>
-      <event id="onPlayerOrderAttackRequestEvent">
+      <event id="onPlayerAttackCountryRequestEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderAttackRequestEvent"/>
+                type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerAttackCountryRequestEvent"/>
       </event>
-      <event id="onPlayerOrderRetreatRequestEvent">
+      <event id="onPlayerRetreatRequestEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderRetreatRequestEvent"/>
+                type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerRetreatRequestEvent"/>
       </event>
       <event id="onPlayerEndAttackPhaseRequestEvent">
         <parameter
@@ -155,10 +155,10 @@
                 name="event"
                 type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectFortifyVectorRequestEvent"/>
       </event>
-      <event id="onPlayerOrderFortifyRequestEvent">
+      <event id="onPlayerFortifyCountryRequestEvent">
         <parameter
                 name="event"
-                type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderFortifyRequestEvent"/>
+                type="com.forerunnergames.peril.common.net.events.client.request.inform.PlayerFortifyCountryRequestEvent"/>
       </event>
       <event id="onPlayerCancelFortifyRequestEvent">
         <parameter
@@ -363,14 +363,14 @@
                     <transition event="onPlayerEndTurnRequestEvent"
                                condition="turnPhase.verifyPlayerEndTurnRequest(event)"
                                nextState="AdvancePlayerTurn"/>
-                    <transition event="onPlayerOrderAttackRequestEvent"
+                    <transition event="onPlayerAttackCountryRequestEvent"
                                 condition="attackPhase.verifyPlayerAttackOrder(event)"
                                 nextState="ProcessBattle">
                       <!-- Required to stop timer when condition is false. -->
                       <!-- Timer will be stopped in onExit when condition is true. -->
                       <timerStop timer="AttackerResponseTimer"/>
                     </transition>
-                    <transition event="onPlayerOrderRetreatRequestEvent"
+                    <transition event="onPlayerRetreatRequestEvent"
                                 action="attackPhase.processPlayerRetreat(event)"
                                 nextState="WaitForPlayerToSelectAttackVector"/>
                     <transition event="onPlayerDefendCountryResponseRequestEvent"
@@ -426,7 +426,7 @@
                                 nextState="WaitForPlayerToFortifyCountry"/>
                   </state>
                   <state name="WaitForPlayerToFortifyCountry">
-                    <transition event="onPlayerOrderFortifyRequestEvent"
+                    <transition event="onPlayerFortifyCountryRequestEvent"
                                 condition="fortifyPhase.verifyPlayerFortifyOrder(event)"
                                 nextState="AdvancePlayerTurn"/>
                     <transition event="onPlayerCancelFortifyRequestEvent"

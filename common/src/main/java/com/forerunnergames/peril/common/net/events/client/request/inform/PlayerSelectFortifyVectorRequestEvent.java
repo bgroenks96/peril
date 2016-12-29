@@ -19,13 +19,13 @@
 package com.forerunnergames.peril.common.net.events.client.request.inform;
 
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerInformRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginFortificationEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerSelectFortifyVectorEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class PlayerSelectFortifyVectorRequestEvent
-        implements PlayerInformRequestEvent <PlayerBeginFortificationEvent>
+        implements PlayerInformRequestEvent <PlayerSelectFortifyVectorEvent>
 {
   private final String sourceCountry;
   private final String targetCountry;
@@ -40,9 +40,9 @@ public final class PlayerSelectFortifyVectorRequestEvent
   }
 
   @Override
-  public Class <PlayerBeginFortificationEvent> getQuestionType ()
+  public Class <PlayerSelectFortifyVectorEvent> getQuestionType ()
   {
-    return PlayerBeginFortificationEvent.class;
+    return PlayerSelectFortifyVectorEvent.class;
   }
 
   public String getSourceCountry ()

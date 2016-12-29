@@ -1,11 +1,11 @@
 package com.forerunnergames.peril.common.net.events.server.denied;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderFortifyDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerOrderFortifyDeniedEvent extends AbstractPlayerDeniedEvent <Reason>
+public final class PlayerFortifyCountryDeniedEvent extends AbstractPlayerDeniedEvent <Reason>
 {
   public enum Reason
   {
@@ -14,13 +14,13 @@ public final class PlayerOrderFortifyDeniedEvent extends AbstractPlayerDeniedEve
     PLAYER_NOT_IN_TURN
   }
 
-  public PlayerOrderFortifyDeniedEvent (final PlayerPacket player, final Reason reason)
+  public PlayerFortifyCountryDeniedEvent (final PlayerPacket player, final Reason reason)
   {
     super (player, reason);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerOrderFortifyDeniedEvent ()
+  private PlayerFortifyCountryDeniedEvent ()
   {
   }
 }

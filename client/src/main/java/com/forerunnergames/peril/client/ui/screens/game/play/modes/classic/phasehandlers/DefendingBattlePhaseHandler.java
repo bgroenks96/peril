@@ -23,7 +23,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playm
 import com.forerunnergames.peril.common.net.events.client.interfaces.BattleRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderRetreatSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerRetreatSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -47,7 +47,7 @@ public final class DefendingBattlePhaseHandler extends AbstractBattlePhaseHandle
   }
 
   @Handler
-  void onEvent (final PlayerOrderRetreatSuccessEvent event)
+  void onEvent (final PlayerRetreatSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

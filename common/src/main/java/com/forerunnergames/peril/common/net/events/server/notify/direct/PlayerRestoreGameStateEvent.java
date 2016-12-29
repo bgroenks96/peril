@@ -18,6 +18,7 @@
 package com.forerunnergames.peril.common.net.events.server.notify.direct;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -25,14 +26,13 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Exceptions;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.DirectNotificiationEvent;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Map;
 
-public final class PlayerRestoreGameStateEvent extends AbstractPlayerEvent implements DirectNotificiationEvent
+public final class PlayerRestoreGameStateEvent extends AbstractPlayerEvent implements DirectPlayerNotificationEvent
 {
   private final PlayerPacket currentPlayer;
   private final int currentRound;

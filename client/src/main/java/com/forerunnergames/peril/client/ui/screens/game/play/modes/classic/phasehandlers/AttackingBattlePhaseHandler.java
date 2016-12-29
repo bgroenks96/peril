@@ -24,11 +24,11 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialo
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.BattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.common.net.events.client.interfaces.BattleRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderAttackRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerAttackCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectAttackVectorRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerSelectAttackVectorEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectAttackVectorSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -60,7 +60,7 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   @Override
   protected BattleRequestEvent createBattleRequestEvent (final int dieCount)
   {
-    return new PlayerOrderAttackRequestEvent (dieCount);
+    return new PlayerAttackCountryRequestEvent (dieCount);
   }
 
   @Override
@@ -73,7 +73,7 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   }
 
   @Handler
-  void onEvent (final PlayerBeginAttackEvent event)
+  void onEvent (final PlayerSelectAttackVectorEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -104,7 +104,7 @@ public final class AttackingBattlePhaseHandler extends AbstractBattlePhaseHandle
   }
 
   @Handler
-  void onEvent (final PlayerOrderAttackDeniedEvent event)
+  void onEvent (final PlayerAttackCountryDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

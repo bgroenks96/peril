@@ -36,6 +36,8 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCoun
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforceCountryEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginAttackPhaseEvent;
@@ -65,17 +67,15 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueAttackOrderWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueFortifyOrderWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerOccupyCountryWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerEndTurnSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerCancelFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderAttackSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderFortifySuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderRetreatSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountrySuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountrySuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerRetreatSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectAttackVectorSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
@@ -253,7 +253,7 @@ public final class StatusMessageGenerator
   }
 
   @Handler
-  void onEvent (final PlayerBeginReinforcementEvent event)
+  void onEvent (final PlayerReinforceCountryEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -462,7 +462,7 @@ public final class StatusMessageGenerator
   }
 
   @Handler
-  void onEvent (final PlayerOrderAttackSuccessEvent event)
+  void onEvent (final PlayerAttackCountrySuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -501,7 +501,7 @@ public final class StatusMessageGenerator
   }
 
   @Handler
-  void onEvent (final PlayerOrderRetreatSuccessEvent event)
+  void onEvent (final PlayerRetreatSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -659,7 +659,7 @@ public final class StatusMessageGenerator
   }
 
   @Handler
-  void onEvent (final PlayerOrderFortifySuccessEvent event)
+  void onEvent (final PlayerFortifyCountrySuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

@@ -19,13 +19,12 @@
 package com.forerunnergames.peril.common.net.events.client.request.inform;
 
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerInformRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforceCountryEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerReinforceCountryRequestEvent
-        implements PlayerInformRequestEvent <PlayerBeginReinforcementEvent>
+public final class PlayerReinforceCountryRequestEvent implements PlayerInformRequestEvent <PlayerReinforceCountryEvent>
 {
   private final String countryName;
   private final int reinforcementCount;
@@ -41,9 +40,9 @@ public final class PlayerReinforceCountryRequestEvent
   }
 
   @Override
-  public Class <PlayerBeginReinforcementEvent> getQuestionType ()
+  public Class <PlayerReinforceCountryEvent> getQuestionType ()
   {
-    return PlayerBeginReinforcementEvent.class;
+    return PlayerReinforceCountryEvent.class;
   }
 
   public String getCountryName ()

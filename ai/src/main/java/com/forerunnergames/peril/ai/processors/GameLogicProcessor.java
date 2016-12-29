@@ -22,9 +22,9 @@ import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerCancelFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndAttackPhaseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndTurnRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderAttackRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderFortifyRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderRetreatRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerAttackCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerFortifyCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerRetreatRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectAttackVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectFortifyVectorRequestEvent;
@@ -38,6 +38,12 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCoun
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerSelectAttackVectorEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerSelectFortifyVectorEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforceCountryEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerCardTradeInAvailableEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerAttackCountryEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerFortifyCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerTurnOrderChangedEvent;
@@ -73,12 +79,6 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueAttackOrderWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueFortifyOrderWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerOccupyCountryWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginFortificationEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueAttackOrderEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueFortifyOrderEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
@@ -90,9 +90,9 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerDefendCo
 import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderAttackSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderFortifySuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderRetreatSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountrySuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountrySuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerRetreatSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectAttackVectorSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
@@ -205,7 +205,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final PlayerBeginReinforcementEvent event)
+  void onEvent (final PlayerReinforceCountryEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -314,7 +314,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final PlayerBeginAttackEvent event)
+  void onEvent (final PlayerSelectAttackVectorEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -362,7 +362,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final PlayerIssueAttackOrderEvent event)
+  void onEvent (final PlayerAttackCountryEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -373,13 +373,13 @@ public final class GameLogicProcessor extends AbstractAiProcessor
     // NEVER retreating is bad for your health... ;-)
     if (shouldAct (RETREAT_PROBABILITY))
     {
-      send (new PlayerOrderRetreatRequestEvent ());
+      send (new PlayerRetreatRequestEvent ());
       return;
     }
 
     final DieRange dieRange = event.getAttackerDieRange ();
 
-    send (new PlayerOrderAttackRequestEvent (chooseRandomly (dieRange.min (), dieRange.max ())));
+    send (new PlayerAttackCountryRequestEvent (chooseRandomly (dieRange.min (), dieRange.max ())));
   }
 
   @Handler
@@ -413,7 +413,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final PlayerOrderAttackSuccessEvent event)
+  void onEvent (final PlayerAttackCountrySuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -421,7 +421,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final PlayerOrderRetreatSuccessEvent event)
+  void onEvent (final PlayerRetreatSuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -530,7 +530,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final PlayerBeginFortificationEvent event)
+  void onEvent (final PlayerSelectFortifyVectorEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -563,7 +563,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final PlayerIssueFortifyOrderEvent event)
+  void onEvent (final PlayerFortifyCountryEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -578,7 +578,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
       return;
     }
 
-    send (new PlayerOrderFortifyRequestEvent (
+    send (new PlayerFortifyCountryRequestEvent (
             chooseRandomly (event.getMinDeltaArmyCount (), event.getMaxDeltaArmyCount ())));
   }
 
@@ -591,7 +591,7 @@ public final class GameLogicProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final PlayerOrderFortifySuccessEvent event)
+  void onEvent (final PlayerFortifyCountrySuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

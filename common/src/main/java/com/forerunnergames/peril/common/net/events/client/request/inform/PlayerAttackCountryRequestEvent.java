@@ -2,16 +2,16 @@ package com.forerunnergames.peril.common.net.events.client.request.inform;
 
 import com.forerunnergames.peril.common.net.events.client.interfaces.BattleRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerInformRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueAttackOrderEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerAttackCountryEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
-public final class PlayerOrderAttackRequestEvent
-        implements BattleRequestEvent, PlayerInformRequestEvent <PlayerIssueAttackOrderEvent>
+public final class PlayerAttackCountryRequestEvent
+        implements BattleRequestEvent, PlayerInformRequestEvent <PlayerAttackCountryEvent>
 {
   private final int dieCount;
 
-  public PlayerOrderAttackRequestEvent (final int dieCount)
+  public PlayerAttackCountryRequestEvent (final int dieCount)
   {
     Arguments.checkIsNotNegative (dieCount, "dieCount");
 
@@ -25,9 +25,9 @@ public final class PlayerOrderAttackRequestEvent
   }
 
   @Override
-  public Class <PlayerIssueAttackOrderEvent> getQuestionType ()
+  public Class <PlayerAttackCountryEvent> getQuestionType ()
   {
-    return PlayerIssueAttackOrderEvent.class;
+    return PlayerAttackCountryEvent.class;
   }
 
   @Override

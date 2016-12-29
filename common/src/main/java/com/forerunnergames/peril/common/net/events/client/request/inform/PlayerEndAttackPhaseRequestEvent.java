@@ -19,14 +19,14 @@
 package com.forerunnergames.peril.common.net.events.client.request.inform;
 
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerInformRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerSelectAttackVectorEvent;
 
-public final class PlayerEndAttackPhaseRequestEvent implements PlayerInformRequestEvent <PlayerBeginAttackEvent>
+public final class PlayerEndAttackPhaseRequestEvent implements PlayerInformRequestEvent <PlayerSelectAttackVectorEvent>
 {
   @Override
-  public Class <PlayerBeginAttackEvent> getQuestionType ()
+  public Class <PlayerSelectAttackVectorEvent> getQuestionType ()
   {
-    return PlayerBeginAttackEvent.class;
+    return PlayerSelectAttackVectorEvent.class;
   }
 
   @Override

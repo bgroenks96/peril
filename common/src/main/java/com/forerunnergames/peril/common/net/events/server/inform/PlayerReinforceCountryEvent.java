@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.notify.direct;
+package com.forerunnergames.peril.common.net.events.server.inform;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputInformEvent;
@@ -30,17 +30,17 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
-public final class PlayerBeginReinforcementEvent extends AbstractPlayerEvent implements PlayerInputInformEvent
+public final class PlayerReinforceCountryEvent extends AbstractPlayerEvent implements PlayerInputInformEvent
 {
   private final ImmutableMap <String, Integer> reinforceableCountryNamesToCountryArmyCounts;
   private final ImmutableSet <CountryPacket> reinforceableCountries;
   private final int minReinforcementsPlacedPerCountry;
   private final int maxArmiesPerCountry;
 
-  public PlayerBeginReinforcementEvent (final PlayerPacket player,
-                                        final ImmutableSet <CountryPacket> reinforceableCountries,
-                                        final int minReinforcementsPlacedPerCountry,
-                                        final int maxArmiesPerCountry)
+  public PlayerReinforceCountryEvent (final PlayerPacket player,
+                                      final ImmutableSet <CountryPacket> reinforceableCountries,
+                                      final int minReinforcementsPlacedPerCountry,
+                                      final int maxArmiesPerCountry)
   {
     super (player);
 
@@ -142,7 +142,7 @@ public final class PlayerBeginReinforcementEvent extends AbstractPlayerEvent imp
   }
 
   @RequiredForNetworkSerialization
-  private PlayerBeginReinforcementEvent ()
+  private PlayerReinforceCountryEvent ()
   {
     reinforceableCountryNamesToCountryArmyCounts = null;
     reinforceableCountries = null;

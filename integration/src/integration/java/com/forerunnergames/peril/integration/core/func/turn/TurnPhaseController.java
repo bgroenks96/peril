@@ -1,9 +1,9 @@
 package com.forerunnergames.peril.integration.core.func.turn;
 
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforceCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.integration.TestMonitor;
@@ -86,13 +86,13 @@ public final class TurnPhaseController implements TestPhaseController
     final TestClient current = getClientInTurn ();
     // create a ClientEventProcessor for only this client
     final ClientEventProcessor processor = new ClientEventProcessor (ImmutableSet.of (current));
-    final ClientEventCallback <PlayerBeginReinforcementEvent> callback = new ClientEventCallback <PlayerBeginReinforcementEvent> ()
+    final ClientEventCallback <PlayerReinforceCountryEvent> callback = new ClientEventCallback <PlayerReinforceCountryEvent> ()
     {
       @Override
-      public void onEventReceived (final Optional <PlayerBeginReinforcementEvent> maybe, final TestClient client)
+      public void onEventReceived (final Optional <PlayerReinforceCountryEvent> maybe, final TestClient client)
       {
         monitor.assertTrue (maybe.isPresent ());
-        final PlayerBeginReinforcementEvent event = maybe.get ();
+        final PlayerReinforceCountryEvent event = maybe.get ();
         final int randomReinforcementCount = Randomness.getRandomIntegerFrom (1, event.getTotalReinforcements ());
 
         // Ensure random country can be reinforced with random reinforcement count.
@@ -110,7 +110,7 @@ public final class TurnPhaseController implements TestPhaseController
       }
     };
 
-    processor.registerCallback (PlayerBeginReinforcementEvent.class, callback);
+    processor.registerCallback (PlayerReinforceCountryEvent.class, callback);
     processor.registerCompletionTask (new Runnable ()
     {
       @Override

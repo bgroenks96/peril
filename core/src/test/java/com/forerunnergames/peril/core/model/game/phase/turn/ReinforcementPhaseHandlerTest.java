@@ -10,12 +10,12 @@ import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerR
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforceCountryEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipReinforcementPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardPacket;
@@ -75,7 +75,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
     assertTrue (testPlayerPacket.getArmiesInHand () > 0);
 
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerBeginReinforcementEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerReinforceCountryEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCardTradeInAvailableEvent.class));
   }
 
@@ -97,7 +97,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasNeverFired (BeginReinforcementPhaseEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerArmiesChangedEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCardTradeInAvailableEvent.class));
-    assertTrue (eventHandler.wasNeverFired (PlayerBeginReinforcementEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerReinforceCountryEvent.class));
   }
 
   @Test
@@ -127,7 +127,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
     assertTrue (testPlayerPacket.getArmiesInHand () > 0);
 
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerBeginReinforcementEvent.class));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerReinforceCountryEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerCardTradeInAvailableEvent.class));
     assertTrue (eventHandler.lastEventOfType (PlayerCardTradeInAvailableEvent.class).getPerson ()
             .is (testPlayerPacket));
@@ -146,10 +146,10 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     reinforcementPhase.waitForPlayerToPlaceReinforcements ();
 
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerBeginReinforcementEvent.class));
-    assertTrue (eventHandler.lastEventOfType (PlayerBeginReinforcementEvent.class).getPerson ()
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerReinforceCountryEvent.class));
+    assertTrue (eventHandler.lastEventOfType (PlayerReinforceCountryEvent.class).getPerson ()
             .is (playerModel.playerPacketWith (testPlayer)));
-    assertTrue (eventHandler.lastEventOfType (PlayerBeginReinforcementEvent.class).getReinforceableCountries ()
+    assertTrue (eventHandler.lastEventOfType (PlayerReinforceCountryEvent.class).getReinforceableCountries ()
             .equals (countryGraphModel.getCountryPackets ()));
   }
 
@@ -166,7 +166,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     reinforcementPhase.waitForPlayerToPlaceReinforcements ();
 
-    assertTrue (eventHandler.wasNeverFired (PlayerBeginReinforcementEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerReinforceCountryEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (EndReinforcementPhaseEvent.class));
     assertTrue (eventHandler.lastEventOfType (EndReinforcementPhaseEvent.class).getPlayerOwnedCountries ()
             .equals (countryGraphModel.getCountryPackets ()));
@@ -185,7 +185,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     reinforcementPhase.waitForPlayerToPlaceReinforcements ();
 
-    assertTrue (eventHandler.wasNeverFired (PlayerBeginReinforcementEvent.class));
+    assertTrue (eventHandler.wasNeverFired (PlayerReinforceCountryEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (EndReinforcementPhaseEvent.class));
     assertTrue (eventHandler.lastEventOfType (EndReinforcementPhaseEvent.class).getPlayerOwnedCountries ()
             .equals (countryGraphModel.getCountryPackets ()));

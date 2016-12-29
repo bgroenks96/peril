@@ -24,12 +24,12 @@ import static org.testng.Assert.assertTrue;
 import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforceCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DistributeInitialArmiesCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
@@ -207,11 +207,11 @@ public final class InitialGamePhaseController implements TestPhaseController
 
     final ClientEventProcessor processor = new ClientEventProcessor (clientPool);
 
-    final ClientEventCallback <PlayerBeginReinforcementEvent> requestCallback;
-    requestCallback = new ClientEventCallback <PlayerBeginReinforcementEvent> ()
+    final ClientEventCallback <PlayerReinforceCountryEvent> requestCallback;
+    requestCallback = new ClientEventCallback <PlayerReinforceCountryEvent> ()
     {
       @Override
-      public void onEventReceived (final Optional <PlayerBeginReinforcementEvent> event, final TestClient client)
+      public void onEventReceived (final Optional <PlayerReinforceCountryEvent> event, final TestClient client)
       {
         monitor.assertTrue (event.isPresent ());
         final ImmutableSet <CountryPacket> availableCountries = event.get ().getReinforceableCountries ();
@@ -226,7 +226,7 @@ public final class InitialGamePhaseController implements TestPhaseController
       }
     };
 
-    processor.registerCallback (PlayerBeginReinforcementEvent.class, requestCallback);
+    processor.registerCallback (PlayerReinforceCountryEvent.class, requestCallback);
 
     processor.start (EndInitialReinforcementPhaseEvent.class, monitor);
 

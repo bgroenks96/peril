@@ -25,15 +25,15 @@ import com.forerunnergames.peril.client.events.SelectFortifyTargetCountryRequest
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerCancelFortifyRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderFortifyRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectFortifyVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerCancelFortifyDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderFortifyDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectFortifyVectorDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginFortificationEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueFortifyOrderEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerSelectFortifyVectorEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerFortifyCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerCancelFortifySuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderFortifySuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectFortifyVectorSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -70,7 +70,7 @@ public final class FortificationPhaseHandler extends AbstractGamePhaseHandler
       @Override
       public void run ()
       {
-        publish (new PlayerOrderFortifyRequestEvent (fortificationDialog.getDeltaArmyCount ()));
+        publish (new PlayerFortifyCountryRequestEvent (fortificationDialog.getDeltaArmyCount ()));
       }
     });
   }
@@ -108,7 +108,7 @@ public final class FortificationPhaseHandler extends AbstractGamePhaseHandler
   }
 
   @Handler
-  void onEvent (final PlayerBeginFortificationEvent event)
+  void onEvent (final PlayerSelectFortifyVectorEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -139,7 +139,7 @@ public final class FortificationPhaseHandler extends AbstractGamePhaseHandler
   }
 
   @Handler
-  void onEvent (final PlayerIssueFortifyOrderEvent event)
+  void onEvent (final PlayerFortifyCountryEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -159,7 +159,7 @@ public final class FortificationPhaseHandler extends AbstractGamePhaseHandler
   }
 
   @Handler
-  void onEvent (final PlayerOrderFortifySuccessEvent event)
+  void onEvent (final PlayerFortifyCountrySuccessEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -169,7 +169,7 @@ public final class FortificationPhaseHandler extends AbstractGamePhaseHandler
   }
 
   @Handler
-  void onEvent (final PlayerOrderFortifyDeniedEvent event)
+  void onEvent (final PlayerFortifyCountryDeniedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

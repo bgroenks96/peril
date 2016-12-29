@@ -3,11 +3,11 @@ package com.forerunnergames.peril.core.model.game.phase.turn;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforceCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginReinforcementWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.ContinentPacket;
@@ -72,7 +72,7 @@ public final class DefaultReinforcementPhaseHandler extends AbstractGamePhaseHan
 
     // publish phase begin event and trade in request
     publish (new BeginReinforcementPhaseEvent (playerPacket, countryReinforcementBonus, continentReinforcementBonus));
-    publish (new PlayerBeginReinforcementEvent (playerPacket, validCountries,
+    publish (new PlayerReinforceCountryEvent (playerPacket, validCountries,
             rules.getMinReinforcementsPlacedPerCountry (), rules.getMaxArmiesOnCountry ()));
     publish (new PlayerBeginReinforcementWaitEvent (playerPacket));
     turnPhaseHandler.publishTradeInEventIfNecessary ();
@@ -112,7 +112,7 @@ public final class DefaultReinforcementPhaseHandler extends AbstractGamePhaseHan
       return;
     }
 
-    publish (new PlayerBeginReinforcementEvent (playerPacket, validCountries,
+    publish (new PlayerReinforceCountryEvent (playerPacket, validCountries,
             rules.getMinReinforcementsPlacedPerCountry (), rules.getMaxArmiesOnCountry ()));
     publish (new PlayerBeginReinforcementWaitEvent (playerPacket));
     log.info ("Waiting for player [{}] to place reinforcements...", playerPacket);

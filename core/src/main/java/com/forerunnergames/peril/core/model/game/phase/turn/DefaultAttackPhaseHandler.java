@@ -3,16 +3,19 @@ package com.forerunnergames.peril.core.model.game.phase.turn;
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndAttackPhaseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderAttackRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderRetreatRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerAttackCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerRetreatRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectAttackVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerSelectAttackVectorEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerEndTurnAvailableEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerAttackCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndAttackPhaseEvent;
@@ -20,17 +23,14 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerDefendCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerIssueAttackOrderWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerOccupyCountryWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerEndTurnAvailableEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginAttackEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerInputCanceledEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueAttackOrderEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerDefendCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderAttackSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerOrderRetreatSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountrySuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerRetreatSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectAttackVectorSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.peril.common.net.packets.battle.FinalBattleActorPacket;
@@ -108,7 +108,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
 
     final PlayerPacket playerPacket = getCurrentPlayerPacket ();
 
-    publish (new PlayerBeginAttackEvent (playerPacket, builder.build ()));
+    publish (new PlayerSelectAttackVectorEvent (playerPacket, builder.build ()));
     publish (new PlayerBeginAttackWaitEvent (playerPacket));
     publish (new PlayerEndTurnAvailableEvent (playerPacket));
   }
@@ -170,7 +170,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     final PendingBattleActorPacket attacker = createPendingAttackerPacket (vector);
     final PendingBattleActorPacket defender = createPendingDefenderPacket (vector);
 
-    publish (new PlayerIssueAttackOrderEvent (attacker, defender));
+    publish (new PlayerAttackCountryEvent (attacker, defender));
     publish (new PlayerIssueAttackOrderWaitEvent (attacker.getPlayer (), attacker, defender));
 
     publish (new PlayerDefendCountryRequestEvent (attacker, defender));
@@ -180,7 +180,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
 
   @Override
   @StateTransitionCondition
-  public boolean verifyPlayerAttackOrder (final PlayerOrderAttackRequestEvent event)
+  public boolean verifyPlayerAttackOrder (final PlayerAttackCountryRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -199,12 +199,12 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     final AttackVector attackVector = maybe.get ();
     final int attackerDieCount = event.getDieCount ();
 
-    final DataResult <AttackOrder, PlayerOrderAttackDeniedEvent.Reason> result;
+    final DataResult <AttackOrder, PlayerAttackCountryDeniedEvent.Reason> result;
     result = battleModel.newPlayerAttackOrder (attackVector, attackerDieCount);
 
     if (result.failed ())
     {
-      publish (new PlayerOrderAttackDeniedEvent (currentPlayerPacket, result.getFailureReason ()));
+      publish (new PlayerAttackCountryDeniedEvent (currentPlayerPacket, result.getFailureReason ()));
       return false;
     }
 
@@ -245,8 +245,8 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     turnDataCache.put (CacheKey.BATTLE_ATTACK_ORDER, result.getReturnValue ());
     turnDataCache.put (CacheKey.FINAL_BATTLE_ACTOR_ATTACKER, createFinalAttacker (attackVector, dieCount));
 
-    final Optional <PlayerIssueAttackOrderEvent> staleEvent = internalCommHandler
-            .lastOutboundEventOfType (PlayerIssueAttackOrderEvent.class);
+    final Optional <PlayerAttackCountryEvent> staleEvent = internalCommHandler
+            .lastOutboundEventOfType (PlayerAttackCountryEvent.class);
     if (staleEvent.isPresent ())
     {
       publish (new PlayerInputCanceledEvent (staleEvent.get ()));
@@ -282,7 +282,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
 
   @Override
   @StateTransitionAction
-  public void processPlayerRetreat (final PlayerOrderRetreatRequestEvent event)
+  public void processPlayerRetreat (final PlayerRetreatRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -298,14 +298,14 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     final CountryPacket defendingCountry = countryGraphModel.countryPacketWith (attackVector.getTargetCountry ());
     // @formatter:on
 
-    publish (new PlayerOrderRetreatSuccessEvent (attackingPlayer, defendingPlayer, attackingCountry, defendingCountry));
+    publish (new PlayerRetreatSuccessEvent (attackingPlayer, defendingPlayer, attackingCountry, defendingCountry));
 
     // Handle the corner case where PlayerDefendCountryResponseRequest was received BEFORE
-    // PlayerOrderRetreatRequestEvent. PlayerDefendCountryResponseRequestEvent should always be answered, and the only
+    // PlayerRetreatRequestEvent. PlayerDefendCountryResponseRequestEvent should always be answered, and the only
     // appropriate response here is a denial.
     //
     // Note: There is another corner case where PlayerDefendCountryResponseRequest could be received AFTER
-    // PlayerOrderRetreatRequestEvent, but there is no sane way to deal with it because we will already be waiting for
+    // PlayerRetreatRequestEvent, but there is no sane way to deal with it because we will already be waiting for
     // the attacking player to select a new attack vector.
     if (turnDataCache.isSet (CacheKey.FINAL_BATTLE_ACTOR_DEFENDER))
     {
@@ -434,7 +434,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     final BattleResultPacket resultPacket = BattlePackets.from (result, playerModel, countryGraphModel,
                                                                 attackerArmyCountDelta, defenderArmyCountDelta);
 
-    publish (new PlayerOrderAttackSuccessEvent (resultPacket.getAttackingPlayer (), resultPacket));
+    publish (new PlayerAttackCountrySuccessEvent (resultPacket.getAttackingPlayer (), resultPacket));
     publish (new PlayerDefendCountryResponseSuccessEvent (resultPacket.getDefendingPlayer (), resultPacket));
 
     final BattleOutcome outcome = result.getOutcome ();

@@ -16,22 +16,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.success;
+package com.forerunnergames.peril.common.net.events.server.inform;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractBattleResultEvent;
-import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractBattleEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.BattleSetupEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputInformEvent;
+import com.forerunnergames.peril.common.net.packets.battle.PendingBattleActorPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerOrderAttackSuccessEvent extends AbstractBattleResultEvent
+public final class PlayerAttackCountryEvent extends AbstractBattleEvent
+        implements BattleSetupEvent, PlayerInputInformEvent
 {
-  public PlayerOrderAttackSuccessEvent (final PlayerPacket player, final BattleResultPacket result)
+  public PlayerAttackCountryEvent (final PendingBattleActorPacket attacker, final PendingBattleActorPacket defender)
   {
-    super (player, result);
+    super (attacker.getPlayer (), attacker, defender);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerOrderAttackSuccessEvent ()
+  private PlayerAttackCountryEvent ()
   {
   }
 }

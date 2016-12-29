@@ -24,7 +24,7 @@ import com.forerunnergames.peril.common.game.DieOutcome;
 import com.forerunnergames.peril.common.game.DieRange;
 import com.forerunnergames.peril.common.game.DieRoll;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerOrderAttackDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerAttackCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -136,8 +136,8 @@ public final class DefaultBattleModel implements BattleModel
   }
 
   @Override
-  public DataResult <AttackOrder, PlayerOrderAttackDeniedEvent.Reason> newPlayerAttackOrder (final AttackVector attackVector,
-                                                                                             final int dieCount)
+  public DataResult <AttackOrder, PlayerAttackCountryDeniedEvent.Reason> newPlayerAttackOrder (final AttackVector attackVector,
+                                                                                               final int dieCount)
   {
     Arguments.checkIsNotNull (attackVector, "attackVector");
     Arguments.checkIsNotNegative (dieCount, "dieCount");
@@ -148,13 +148,13 @@ public final class DefaultBattleModel implements BattleModel
 
     if (sourceCountryArmyCount < rules.getMinArmiesOnCountryForAttack ())
     {
-      return DataResult.failureNoData (PlayerOrderAttackDeniedEvent.Reason.INSUFFICIENT_ARMY_COUNT);
+      return DataResult.failureNoData (PlayerAttackCountryDeniedEvent.Reason.INSUFFICIENT_ARMY_COUNT);
     }
 
     if (dieCount < rules.getMinAttackerDieCount (sourceCountryArmyCount)
             || dieCount > rules.getMaxAttackerDieCount (sourceCountryArmyCount))
     {
-      return DataResult.failureNoData (PlayerOrderAttackDeniedEvent.Reason.INVALID_DIE_COUNT);
+      return DataResult.failureNoData (PlayerAttackCountryDeniedEvent.Reason.INVALID_DIE_COUNT);
     }
 
     final AttackOrder attackOrder = new DefaultAttackOrder (attackVector, dieCount);

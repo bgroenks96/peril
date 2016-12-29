@@ -18,14 +18,14 @@
 package com.forerunnergames.peril.common.net.events.client.request.inform;
 
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerInformRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIssueFortifyOrderEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerFortifyCountryEvent;
 
-public final class PlayerCancelFortifyRequestEvent implements PlayerInformRequestEvent <PlayerIssueFortifyOrderEvent>
+public final class PlayerCancelFortifyRequestEvent implements PlayerInformRequestEvent <PlayerFortifyCountryEvent>
 {
   @Override
-  public Class <PlayerIssueFortifyOrderEvent> getQuestionType ()
+  public Class <PlayerFortifyCountryEvent> getQuestionType ()
   {
-    return PlayerIssueFortifyOrderEvent.class;
+    return PlayerFortifyCountryEvent.class;
   }
 
   @Override

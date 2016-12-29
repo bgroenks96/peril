@@ -25,16 +25,16 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerOrderRetreatSuccessEvent extends AbstractPlayerEvent implements PlayerSuccessEvent
+public final class PlayerRetreatSuccessEvent extends AbstractPlayerEvent implements PlayerSuccessEvent
 {
   private final PlayerPacket defendingPlayer;
   private final CountryPacket attackingCountry;
   private final CountryPacket defendingCountry;
 
-  public PlayerOrderRetreatSuccessEvent (final PlayerPacket attackingPlayer,
-                                         final PlayerPacket defendingPlayer,
-                                         final CountryPacket attackingCountry,
-                                         final CountryPacket defendingCountry)
+  public PlayerRetreatSuccessEvent (final PlayerPacket attackingPlayer,
+                                    final PlayerPacket defendingPlayer,
+                                    final CountryPacket attackingCountry,
+                                    final CountryPacket defendingCountry)
   {
     super (attackingPlayer);
 
@@ -105,7 +105,7 @@ public final class PlayerOrderRetreatSuccessEvent extends AbstractPlayerEvent im
   }
 
   @RequiredForNetworkSerialization
-  private PlayerOrderRetreatSuccessEvent ()
+  private PlayerRetreatSuccessEvent ()
   {
     defendingPlayer = null;
     attackingCountry = null;

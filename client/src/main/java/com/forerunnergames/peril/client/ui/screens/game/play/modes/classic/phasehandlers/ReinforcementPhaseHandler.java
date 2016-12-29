@@ -22,7 +22,7 @@ import com.badlogic.gdx.Gdx;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforceCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -42,7 +42,7 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
   private static final Logger log = LoggerFactory.getLogger (ReinforcementPhaseHandler.class);
   private final ReinforcementDialog reinforcementDialog;
   @Nullable
-  private PlayerBeginReinforcementEvent serverInformEvent;
+  private PlayerReinforceCountryEvent serverInformEvent;
   @Nullable
   private ReinforceTrigger trigger;
 
@@ -169,7 +169,7 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
   }
 
   @Handler
-  void onEvent (final PlayerBeginReinforcementEvent event)
+  void onEvent (final PlayerReinforceCountryEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -214,7 +214,7 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
       // @formatter:off
       final String failureMessage =
               Strings.format ("Not reinforcing country [{}] because did not receive server inform event [{}].",
-                              countryName, PlayerBeginReinforcementEvent.class.getSimpleName ());
+                              countryName, PlayerReinforceCountryEvent.class.getSimpleName ());
       // @formatter:on
       log.warn (failureMessage);
       return Result.failure (failureMessage);

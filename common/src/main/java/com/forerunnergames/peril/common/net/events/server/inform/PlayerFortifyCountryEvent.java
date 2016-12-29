@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,26 +15,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.notify.direct;
+package com.forerunnergames.peril.common.net.events.server.inform;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerSelectCountryVectorEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerFortifyCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputInformEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-import com.google.common.collect.ImmutableMultimap;
-
-public final class PlayerBeginAttackEvent extends AbstractPlayerSelectCountryVectorEvent implements PlayerInputInformEvent
+public final class PlayerFortifyCountryEvent extends AbstractPlayerFortifyCountryEvent implements PlayerInputInformEvent
 {
-  public PlayerBeginAttackEvent (final PlayerPacket currentPlayer,
-                                 final ImmutableMultimap <CountryPacket, CountryPacket> validAttackVectors)
+  public PlayerFortifyCountryEvent (final PlayerPacket player,
+                                    final CountryPacket sourceCountry,
+                                    final CountryPacket targetCountry,
+                                    final int minDeltaArmyCount,
+                                    final int maxDeltaArmyCount)
   {
-    super (currentPlayer, validAttackVectors);
+    super (player, sourceCountry, targetCountry, minDeltaArmyCount, maxDeltaArmyCount);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerBeginAttackEvent ()
+  private PlayerFortifyCountryEvent ()
   {
   }
 }

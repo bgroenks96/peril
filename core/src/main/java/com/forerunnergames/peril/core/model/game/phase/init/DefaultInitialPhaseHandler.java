@@ -9,6 +9,7 @@ import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountr
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforceCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ActivePlayerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerCountryAssignmentEvent;
@@ -19,7 +20,6 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Playe
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerBeginReinforcementWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerClaimCountryWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerBeginReinforcementEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
@@ -330,7 +330,7 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
 
     log.trace ("Waiting for [{}] to place initial reinforcements...", playerPacket);
 
-    publish (new PlayerBeginReinforcementEvent (playerPacket, getValidCountriesForReinforcement (playerId),
+    publish (new PlayerReinforceCountryEvent (playerPacket, getValidCountriesForReinforcement (playerId),
             rules.getMinReinforcementsPlacedPerCountry (), rules.getMaxArmiesOnCountry ()));
     publish (new PlayerBeginReinforcementWaitEvent (playerPacket));
     publish (new ActivePlayerChangedEvent (playerPacket));

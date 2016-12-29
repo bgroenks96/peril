@@ -1,8 +1,8 @@
 package com.forerunnergames.peril.core.model.game.phase.turn;
 
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndAttackPhaseRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderAttackRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderRetreatRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerAttackCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerRetreatRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectAttackVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
@@ -24,7 +24,7 @@ public interface AttackPhaseHandler extends GamePhaseHandler
   void waitForPlayerAttackOrder ();
 
   @StateTransitionCondition
-  boolean verifyPlayerAttackOrder (final PlayerOrderAttackRequestEvent event);
+  boolean verifyPlayerAttackOrder (final PlayerAttackCountryRequestEvent event);
 
   @StateTimerDuration
   long getBattleResponseTimeoutMs ();
@@ -36,7 +36,7 @@ public interface AttackPhaseHandler extends GamePhaseHandler
   boolean handleDefenderTimeout ();
 
   @StateTransitionAction
-  void processPlayerRetreat (final PlayerOrderRetreatRequestEvent event);
+  void processPlayerRetreat (final PlayerRetreatRequestEvent event);
 
   @StateTransitionAction
   void processPlayerEndAttackPhase (final PlayerEndAttackPhaseRequestEvent event);

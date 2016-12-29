@@ -19,13 +19,13 @@
 package com.forerunnergames.peril.core.model.state;
 
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerAttackCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerCancelFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndAttackPhaseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndTurnRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderAttackRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderFortifyRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerOrderRetreatRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerRetreatRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectAttackVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectFortifyVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerTradeInCardsRequestEvent;
@@ -335,23 +335,23 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onEvent (final PlayerOrderAttackRequestEvent event)
+  public void onEvent (final PlayerAttackCountryRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onPlayerOrderAttackRequestEvent (event);
+    context.onPlayerAttackCountryRequestEvent (event);
   }
 
   @Handler
-  public void onEvent (final PlayerOrderRetreatRequestEvent event)
+  public void onEvent (final PlayerRetreatRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onPlayerOrderRetreatRequestEvent (event);
+    context.onPlayerRetreatRequestEvent (event);
   }
 
   @Handler
@@ -415,13 +415,13 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onEvent (final PlayerOrderFortifyRequestEvent event)
+  public void onEvent (final PlayerFortifyCountryRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onPlayerOrderFortifyRequestEvent (event);
+    context.onPlayerFortifyCountryRequestEvent (event);
   }
 
   @Handler

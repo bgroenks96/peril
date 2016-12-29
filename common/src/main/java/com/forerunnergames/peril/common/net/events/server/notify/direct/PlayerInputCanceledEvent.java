@@ -1,13 +1,13 @@
 package com.forerunnergames.peril.common.net.events.server.notify.direct;
 
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerNotificationEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerInputCanceledEvent extends AbstractPlayerEvent implements DirectPlayerEvent
+public final class PlayerInputCanceledEvent extends AbstractPlayerEvent implements DirectPlayerNotificationEvent
 {
   private final PlayerInputEvent originalInputEvent;
 

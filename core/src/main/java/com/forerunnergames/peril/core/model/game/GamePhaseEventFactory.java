@@ -19,7 +19,7 @@
 package com.forerunnergames.peril.core.model.game;
 
 import com.forerunnergames.peril.common.game.TurnPhase;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerCardTradeInAvailableEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.core.model.card.CardSet;
 import com.forerunnergames.tools.common.id.Id;
 
