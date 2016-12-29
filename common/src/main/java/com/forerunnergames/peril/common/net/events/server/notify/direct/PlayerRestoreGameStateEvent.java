@@ -17,6 +17,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.notify.direct;
 
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
@@ -35,6 +36,7 @@ import java.util.Map;
 public final class PlayerRestoreGameStateEvent extends AbstractPlayerEvent implements DirectPlayerNotificationEvent
 {
   private final PlayerPacket currentPlayer;
+  private final GamePhase currentPhase;
   private final int currentRound;
   private final CardSetPacket cardsInHand;
   private final ImmutableSet <CardSetPacket> availableTradeIns;
@@ -42,6 +44,7 @@ public final class PlayerRestoreGameStateEvent extends AbstractPlayerEvent imple
 
   public PlayerRestoreGameStateEvent (final PlayerPacket selfPlayer,
                                       final PlayerPacket currentPlayer,
+                                      final GamePhase currentPhase,
                                       final int currentRound,
                                       final CardSetPacket cardsInHand,
                                       final ImmutableSet <CardSetPacket> availableTradeIns,
@@ -50,6 +53,7 @@ public final class PlayerRestoreGameStateEvent extends AbstractPlayerEvent imple
     super (selfPlayer);
 
     Arguments.checkIsNotNull (currentPlayer, "currentPlayer");
+    Arguments.checkIsNotNull (currentPhase, "currentPhase");
     Arguments.checkIsNotNegative (currentRound, "currentRound");
     Arguments.checkIsNotNull (cardsInHand, "cardsInHand");
     Arguments.checkIsNotNull (availableTradeIns, "availableTradeIns");
@@ -58,6 +62,7 @@ public final class PlayerRestoreGameStateEvent extends AbstractPlayerEvent imple
     Arguments.checkHasNoNullKeysOrValues (countriesToPlayers, "countriesToPlayers");
 
     this.currentPlayer = currentPlayer;
+    this.currentPhase = currentPhase;
     this.currentRound = currentRound;
     this.cardsInHand = cardsInHand;
     this.availableTradeIns = availableTradeIns;
@@ -67,6 +72,11 @@ public final class PlayerRestoreGameStateEvent extends AbstractPlayerEvent imple
   public PlayerPacket getCurrentPlayer ()
   {
     return currentPlayer;
+  }
+
+  public GamePhase getCurrentPhase ()
+  {
+    return currentPhase;
   }
 
   public int getCurrentRound ()
@@ -117,9 +127,9 @@ public final class PlayerRestoreGameStateEvent extends AbstractPlayerEvent imple
   public String toString ()
   {
     return Strings.format (
-                           "{} | CurrentPlayer: [{}] | CurrentRound: [{}] | CardsInHand: [{}] | "
+                           "{} | CurrentPlayer: [{}] | CurrentPhase: [{}] | CurrentRound: [{}] | CardsInHand: [{}] | "
                                    + "AvailableTradeIns: [{}] | CountriesToPlayers: [{}] ",
-                           super.toString (), currentPlayer, currentRound, cardsInHand, availableTradeIns,
+                           super.toString (), currentPlayer, currentPhase, currentRound, cardsInHand, availableTradeIns,
                            countriesToPlayers);
   }
 
@@ -127,6 +137,7 @@ public final class PlayerRestoreGameStateEvent extends AbstractPlayerEvent imple
   private PlayerRestoreGameStateEvent ()
   {
     currentPlayer = null;
+    currentPhase = GamePhase.UNKNOWN;
     currentRound = 0;
     cardsInHand = null;
     availableTradeIns = null;

@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.model.game.phase.init;
 
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
@@ -121,6 +122,7 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
       case MANUAL:
       {
         log.info ("Initial country assignment = MANUAL");
+        changeGamePhaseTo (GamePhase.MANUAL_COUNTRY_ASSIGNMENT);
         publish (new BeginManualCountryAssignmentEvent ());
         break;
       }
@@ -210,6 +212,8 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
     log.info ("Begin initial reinforcement phase...");
 
     playerTurnModel.resetCurrentTurn ();
+
+    changeGamePhaseTo (GamePhase.INITIAL_REINFORCEMENT);
 
     publish (new BeginInitialReinforcementPhaseEvent (getCurrentPlayerPacket ()));
   }
@@ -405,6 +409,8 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
   {
     log.trace ("Begin InitialPhaseHandler");
 
+    changeGamePhaseTo (GamePhase.INITIAL);
+
     playerTurnModel.setRoundIncreasing (false);
   }
 
@@ -412,5 +418,7 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
   protected void onEnd ()
   {
     log.trace ("End InitialPhaseHandler");
+
+    changeGamePhaseTo (GamePhase.INITIAL);
   }
 }

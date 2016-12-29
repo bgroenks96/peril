@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoinGameRequestEvent;
@@ -43,6 +44,8 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
   protected void setupTest ()
   {
     initialPhase = new DefaultInitialPhaseHandler (gameModelConfig);
+    phaseHandlerBase = initialPhase;
+    initialPhase.begin ();
   }
 
   @Test
@@ -54,6 +57,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     assertTrue (eventHandler.wasFiredExactlyOnce (DeterminePlayerTurnOrderCompleteEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerTurnOrderChangedEvent.class));
+    assertGamePhaseIs (GamePhase.INITIAL);
   }
 
   @Test
@@ -65,6 +69,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     assertTrue (eventHandler.wasFiredExactlyOnce (DeterminePlayerTurnOrderCompleteEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerTurnOrderChangedEvent.class));
+    assertGamePhaseIs (GamePhase.INITIAL);
   }
 
   @Test
@@ -76,6 +81,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     assertTrue (eventHandler.wasFiredExactlyOnce (DeterminePlayerTurnOrderCompleteEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerTurnOrderChangedEvent.class));
+    assertGamePhaseIs (GamePhase.INITIAL);
   }
 
   @Test
@@ -95,6 +101,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     assertTrue (eventHandler.wasFiredExactlyOnce (DistributeInitialArmiesCompleteEvent.class));
     assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerArmiesChangedEvent.class, players.size ()));
+    assertGamePhaseIs (GamePhase.INITIAL);
     for (final PlayerArmiesChangedEvent event : eventHandler.allEventsOfType (PlayerArmiesChangedEvent.class))
     {
       assertEquals (initialArmies, event.getPlayerDeltaArmyCount ());
@@ -110,6 +117,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     assertTrue (eventHandler.wasFiredExactlyOnce (DistributeInitialArmiesCompleteEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerArmiesChangedEvent.class));
+    assertGamePhaseIs (GamePhase.INITIAL);
   }
 
   @Test
@@ -122,7 +130,11 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     addMaxPlayers ();
 
+    assertGamePhaseIs (GamePhase.INITIAL);
+
     initialPhase.waitForCountryAssignmentToBegin ();
+
+    assertGamePhaseIs (GamePhase.INITIAL);
 
     assertTrue (eventHandler.wasFiredExactlyOnce (BeginPlayerCountryAssignmentEvent.class));
     assertEquals (InitialCountryAssignment.RANDOM,
@@ -140,7 +152,11 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     addMaxPlayers ();
 
+    assertGamePhaseIs (GamePhase.INITIAL);
+
     initialPhase.waitForCountryAssignmentToBegin ();
+
+    assertGamePhaseIs (GamePhase.MANUAL_COUNTRY_ASSIGNMENT);
 
     assertTrue (eventHandler.wasFiredExactlyOnce (BeginPlayerCountryAssignmentEvent.class));
     assertEquals (InitialCountryAssignment.MANUAL,
@@ -162,6 +178,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertFalse (countryOwnerModel.hasAnyUnownedCountries ());
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerCountryAssignmentCompleteEvent.class));
     assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerArmiesChangedEvent.class, playerModel.getPlayerCount ()));
+    assertGamePhaseIs (GamePhase.INITIAL);
   }
 
   @Test
@@ -191,6 +208,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerCountryAssignmentCompleteEvent.class));
     verifyPlayerCountryAssignmentCompleteEvent ();
     assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerArmiesChangedEvent.class, playerModel.getPlayerCount ()));
+    assertGamePhaseIs (GamePhase.INITIAL);
   }
 
   @Test
@@ -214,6 +232,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerCountryAssignmentCompleteEvent.class));
     verifyPlayerCountryAssignmentCompleteEvent ();
     assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerArmiesChangedEvent.class, playerModel.getPlayerCount ()));
+    assertGamePhaseIs (GamePhase.INITIAL);
   }
 
   @Test
@@ -225,6 +244,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     assertTrue (countryOwnerModel.allCountriesAreUnowned ());
     assertTrue (eventHandler.wasNeverFired (PlayerArmiesChangedEvent.class));
+    assertGamePhaseIs (GamePhase.INITIAL);
   }
 
   @Test
@@ -363,6 +383,21 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
   }
 
   @Test
+  public void testBeginIntiialReinforcement ()
+  {
+    addMaxPlayers ();
+
+    // add armies to player hand
+    playerModel.addArmyToHandOf (playerModel.playerWith (PlayerTurnOrder.FIRST));
+
+    assertGamePhaseIs (GamePhase.INITIAL);
+
+    initialPhase.beginInitialReinforcementPhase ();
+
+    assertGamePhaseIs (GamePhase.INITIAL_REINFORCEMENT);
+  }
+
+  @Test
   public void testWaitForInitialReinforcementSkipsPlayersWithZeroArmies ()
   {
     addMaxPlayers ();
@@ -391,6 +426,5 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.thirdToLastEventWasType (PlayerReinforceCountryEvent.class));
     assertTrue (eventHandler.secondToLastEventWasType (PlayerBeginReinforcementWaitEvent.class));
     assertTrue (eventHandler.lastEventWasType (ActivePlayerChangedEvent.class));
-
   }
 }

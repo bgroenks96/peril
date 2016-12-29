@@ -5,13 +5,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.forerunnergames.peril.common.game.CardType;
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforceCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerCardTradeInAvailableEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforceCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
@@ -53,6 +54,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
   {
     turnPhaseHandler = new DefaultTurnPhaseHandler (gameModelConfig, eventFactory);
     reinforcementPhase = new DefaultReinforcementPhaseHandler (gameModelConfig, turnPhaseHandler);
+    phaseHandlerBase = reinforcementPhase;
   }
 
   @Test
@@ -77,6 +79,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerReinforceCountryEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCardTradeInAvailableEvent.class));
+    assertGamePhaseIs (GamePhase.REINFORCEMENT);
   }
 
   @Test
@@ -98,6 +101,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasNeverFired (PlayerArmiesChangedEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCardTradeInAvailableEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerReinforceCountryEvent.class));
+    assertGamePhaseIs (GamePhase.REINFORCEMENT);
   }
 
   @Test
@@ -131,6 +135,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerCardTradeInAvailableEvent.class));
     assertTrue (eventHandler.lastEventOfType (PlayerCardTradeInAvailableEvent.class).getPerson ()
             .is (testPlayerPacket));
+    assertGamePhaseIs (GamePhase.REINFORCEMENT);
   }
 
   @Test
@@ -225,6 +230,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerTradeInCardsResponseSuccessEvent.class));
     assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerReinforceCountrySuccessEvent.class, count));
     assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerArmiesChangedEvent.class, count + 2));
+    assertGamePhaseIs (GamePhase.REINFORCEMENT);
 
     final Iterator <CountryPacket> updatedCountries = countryOwnerModel.getCountryPacketsOwnedBy (testPlayer)
             .iterator ();
@@ -272,8 +278,8 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerTradeInCardsResponseSuccessEvent.class));
     assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerArmiesChangedEvent.class, 3));
     assertTrue (cardModel.countCardsInHand (testPlayer) < numCardsInHand);
-
     assertEquals (1, countryArmyModel.getArmyCountFor (countryGraphModel.countryWith (randomCountry.getName ())));
+    assertGamePhaseIs (GamePhase.REINFORCEMENT);
   }
 
   @Test
@@ -310,6 +316,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertEquals (PlayerReinforceCountryDeniedEvent.Reason.TRADE_IN_REQUIRED,
                   eventHandler.lastEventOfType (PlayerReinforceCountryDeniedEvent.class).getReason ());
     assertEquals (numCardsInHand, cardModel.countCardsInHand (testPlayer));
+    assertGamePhaseIs (GamePhase.REINFORCEMENT);
   }
 
   public void testVerifyPlayerCountryReinforcementWithOptionalTradeIn ()
@@ -352,8 +359,8 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerTradeInCardsResponseSuccessEvent.class));
     assertTrue (eventHandler.wasFiredExactlyNTimes (PlayerArmiesChangedEvent.class, 2));
     assertTrue (cardModel.countCardsInHand (testPlayer) < numCardsInHand);
-
     assertEquals (1, countryArmyModel.getArmyCountFor (countryGraphModel.countryWith (randomCountry.getName ())));
+    assertGamePhaseIs (GamePhase.REINFORCEMENT);
   }
 
   @Test
@@ -398,6 +405,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerTradeInCardsResponseDeniedEvent.class));
     assertTrue (eventHandler.lastEventOfType (PlayerTradeInCardsResponseDeniedEvent.class).getReason ()
             .equals (PlayerTradeInCardsResponseDeniedEvent.Reason.CARDS_NOT_IN_HAND));
+    assertGamePhaseIs (GamePhase.REINFORCEMENT);
   }
 
   @Test
@@ -431,6 +439,7 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerTradeInCardsResponseSuccessEvent.class));
     assertTrue (eventHandler.lastEventOfType (PlayerReinforceCountryDeniedEvent.class).getReason ()
             .equals (PlayerReinforceCountryDeniedEvent.Reason.NOT_OWNER_OF_COUNTRY));
+    assertGamePhaseIs (GamePhase.REINFORCEMENT);
   }
 
   @Test
@@ -463,5 +472,6 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerTradeInCardsResponseSuccessEvent.class));
     assertTrue (eventHandler.lastEventOfType (PlayerReinforceCountryDeniedEvent.class).getReason ()
             .equals (PlayerReinforceCountryDeniedEvent.Reason.INSUFFICIENT_ARMIES_IN_HAND));
+    assertGamePhaseIs (GamePhase.REINFORCEMENT);
   }
 }

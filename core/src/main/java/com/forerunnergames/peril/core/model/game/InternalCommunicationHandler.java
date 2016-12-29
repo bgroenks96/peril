@@ -26,6 +26,7 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInput
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputInformEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerInputCanceledEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.events.EventRegistry;
 import com.forerunnergames.peril.core.events.internal.player.NotifyPlayerInputTimeoutEvent;
@@ -155,7 +156,7 @@ public class InternalCommunicationHandler
                inputToAnswerEvents.size ());
 
     requestEvents.clear ();
-    inputToAnswerEvents.clear ();
+    cancelAndDiscardInputEventCache ();
   }
 
   // ------ Outbound Event Handlers ------- //
@@ -223,5 +224,15 @@ public class InternalCommunicationHandler
   private <T extends PlayerInputEvent> ImmutableSet <T> allInputEventsOfType (final Class <T> inputEventType)
   {
     return ImmutableSet.copyOf (Iterables.filter (inputToAnswerEvents.keySet (), inputEventType));
+  }
+
+  private void cancelAndDiscardInputEventCache ()
+  {
+    for (final PlayerInputEvent next : ImmutableSet.copyOf (inputToAnswerEvents.keySet ()))
+    {
+      log.info ("Discarding pending input event: [{}]", next);
+      inputToAnswerEvents.remove (next);
+      eventBus.publish (new PlayerInputCanceledEvent (next));
+    }
   }
 }

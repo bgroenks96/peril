@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.model.game.phase.turn;
 
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
@@ -45,6 +46,8 @@ public final class DefaultReinforcementPhaseHandler extends AbstractGamePhaseHan
     final Id playerId = getCurrentPlayerId ();
 
     log.info ("Begin reinforcement phase for player [{}].", getCurrentPlayerPacket ());
+
+    changeGamePhaseTo (GamePhase.REINFORCEMENT);
 
     final ImmutableSet <CountryPacket> validCountries = getValidCountriesForReinforcement (playerId);
     if (validCountries.isEmpty ())

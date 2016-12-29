@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.core.model.game;
 
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndTurnRequestEvent;
@@ -55,6 +56,8 @@ import net.engio.mbassy.listener.Handler;
 
 public final class GameModel extends AbstractGamePhaseHandler
 {
+  private GamePhase resumeGamePhase = GamePhase.UNKNOWN;
+
   GameModel (final GameModelConfiguration gameModelConfig)
   {
     super (gameModelConfig);
@@ -108,12 +111,17 @@ public final class GameModel extends AbstractGamePhaseHandler
   public void suspendGame ()
   {
     log.info ("Suspending game...");
+
+    resumeGamePhase = getCurrentGamePhase ();
+    changeGamePhaseTo (GamePhase.SUSPENDED);
   }
 
   @StateTransitionAction
   public void resumeGame ()
   {
     log.info ("Resuming game...");
+
+    changeGamePhaseTo (resumeGamePhase);
   }
 
   @StateTransitionCondition
@@ -264,14 +272,15 @@ public final class GameModel extends AbstractGamePhaseHandler
     final Id targetPlayerId = playerModel.idOf (targetPlayerName);
 
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
+    final GamePhase currentPhsae = getCurrentGamePhase ();
     final int currentRoundNumber = playerTurnModel.getRound ();
     final ImmutableMap <CountryPacket, PlayerPacket> countriesToPlayers = buildPlayMapViewFrom (playerModel,
                                                                                                 playMapModel);
     final CardSetPacket cardsInHand = CardPackets.fromCards (cardModel.getCardsInHand (targetPlayerId));
     final ImmutableSet <CardSetPacket> availableTradeIns = CardPackets
             .fromCardMatchSet (cardModel.computeMatchesFor (targetPlayerId));
-    publish (new PlayerRestoreGameStateEvent (event.getTargetPlayer (), currentPlayer, currentRoundNumber, cardsInHand,
-            availableTradeIns, countriesToPlayers));
+    publish (new PlayerRestoreGameStateEvent (event.getTargetPlayer (), currentPlayer, currentPhsae, currentRoundNumber,
+            cardsInHand, availableTradeIns, countriesToPlayers));
     publish (new SendGameStateResponseEvent (ResponseCode.OK, event.getEventId ()));
   }
 
@@ -291,6 +300,8 @@ public final class GameModel extends AbstractGamePhaseHandler
   private void endGame ()
   {
     log.info ("Game over.");
+
+    changeGamePhaseTo (GamePhase.END);
 
     // TODO End the game gracefully - this can be called DURING ANY GAME STATE
   }

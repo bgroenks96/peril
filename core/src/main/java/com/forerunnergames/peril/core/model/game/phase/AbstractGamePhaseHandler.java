@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.model.game.phase;
 
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerResponseRequestEvent;
@@ -38,6 +39,7 @@ import com.forerunnergames.peril.core.model.playmap.country.CountryGraphModel;
 import com.forerunnergames.peril.core.model.playmap.country.CountryOwnerModel;
 import com.forerunnergames.peril.core.model.state.annotations.StateEntryAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateExitAction;
+import com.forerunnergames.peril.core.model.state.events.GamePhaseChangedEvent;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
@@ -76,6 +78,7 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   protected final InternalCommunicationHandler internalCommHandler;
   protected final MBassador <Event> eventBus;
 
+  private GamePhase currentPhase = GamePhase.UNKNOWN;
   private boolean isActive;
   private boolean isSuspended;
 
@@ -123,8 +126,8 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     }
 
     isActive = true;
-    // subscribe to event bus so we can be notified about suspend/resume events
     eventBus.subscribe (this);
+    // GamePhaseHandlers.onGamePhaseBegin (this);
     onBegin ();
   }
 
@@ -137,17 +140,22 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
       return;
     }
 
-    isActive = false;
-    eventBus.unsubscribe (this);
     onEnd ();
+    isActive = false;
+    // GamePhaseHandlers.onGamePhaseEnd (this);
+    eventBus.unsubscribe (this);
   }
-
-  // ------ Shared State Machine Accessible Methods ------- //
 
   @Override
   public boolean isActive ()
   {
     return isActive;
+  }
+
+  @Override
+  public GamePhase getCurrentGamePhase ()
+  {
+    return currentPhase;
   }
 
   @Override
@@ -161,6 +169,8 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   {
     return playerModel.playerPacketWith (playerTurnModel.getCurrentTurn ());
   }
+
+  // ------ Shared State Machine Accessible Methods ------- //
 
   public String getCurrentPlayerName ()
   {
@@ -232,7 +242,7 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     playerTurnModel.resetCurrentTurn ();
   }
 
-  // ------ Suspend/Resume Event Handlers ------ //
+  // ------ Event Handlers ------ //
 
   @Handler
   void onEvent (final SuspendGameEvent event)
@@ -254,7 +264,27 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     isSuspended = false;
   }
 
+  @Handler
+  void onEvent (final GamePhaseChangedEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+
+    currentPhase = event.getCurrentPhase ();
+  }
+
   // ------ Shared Game Phase Handler Utility Methods ------ //
+
+  protected void changeGamePhaseTo (final GamePhase phase)
+  {
+    if (currentPhase == phase)
+    {
+      return;
+    }
+
+    eventBus.publish (new GamePhaseChangedEvent (phase, this));
+  }
 
   protected boolean isCurrentPlayer (final Id playerId)
   {

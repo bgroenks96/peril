@@ -23,6 +23,8 @@ public class TurnPhaseHandlerTest extends AbstractGamePhaseHandlerTest
   protected void setupTest ()
   {
     turnPhase = new DefaultTurnPhaseHandler (gameModelConfig, eventFactory);
+    phaseHandlerBase = turnPhase;
+    turnPhase.begin ();
   }
 
   @Test

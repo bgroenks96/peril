@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.model.game.phase.turn;
 
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerCancelFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectFortifyVectorRequestEvent;
@@ -7,9 +8,9 @@ import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountr
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerCancelFortifyDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectFortifyVectorDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.inform.PlayerSelectFortifyVectorEvent;
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerEndTurnAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerFortifyCountryEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerSelectFortifyVectorEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
@@ -77,6 +78,8 @@ public final class DefaultFortifyPhaseHandler extends AbstractGamePhaseHandler i
     turnDataCache.put (CacheKey.FORTIFY_VALID_VECTORS, validFortifyVectors);
 
     log.info ("Begin fortify phase for player [{}].", currentPlayer);
+
+    changeGamePhaseTo (GamePhase.FORTIFY);
 
     publish (new BeginFortifyPhaseEvent (currentPlayer));
   }

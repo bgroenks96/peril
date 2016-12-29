@@ -1,5 +1,6 @@
 package com.forerunnergames.peril.core.model.game.phase.turn;
 
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndTurnRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerTradeInCardsRequestEvent;
@@ -152,11 +153,15 @@ public final class DefaultTurnPhaseHandler extends AbstractGamePhaseHandler impl
     log.trace ("Begin DefaultTurnPhaseHandler");
 
     playerTurnModel.setRoundIncreasing (true);
+
+    changeGamePhaseTo (GamePhase.TURN);
   }
 
   @Override
   protected void onEnd ()
   {
     log.trace ("End DefaultTurnPhaseHandler");
+
+    changeGamePhaseTo (GamePhase.TURN);
   }
 }

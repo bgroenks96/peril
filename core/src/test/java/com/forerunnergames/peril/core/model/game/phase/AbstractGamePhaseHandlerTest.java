@@ -1,6 +1,7 @@
 package com.forerunnergames.peril.core.model.game.phase;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.mock;
 
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.eventbus.EventBusHandler;
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerResponseRequestEvent;
@@ -90,6 +92,9 @@ public abstract class AbstractGamePhaseHandlerTest
   protected GamePhaseEventFactory eventFactory;
   protected ImmutableSet <Card> cardDeck = CardModelTest.generateTestCards ();
   protected GameRules gameRules;
+  protected GamePhaseHandler phaseHandlerBase;
+
+  protected abstract void setupTest ();
 
   protected static ImmutableList <String> generateTestCountryNames (final int totalCountryCount)
   {
@@ -149,8 +154,6 @@ public abstract class AbstractGamePhaseHandlerTest
     setupTest ();
   }
 
-  protected abstract void setupTest ();
-
   protected void advancePlayerTurn ()
   {
     playerTurnModel.advance ();
@@ -190,6 +193,16 @@ public abstract class AbstractGamePhaseHandlerTest
 
     assertTrue (gameModel.playerCountIs (1));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerJoinGameSuccessEvent.class));
+  }
+
+  protected void assertGamePhaseIs (final GamePhase gamePhase)
+  {
+    assertEquals (gamePhase, phaseHandlerBase.getCurrentGamePhase ());
+  }
+
+  protected void assertGamePhaseIsNot (final GamePhase gamePhase)
+  {
+    assertNotEquals (gamePhase, phaseHandlerBase.getCurrentGamePhase ());
   }
 
   protected void assertLastEventWasNotDeniedEvent ()

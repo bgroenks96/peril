@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectFortifyVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryDeniedEvent;
@@ -34,6 +35,7 @@ public class FortifyPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     initializeGameModelWith (createPlayMapModelWithTestTerritoryGraphs (defaultTestCountries));
     addMaxPlayers ();
     fortifyPhase = new DefaultFortifyPhaseHandler (gameModelConfig);
+    phaseHandlerBase = fortifyPhase;
   }
 
   @Test
@@ -60,6 +62,7 @@ public class FortifyPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasFiredExactlyOnce (BeginFortifyPhaseEvent.class));
     assertEquals (playerModel.playerPacketWith (player1),
                   eventHandler.lastEventOfType (BeginFortifyPhaseEvent.class).getPerson ());
+    assertGamePhaseIs (GamePhase.FORTIFY);
 
     // begin fortification phase (part II)
     fortifyPhase.waitForPlayerToSelectFortifyVector ();
@@ -95,6 +98,7 @@ public class FortifyPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     fortifyPhase.begin ();
 
+    assertGamePhaseIsNot (GamePhase.FORTIFY);
     assertTrue (eventHandler.wasFiredExactlyOnce (SkipFortifyPhaseEvent.class));
     assertTrue (eventHandler.wasNeverFired (BeginFortifyPhaseEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerSelectFortifyVectorEvent.class));
