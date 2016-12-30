@@ -29,10 +29,9 @@ import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.net.dispatchers.NetworkEventDispatcher;
 import com.forerunnergames.peril.common.net.events.client.interfaces.JoinGameServerRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerInformRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerAnswerEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.AiJoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
@@ -71,7 +70,6 @@ import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
 import com.forerunnergames.peril.server.communicators.SpectatorCommunicator;
 import com.forerunnergames.peril.server.controllers.ClientPlayerMapping.RegisteredClientPlayerNotFoundException;
-import com.forerunnergames.peril.server.controllers.ClientSpectatorMapping.RegisteredClientSpectatorNotFoundException;
 import com.forerunnergames.peril.server.controllers.MultiplayerControllerEventCache.PlayerInputEventTimeoutCallback;
 import com.forerunnergames.peril.server.dispatchers.ClientRequestEventDispatchListener;
 import com.forerunnergames.peril.server.dispatchers.ClientRequestEventDispatcher;
@@ -89,16 +87,13 @@ import com.forerunnergames.tools.net.client.configuration.DefaultClientConfigura
 import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
-import com.forerunnergames.tools.net.events.remote.origin.client.InformRequestEvent;
-import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastEvent;
-import com.forerunnergames.tools.net.events.remote.origin.server.ServerRequestEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.ServerQuestionEvent;
 import com.forerunnergames.tools.net.server.remote.RemoteClient;
 import com.forerunnergames.tools.net.server.remote.RemoteClientConnector;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -475,8 +470,7 @@ public final class MultiplayerController extends ControllerAdapter
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
 
-    assert !(event instanceof InformRequestEvent);
-    assert !(event instanceof ResponseRequestEvent);
+    assert !(event instanceof PlayerAnswerEvent);
 
     log.trace ("Event received [{}]", event);
 
@@ -503,13 +497,12 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Override
-  public void handleEvent (final PlayerResponseRequestEvent <?> event, final RemoteClient client)
+  public void handleEvent (final PlayerAnswerEvent <?> event, final RemoteClient client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
 
     assert !(event instanceof PlayerRequestEvent);
-    assert !(event instanceof InformRequestEvent);
 
     log.trace ("Event received [{}]", event);
 
@@ -541,49 +534,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     eventRegistry.registerTo (player, event);
 
-    handlePlayerResponseRequestTo (event.getQuestionType (), event, player);
-  }
-
-  @Override
-  public void handleEvent (final PlayerInformRequestEvent <?> event, final RemoteClient client)
-  {
-    Arguments.checkIsNotNull (event, "event");
-    Arguments.checkIsNotNull (client, "client");
-
-    assert !(event instanceof PlayerRequestEvent);
-    assert !(event instanceof ResponseRequestEvent);
-
-    log.trace ("Event received [{}]", event);
-
-    final Optional <PlayerPacket> playerQuery;
-    try
-    {
-      playerQuery = clientsToPlayers.playerFor (client);
-    }
-    catch (final ClientPlayerMapping.RegisteredClientPlayerNotFoundException e)
-    {
-      log.error ("Error resolving client to player.", e);
-      return;
-    }
-
-    if (!playerQuery.isPresent ())
-    {
-      log.warn ("Ignoring event [{}] from non-player client [{}]", event, client);
-      return;
-    }
-
-    final PlayerPacket player = playerQuery.get ();
-
-    if (!waitingForRequestToInformEventFromPlayer (event.getQuestionType (), player))
-    {
-      log.warn ("Ignoring event [{}] from player [{}] because no prior corresponding server inform event of type [{}] was sent to that player.",
-                event, player, event.getQuestionType ());
-      return;
-    }
-
-    eventRegistry.registerTo (player, event);
-
-    handlePlayerInformRequestFor (event.getQuestionType (), event, player);
+    handlePlayerResponseTo (event.getQuestionType (), event, player);
   }
 
   // ---------- Public getters and setters ---------- //
@@ -666,19 +617,13 @@ public final class MultiplayerController extends ControllerAdapter
     log.info ("Client [{}] disconnected.", client);
 
     Optional <PlayerPacket> playerQuery = Optional.absent ();
-    Optional <SpectatorPacket> spectatorQuery = Optional.absent ();
     try
     {
       playerQuery = clientsToPlayers.playerFor (client);
-      spectatorQuery = clientsToSpectators.spectatorFor (client);
     }
     catch (final ClientPlayerMapping.RegisteredClientPlayerNotFoundException e)
     {
       log.error ("Error resolving client to player.", e);
-    }
-    catch (final RegisteredClientSpectatorNotFoundException e)
-    {
-      log.error ("Error resolving client to spectator.", e);
     }
 
     final boolean isUnexpectedDisconnect = playerQuery.isPresent ();
@@ -686,14 +631,6 @@ public final class MultiplayerController extends ControllerAdapter
     {
       handlePlayerDisconnect (playerQuery.get (), client);
     }
-
-    // NOTE: this is no longer necessary (I *think*) because this is an expected case when a player quits
-    // voluntarily... processing of PlayerQuitGameRequestEvent will finish before this handler is executed
-    //
-    // if (!playerQuery.isPresent () && !spectatorQuery.isPresent ())
-    // {
-    // log.warn ("Client [{}] disconnected but did not exist as a player or spectator.", client);
-    // }
 
     // removes the client from the server/mapping, if necessary
     remove (client);
@@ -1153,23 +1090,12 @@ public final class MultiplayerController extends ControllerAdapter
     return gameServerConfig.getGameServerType () == GameServerType.HOST_AND_PLAY;
   }
 
-  private boolean waitingForResponseToInputEventFromPlayer (final Class <? extends ServerRequestEvent> requestClass,
+  private boolean waitingForResponseToInputEventFromPlayer (final Class <? extends ServerQuestionEvent> requestClass,
                                                             final PlayerPacket player)
   {
-    for (final PlayerInputRequestEvent request : eventCache.inputRequestsFor (player))
+    for (final PlayerInputEvent request : eventCache.inputEventsFor (player))
     {
       if (requestClass.isInstance (request)) return true;
-    }
-
-    return false;
-  }
-
-  private boolean waitingForRequestToInformEventFromPlayer (final Class <? extends PlayerInputInformEvent> informClass,
-                                                            final PlayerPacket player)
-  {
-    for (final PlayerInputInformEvent informEvent : eventCache.informEventsFor (player))
-    {
-      if (informClass.isInstance (informEvent)) return true;
     }
 
     return false;
@@ -1282,48 +1208,28 @@ public final class MultiplayerController extends ControllerAdapter
     resendPendingInputEventsFor (updatedPlayer);
   }
 
-  private void handlePlayerResponseRequestTo (final Class <? extends ServerRequestEvent> requestClass,
-                                              final PlayerResponseRequestEvent <?> responseRequest,
-                                              final PlayerPacket player)
+  private void handlePlayerResponseTo (final Class <? extends ServerQuestionEvent> requestClass,
+                                       final PlayerAnswerEvent <?> answerEvent,
+                                       final PlayerPacket player)
   {
-    for (final PlayerInputRequestEvent request : eventCache.inputRequestsFor (player))
+    for (final PlayerInputEvent inputEvent : eventCache.inputEventsFor (player))
     {
-      if (requestClass.isInstance (request))
+      if (requestClass.isInstance (inputEvent))
       {
-        final boolean wasRemoved = eventCache.remove (player, request);
+        final boolean wasRemoved = eventCache.remove (player, inputEvent);
         assert wasRemoved;
-        publish (responseRequest);
+        publish (answerEvent);
         return;
       }
     }
 
-    log.warn ("Ignoring event [{}] from player [{}] because no prior corresponding request of type [{}] was sent to that player.",
-              responseRequest, player, requestClass);
-  }
-
-  private void handlePlayerInformRequestFor (final Class <? extends PlayerInputInformEvent> informClass,
-                                             final PlayerInformRequestEvent <?> informRequest,
-                                             final PlayerPacket player)
-  {
-    for (final PlayerInputInformEvent informEvent : eventCache.informEventsFor (player))
-    {
-      if (informClass.isInstance (informEvent))
-      {
-        final boolean wasRemoved = eventCache.remove (player, informEvent);
-        assert wasRemoved;
-        publish (informRequest);
-        return;
-      }
-    }
-
-    log.warn ("Ignoring event [{}] from player [{}] because no prior corresponding inform event of type [{}] was sent to that player.",
-              informRequest, player, informClass);
+    log.warn ("Ignoring event [{}] from player [{}] because no prior corresponding event of type [{}] was sent to that player.",
+              answerEvent, player, requestClass);
   }
 
   private void resendPendingInputEventsFor (final PlayerPacket player)
   {
-    for (final PlayerInputEvent event : Sets.union (eventCache.informEventsFor (player),
-                                                    eventCache.inputRequestsFor (player)))
+    for (final PlayerInputEvent event : eventCache.inputEventsFor (player))
     {
       sendToPlayer (player, event);
     }
