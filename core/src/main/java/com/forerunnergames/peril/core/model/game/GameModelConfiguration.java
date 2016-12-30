@@ -108,6 +108,11 @@ public final class GameModelConfiguration
     return rules;
   }
 
+  public EventRegistry getEventRegistry ()
+  {
+    return eventRegistry;
+  }
+
   public PlayerTurnDataCache <CacheKey> getTurnDataCache ()
   {
     return turnDataCache;

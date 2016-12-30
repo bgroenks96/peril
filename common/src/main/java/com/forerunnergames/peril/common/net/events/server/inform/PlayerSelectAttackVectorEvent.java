@@ -29,10 +29,10 @@ import com.google.common.collect.ImmutableMultimap;
 public final class PlayerSelectAttackVectorEvent extends AbstractPlayerSelectCountryVectorEvent
         implements PlayerInputInformEvent
 {
-  public PlayerSelectAttackVectorEvent (final PlayerPacket currentPlayer,
+  public PlayerSelectAttackVectorEvent (final PlayerPacket player,
                                         final ImmutableMultimap <CountryPacket, CountryPacket> validAttackVectors)
   {
-    super (currentPlayer, validAttackVectors);
+    super (player, validAttackVectors);
   }
 
   @RequiredForNetworkSerialization

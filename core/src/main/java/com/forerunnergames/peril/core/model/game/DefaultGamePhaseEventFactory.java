@@ -27,7 +27,6 @@ import com.forerunnergames.peril.core.model.card.CardPackets;
 import com.forerunnergames.peril.core.model.card.CardSet;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.playmap.PlayMapModel;
-import com.forerunnergames.peril.core.model.playmap.country.CountryOwnerModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
 
@@ -36,7 +35,6 @@ import com.google.common.collect.ImmutableSet;
 public final class DefaultGamePhaseEventFactory implements GamePhaseEventFactory
 {
   private final PlayerModel playerModel;
-  private final CountryOwnerModel countryOwnerModel;
   private final CardModel cardModel;
   private final GameRules rules;
 
@@ -53,8 +51,6 @@ public final class DefaultGamePhaseEventFactory implements GamePhaseEventFactory
     this.playerModel = playerModel;
     this.cardModel = cardModel;
     this.rules = rules;
-
-    countryOwnerModel = playMapModel.getCountryOwnerModel ();
   }
 
   @Override

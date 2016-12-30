@@ -42,8 +42,10 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import java.util.Map;
+import java.util.Set;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
@@ -58,7 +60,8 @@ public class InternalCommunicationHandler
   private final EventRegistry eventRegistry;
   private final MBassador <Event> eventBus;
   private final Map <RequestEvent, PlayerPacket> requestEvents = Maps.newHashMap ();
-  private final BiMap <PlayerInputEvent, PlayerAnswerEvent <?>> inputToAnswerEvents;
+  private final Set <PlayerInputEvent> unmappedInputEvents = Sets.newHashSet ();
+  private final BiMap <PlayerAnswerEvent <?>, PlayerInputEvent> answerToInputEvents;
 
   public InternalCommunicationHandler (final EventRegistry eventRegistry, final MBassador <Event> eventBus)
   {
@@ -68,7 +71,7 @@ public class InternalCommunicationHandler
     this.eventRegistry = eventRegistry;
     this.eventBus = eventBus;
 
-    inputToAnswerEvents = HashBiMap.create ();
+    answerToInputEvents = HashBiMap.create ();
 
     eventRegistry.initialize ();
   }
@@ -109,8 +112,7 @@ public class InternalCommunicationHandler
     Arguments.checkIsNotNull (inputRequestType, "inputRequestType");
     Arguments.checkIsNotNull (event, "event");
 
-    final PlayerInputRequestEvent inputRequestEvent = (PlayerInputRequestEvent) inputToAnswerEvents.inverse ()
-            .get (event);
+    final PlayerInputRequestEvent inputRequestEvent = (PlayerInputRequestEvent) answerToInputEvents.get (event);
     return Optional.fromNullable (inputRequestType.cast (inputRequestEvent));
   }
 
@@ -123,14 +125,13 @@ public class InternalCommunicationHandler
     Arguments.checkIsNotNull (informEventType, "informEventType");
     Arguments.checkIsNotNull (event, "event");
 
-    final PlayerInputRequestEvent inputInformEvent = (PlayerInputRequestEvent) inputToAnswerEvents.inverse ()
-            .get (event);
+    final PlayerInputRequestEvent inputInformEvent = (PlayerInputRequestEvent) answerToInputEvents.get (event);
     return Optional.fromNullable (informEventType.cast (inputInformEvent));
   }
 
   public <T extends PlayerInputEvent> void republishFor (final PlayerAnswerEvent <T> answerEvent)
   {
-    final PlayerInputEvent inputEvent = inputToAnswerEvents.inverse ().get (answerEvent);
+    final PlayerInputEvent inputEvent = answerToInputEvents.get (answerEvent);
     if (inputEvent == null)
     {
       log.warn ("No event found to republish for [{}]", answerEvent);
@@ -153,7 +154,7 @@ public class InternalCommunicationHandler
   public void clearEventCache ()
   {
     log.debug ("Clearing internal event caches [{} RequestEvents] [{} PlayerAnswerEvents].", requestEvents.size (),
-               inputToAnswerEvents.size ());
+               answerToInputEvents.size ());
 
     requestEvents.clear ();
     cancelAndDiscardInputEventCache ();
@@ -166,11 +167,7 @@ public class InternalCommunicationHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    final PlayerAnswerEvent <?> previousValue = inputToAnswerEvents.forcePut (event, null);
-    if (previousValue != null)
-    {
-      log.warn ("Overwriting previous value for [{}]: {}", event, previousValue);
-    }
+    unmappedInputEvents.add (event);
   }
 
   // ------ Inbound Event Handlers ------- //
@@ -182,15 +179,29 @@ public class InternalCommunicationHandler
 
     log.trace ("Event received [{}]", event);
 
-    final ImmutableSet <T> inputEventMatches = allInputEventsOfType (event.getQuestionType ());
+    final ImmutableSet <T> inputEventMatches = allUnmappedInputEventsOfType (event.getQuestionType ());
     if (!inputEventMatches.isEmpty ())
     {
-      log.warn ("Received answer event with no corresponding outbound event! Event: [{}]", event);
+      log.warn ("Received answer event with no corresponding outbound event! [{}]", event);
       return;
     }
 
-    // TODO this is broken if there are multiple pending input requests for different players
-    inputToAnswerEvents.forcePut (Iterables.getFirst (inputEventMatches, null), event);
+    final Optional <PlayerPacket> playerMaybe = eventRegistry.playerFor (event);
+    if (!playerMaybe.isPresent ())
+    {
+      log.warn ("Received answer event with no player mapping! [{}]", event);
+    }
+
+    final PlayerPacket player = playerMaybe.get ();
+    for (final T inputEvent : inputEventMatches)
+    {
+      if (inputEvent.getPerson ().isNot (player))
+      {
+        continue;
+      }
+
+      map (event, inputEvent);
+    }
   }
 
   @Handler
@@ -221,18 +232,29 @@ public class InternalCommunicationHandler
     eventBus.publish (new SkipPlayerTurnEvent (event.getPlayer (), SkipPlayerTurnEvent.Reason.PLAYER_INPUT_TIMED_OUT));
   }
 
-  private <T extends PlayerInputEvent> ImmutableSet <T> allInputEventsOfType (final Class <T> inputEventType)
+  private <T extends PlayerInputEvent> ImmutableSet <T> allUnmappedInputEventsOfType (final Class <T> inputEventType)
   {
-    return ImmutableSet.copyOf (Iterables.filter (inputToAnswerEvents.keySet (), inputEventType));
+    return ImmutableSet.copyOf (Iterables.filter (unmappedInputEvents, inputEventType));
+  }
+
+  private void map (final PlayerAnswerEvent <?> answerEvent, final PlayerInputEvent inputEvent)
+  {
+    final PlayerInputEvent previous = answerToInputEvents.forcePut (answerEvent, inputEvent);
+    if (previous != null)
+    {
+      log.warn ("Overwrote previous mapping for [{}] => [{}], replaced with [{}]", answerEvent, previous, inputEvent);
+    }
   }
 
   private void cancelAndDiscardInputEventCache ()
   {
-    for (final PlayerInputEvent next : ImmutableSet.copyOf (inputToAnswerEvents.keySet ()))
+    for (final PlayerInputEvent next : unmappedInputEvents)
     {
-      log.info ("Discarding pending input event: [{}]", next);
-      inputToAnswerEvents.remove (next);
+      log.debug ("Publishing cancellation for unmapped input event [{}]", next);
       eventBus.publish (new PlayerInputCanceledEvent (next));
     }
+
+    unmappedInputEvents.clear ();
+    answerToInputEvents.clear ();
   }
 }

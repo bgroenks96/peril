@@ -120,14 +120,10 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   @Override
   public void begin ()
   {
-    if (isActive || isSuspended)
-    {
-      return;
-    }
+    if (isActive || isSuspended) return;
 
     isActive = true;
     eventBus.subscribe (this);
-    // GamePhaseHandlers.onGamePhaseBegin (this);
     onBegin ();
   }
 
@@ -135,14 +131,10 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   @Override
   public void end ()
   {
-    if (!isActive || isSuspended)
-    {
-      return;
-    }
+    if (!isActive || isSuspended) return;
 
     onEnd ();
     isActive = false;
-    // GamePhaseHandlers.onGamePhaseEnd (this);
     eventBus.unsubscribe (this);
   }
 
@@ -278,10 +270,7 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
 
   protected void changeGamePhaseTo (final GamePhase phase)
   {
-    if (currentPhase == phase)
-    {
-      return;
-    }
+    if (currentPhase == phase) return;
 
     eventBus.publish (new GamePhaseChangedEvent (phase, this));
   }

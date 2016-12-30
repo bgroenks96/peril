@@ -129,7 +129,7 @@ public class DefaultEventRegistry implements EventRegistry
     while (outboundEventCache.size () > targetCacheSize)
     {
       final ServerEvent discarded = outboundEventCache.poll ();
-      log.trace ("Discarding old event from server revent cache [{}]", discarded);
+      log.trace ("Discarding old event from server event cache [{}]", discarded);
     }
 
     log.debug ("Pruned outbound event cache [New Size: {}]; Discarded {} old events.", outboundEventCache.size (),
