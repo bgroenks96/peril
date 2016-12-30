@@ -1,8 +1,6 @@
 package com.forerunnergames.peril.server.controllers;
 
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputInformEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.server.remote.RemoteClient;
@@ -29,8 +27,7 @@ final class MultiplayerControllerEventCache
   private final long inputEventTimeoutMillis;
 
   private final Timer inputEventTimer;
-  private final Multimap <PlayerPacket, PlayerInputRequestEvent> playerInputRequestEventCache;
-  private final Multimap <PlayerPacket, PlayerInputInformEvent> playerInformEventCache;
+  private final Multimap <PlayerPacket, PlayerInputEvent> playerInputEventCache;
   private final Map <String, RemoteClient> playerJoinGameRequestCache;
   private final Map <PlayerInputEvent, TimerTask> inputEventTimeouts;
 
@@ -44,28 +41,18 @@ final class MultiplayerControllerEventCache
     this.inputEventTimeoutMillis = inputEventTimeoutMillis;
 
     inputEventTimer = new Timer (TIMER_NAME, true);
-    playerInputRequestEventCache = HashMultimap.create ();
-    playerInformEventCache = HashMultimap.create ();
+    playerInputEventCache = HashMultimap.create ();
     playerJoinGameRequestCache = Collections.synchronizedMap (Maps. <String, RemoteClient>newHashMap ());
     inputEventTimeouts = Collections.synchronizedMap (Maps. <PlayerInputEvent, TimerTask>newHashMap ());
   }
 
-  boolean add (final PlayerPacket player, final PlayerInputRequestEvent inputRequest)
+  boolean add (final PlayerPacket player, final PlayerInputEvent inputRequest)
   {
     Arguments.checkIsNotNull (player, "player");
     Arguments.checkIsNotNull (inputRequest, "inputRequest");
 
     addTimerTaskFor (inputRequest);
-    return playerInputRequestEventCache.put (player, inputRequest);
-  }
-
-  boolean add (final PlayerPacket player, final PlayerInputInformEvent informEvent)
-  {
-    Arguments.checkIsNotNull (player, "player");
-    Arguments.checkIsNotNull (informEvent, "informEvent");
-
-    addTimerTaskFor (informEvent);
-    return playerInformEventCache.put (player, informEvent);
+    return playerInputEventCache.put (player, inputRequest);
   }
 
   void addPendingPlayerJoin (final String playerName, final RemoteClient client)
@@ -76,18 +63,11 @@ final class MultiplayerControllerEventCache
     playerJoinGameRequestCache.put (playerName, client);
   }
 
-  ImmutableSet <PlayerInputRequestEvent> inputRequestsFor (final PlayerPacket player)
+  ImmutableSet <PlayerInputEvent> inputEventsFor (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
 
-    return ImmutableSet.copyOf (playerInputRequestEventCache.get (player));
-  }
-
-  ImmutableSet <PlayerInputInformEvent> informEventsFor (final PlayerPacket player)
-  {
-    Arguments.checkIsNotNull (player, "player");
-
-    return ImmutableSet.copyOf (playerInformEventCache.get (player));
+    return ImmutableSet.copyOf (playerInputEventCache.get (player));
   }
 
   RemoteClient pendingClientFor (final String playerName)
@@ -97,22 +77,13 @@ final class MultiplayerControllerEventCache
     return playerJoinGameRequestCache.get (playerName);
   }
 
-  boolean remove (final PlayerPacket player, final PlayerInputRequestEvent inputRequest)
+  boolean remove (final PlayerPacket player, final PlayerInputEvent inputEvent)
   {
     Arguments.checkIsNotNull (player, "player");
-    Arguments.checkIsNotNull (inputRequest, "inputRequest");
+    Arguments.checkIsNotNull (inputEvent, "inputEvent");
 
-    cancelTimerTaskFor (inputRequest);
-    return playerInputRequestEventCache.remove (player, inputRequest);
-  }
-
-  boolean remove (final PlayerPacket player, final PlayerInputInformEvent informEvent)
-  {
-    Arguments.checkIsNotNull (player, "player");
-    Arguments.checkIsNotNull (informEvent, "informEvent");
-
-    cancelTimerTaskFor (informEvent);
-    return playerInformEventCache.remove (player, informEvent);
+    cancelTimerTaskFor (inputEvent);
+    return playerInputEventCache.remove (player, inputEvent);
   }
 
   RemoteClient removePendingPlayerJoin (final String playerName)
@@ -130,37 +101,16 @@ final class MultiplayerControllerEventCache
 
     // we don't know the specific type of the event, so try to remove from both caches
     final PlayerPacket player = inputEvent.getPerson ();
-    if (playerInformEventCache.containsKey (inputEvent))
-    {
-      playerInformEventCache.remove (player, inputEvent);
-    }
+    if (!playerInputEventCache.containsKey (player)) return;
 
-    if (playerInformEventCache.containsKey (inputEvent))
-    {
-      playerInputRequestEventCache.remove (player, inputEvent);
-    }
+    playerInputEventCache.remove (player, inputEvent);
   }
 
-  ImmutableSet <PlayerInputRequestEvent> removeAllInputRequestsFor (final PlayerPacket player)
+  ImmutableSet <PlayerInputEvent> removeAllInputEventsFor (final PlayerPacket player)
   {
     Arguments.checkIsNotNull (player, "player");
 
-    return cancelAll (ImmutableSet.copyOf (playerInputRequestEventCache.removeAll (player)));
-  }
-
-  ImmutableSet <PlayerInputInformEvent> removeAllInformEventsFor (final PlayerPacket player)
-  {
-    Arguments.checkIsNotNull (player, "player");
-
-    return cancelAll (ImmutableSet.copyOf (playerInformEventCache.removeAll (player)));
-  }
-
-  void removeAll (final PlayerPacket player)
-  {
-    Arguments.checkIsNotNull (player, "player");
-
-    removeAllInputRequestsFor (player);
-    removeAllInformEventsFor (player);
+    return cancelAll (ImmutableSet.copyOf (playerInputEventCache.removeAll (player)));
   }
 
   boolean isPendingJoin (final String playerName)
@@ -174,7 +124,7 @@ final class MultiplayerControllerEventCache
   {
     Arguments.checkIsNotNull (player, "player");
 
-    return playerInformEventCache.containsKey (player) || playerInputRequestEventCache.containsKey (player);
+    return playerInputEventCache.containsKey (player);
   }
 
   void resetTimerFor (final PlayerInputEvent inputEvent)
@@ -189,15 +139,9 @@ final class MultiplayerControllerEventCache
   {
     Arguments.checkIsNotNull (player, "player");
 
-    if (playerInputRequestEventCache.containsKey (player))
-    {
-      cancelAll (playerInputRequestEventCache.get (player));
-    }
+    if (playerInputEventCache.containsKey (player)) return;
 
-    if (playerInformEventCache.containsKey (player))
-    {
-      cancelAll (playerInformEventCache.get (player));
-    }
+    cancelAll (playerInputEventCache.get (player));
   }
 
   private void addTimerTaskFor (final PlayerInputEvent inputEvent)

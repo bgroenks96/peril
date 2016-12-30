@@ -230,7 +230,7 @@ public final class InitialGamePhaseController implements TestPhaseController
 
     processor.start (EndInitialReinforcementPhaseEvent.class, monitor);
 
-    monitor.awaitCompletion (10000000);
+    monitor.awaitCompletion ();
   }
 
   private void sendForAllClientsJoinGameRequest ()
