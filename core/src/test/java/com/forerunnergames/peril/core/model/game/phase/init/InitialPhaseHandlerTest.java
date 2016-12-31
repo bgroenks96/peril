@@ -335,7 +335,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     final PlayerClaimCountryResponseRequestEvent responseRequest = new PlayerClaimCountryResponseRequestEvent (
             "Transylvania");
-    when (mockCommHandler.inputRequestFor (responseRequest, PlayerClaimCountryRequestEvent.class))
+    when (mockEventRegistry.inputEventFor (responseRequest, PlayerClaimCountryRequestEvent.class))
             .thenReturn (Optional.of (createDefault (PlayerClaimCountryRequestEvent.class)));
     publishResponseRequest (responseRequest);
     initialPhase.verifyPlayerClaimCountryResponseRequest (responseRequest);
@@ -344,7 +344,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasNeverFired (PlayerClaimCountryResponseSuccessEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerArmiesChangedEvent.class));
-    verify (mockCommHandler).republishFor (eq (responseRequest));
+    verify (mockEventRegistry).republishFor (eq (responseRequest));
   }
 
   @Test
@@ -368,7 +368,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     advancePlayerTurn (); // state machine does this as state exit action
 
     final PlayerClaimCountryRequestEvent defaultRequest = createDefault (PlayerClaimCountryRequestEvent.class);
-    when (mockCommHandler.inputRequestFor (responseRequest, PlayerClaimCountryRequestEvent.class))
+    when (mockEventRegistry.inputEventFor (responseRequest, PlayerClaimCountryRequestEvent.class))
             .thenReturn (Optional.of (defaultRequest));
     publishResponseRequest (responseRequest);
     initialPhase.verifyPlayerClaimCountryResponseRequest (responseRequest);
@@ -379,7 +379,7 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     // should not have received any more PlayerArmiesChangedEvents
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
     // verify that republish was called
-    verify (mockCommHandler).republishFor (eq (responseRequest));
+    verify (mockEventRegistry).republishFor (eq (responseRequest));
   }
 
   @Test

@@ -26,13 +26,10 @@ import com.forerunnergames.peril.core.events.internal.player.NotifyPlayerInputTi
 import com.forerunnergames.peril.core.events.internal.player.SendGameStateRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent;
 import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent.ResponseCode;
-import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataRequestEvent;
-import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataResponseEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 import java.util.Set;
@@ -52,21 +49,6 @@ public class DefaultCoreCommunicator implements CoreCommunicator
     this.eventBus = eventBus;
 
     eventBus.subscribe (this);
-  }
-
-  @Override
-  public ImmutableSet <PlayerPacket> fetchCurrentPlayerData ()
-  {
-    final UpdatePlayerDataRequestEvent requestEvent = new UpdatePlayerDataRequestEvent ();
-    // synchronous publish should guarantee that we receive the response before publish returns
-    eventBus.publish (requestEvent);
-
-    // just in case the response somehow was not received (maybe Core sneakily forked a thread or something)...
-    // wrap it with Optional to handle null case
-    final Optional <InternalResponseEvent> responseEvent = getResponseFor (requestEvent);
-    if (!responseEvent.isPresent ()) return ImmutableSet.of ();
-    final UpdatePlayerDataResponseEvent playerDataResponse = (UpdatePlayerDataResponseEvent) responseEvent.get ();
-    return playerDataResponse.getUpdatedPlayers ();
   }
 
   @Override

@@ -42,9 +42,8 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameD
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerQuitGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputInformEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerDisconnectEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ResumeGameEvent;
@@ -69,7 +68,6 @@ import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
 import com.forerunnergames.peril.server.communicators.SpectatorCommunicator;
-import com.forerunnergames.peril.server.controllers.ClientPlayerMapping.RegisteredClientPlayerNotFoundException;
 import com.forerunnergames.peril.server.controllers.MultiplayerControllerEventCache.PlayerInputEventTimeoutCallback;
 import com.forerunnergames.peril.server.dispatchers.ClientRequestEventDispatchListener;
 import com.forerunnergames.peril.server.dispatchers.ClientRequestEventDispatcher;
@@ -433,7 +431,7 @@ public final class MultiplayerController extends ControllerAdapter
       playerQuery = clientsToPlayers.playerFor (client);
       spectatorQuery = clientsToSpectators.spectatorFor (client);
     }
-    catch (final ClientPlayerMapping.RegisteredClientPlayerNotFoundException e)
+    catch (final RegisteredClientPlayerNotFoundException e)
     {
       log.error ("Error resolving client to player.", e);
       return;
@@ -479,7 +477,7 @@ public final class MultiplayerController extends ControllerAdapter
     {
       playerQuery = clientsToPlayers.playerFor (client);
     }
-    catch (final ClientPlayerMapping.RegisteredClientPlayerNotFoundException e)
+    catch (final RegisteredClientPlayerNotFoundException e)
     {
       log.error ("Error resolving client to player.", e);
       return;
@@ -511,7 +509,7 @@ public final class MultiplayerController extends ControllerAdapter
     {
       playerQuery = clientsToPlayers.playerFor (client);
     }
-    catch (final ClientPlayerMapping.RegisteredClientPlayerNotFoundException e)
+    catch (final RegisteredClientPlayerNotFoundException e)
     {
       log.error ("Error resolving client to player.", e);
       return;
@@ -587,11 +585,6 @@ public final class MultiplayerController extends ControllerAdapter
     return clientsInServer.contains (client);
   }
 
-  Optional <UUID> getPlayerServerId (final PlayerPacket player)
-  {
-    return clientsToPlayers.serverIdFor (player);
-  }
-
   // ---------- Remote inbound client event communication ---------- //
 
   @Handler
@@ -621,7 +614,7 @@ public final class MultiplayerController extends ControllerAdapter
     {
       playerQuery = clientsToPlayers.playerFor (client);
     }
-    catch (final ClientPlayerMapping.RegisteredClientPlayerNotFoundException e)
+    catch (final RegisteredClientPlayerNotFoundException e)
     {
       log.error ("Error resolving client to player.", e);
     }
@@ -769,31 +762,14 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Handler
-  void onEvent (final PlayerInputRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    final boolean wasAdded = eventCache.add (event.getPerson (), event);
-    assert wasAdded;
-
-    // let handler for direct player event handle forwarding the event
-  }
-
-  @Handler
-  void onEvent (final PlayerInputInformEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    final boolean wasAdded = eventCache.add (event.getPerson (), event);
-    assert wasAdded;
-
-    // let handler for direct player event handle forwarding the event
-  }
-
-  @Handler
   void onEvent (final PlayerInputEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    // handler for direct player event will take care of forwarding the event
+
+    final boolean wasAdded = eventCache.add (event.getPerson (), event);
+    assert wasAdded;
 
     if (clientsToPlayers.existsClientFor (event.getPerson ()))
     {
@@ -835,6 +811,15 @@ public final class MultiplayerController extends ControllerAdapter
     log.trace ("Event received [{}]", event);
 
     sendToPlayer (event.getPerson (), event);
+  }
+
+  @Handler
+  void onEvent (final PlayerEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    // update player packet value in client/player mapping
+    clientsToPlayers.makeCurrent (event.getPerson ());
   }
 
   // ---------- Outbound server responses requiring special processing ---------- //
@@ -1233,6 +1218,16 @@ public final class MultiplayerController extends ControllerAdapter
     {
       sendToPlayer (player, event);
     }
+  }
+
+  ImmutableSet <PlayerPacket> getPlayers ()
+  {
+    return clientsToPlayers.players ();
+  }
+
+  Optional <UUID> getPlayerServerId (final PlayerPacket player)
+  {
+    return clientsToPlayers.serverIdFor (player);
   }
 
   private final class ClientConnectorDaemon

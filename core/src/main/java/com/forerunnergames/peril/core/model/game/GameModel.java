@@ -32,11 +32,10 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGame
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.peril.core.events.internal.player.NotifyPlayerInputTimeoutEvent;
 import com.forerunnergames.peril.core.events.internal.player.SendGameStateRequestEvent;
 import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent;
 import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent.ResponseCode;
-import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataRequestEvent;
-import com.forerunnergames.peril.core.events.internal.player.UpdatePlayerDataResponseEvent;
 import com.forerunnergames.peril.core.model.card.CardPackets;
 import com.forerunnergames.peril.core.model.game.phase.AbstractGamePhaseHandler;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
@@ -61,9 +60,6 @@ public final class GameModel extends AbstractGamePhaseHandler
   GameModel (final GameModelConfiguration gameModelConfig)
   {
     super (gameModelConfig);
-
-    eventBus.subscribe (internalCommHandler);
-    eventBus.subscribe (this);
   }
 
   @Override
@@ -226,6 +222,8 @@ public final class GameModel extends AbstractGamePhaseHandler
                getCurrentPlayerId (), turnDataCache);
   }
 
+  // ------- Game Phase Event Handlers ------- //
+
   @Handler (priority = Integer.MIN_VALUE)
   void onEvent (final PlayerEndTurnRequestEvent event)
   {
@@ -234,7 +232,7 @@ public final class GameModel extends AbstractGamePhaseHandler
       return;
     }
 
-    final Optional <PlayerPacket> sender = internalCommHandler.senderOf (event);
+    final Optional <PlayerPacket> sender = eventRegistry.senderOf (event);
     if (!sender.isPresent () || sender.get ().isNot (getCurrentPlayerPacket ()))
     {
       publish (new PlayerEndTurnDeniedEvent (sender.get (), PlayerEndTurnDeniedEvent.Reason.NOT_IN_TURN));
@@ -245,14 +243,14 @@ public final class GameModel extends AbstractGamePhaseHandler
   }
 
   @Handler
-  void onEvent (final UpdatePlayerDataRequestEvent event)
+  void onEvent (final NotifyPlayerInputTimeoutEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
-    log.trace ("Internal event received [{}]", event);
+    log.debug ("Internal event received [{}]", event);
 
-    final ImmutableSet <PlayerPacket> players = playerModel.getPlayerPackets ();
-    publish (new UpdatePlayerDataResponseEvent (players, event.getEventId ()));
+    // handler will verify whether or not the skip player turn event is valid
+    publish (new SkipPlayerTurnEvent (event.getPlayer (), SkipPlayerTurnEvent.Reason.PLAYER_INPUT_TIMED_OUT));
   }
 
   @Handler

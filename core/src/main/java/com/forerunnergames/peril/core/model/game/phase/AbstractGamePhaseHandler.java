@@ -3,12 +3,12 @@ package com.forerunnergames.peril.core.model.game.phase;
 import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerAnswerEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultCountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerCardsChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerTurnOrderChangedEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ActivePlayerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginRoundEvent;
@@ -22,6 +22,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Suspe
 import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.peril.core.events.EventRegistry;
 import com.forerunnergames.peril.core.model.battle.BattleModel;
 import com.forerunnergames.peril.core.model.card.Card;
 import com.forerunnergames.peril.core.model.card.CardModel;
@@ -29,7 +30,6 @@ import com.forerunnergames.peril.core.model.card.CardPackets;
 import com.forerunnergames.peril.core.model.game.CacheKey;
 import com.forerunnergames.peril.core.model.game.GameModelConfiguration;
 import com.forerunnergames.peril.core.model.game.GameStatus;
-import com.forerunnergames.peril.core.model.game.InternalCommunicationHandler;
 import com.forerunnergames.peril.core.model.game.PlayerTurnDataCache;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.playmap.PlayMapModel;
@@ -74,8 +74,8 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   protected final PlayerTurnModel playerTurnModel;
   protected final BattleModel battleModel;
   protected final GameRules rules;
+  protected final EventRegistry eventRegistry;
   protected final PlayerTurnDataCache <CacheKey> turnDataCache;
-  protected final InternalCommunicationHandler internalCommHandler;
   protected final MBassador <Event> eventBus;
 
   private GamePhase currentPhase = GamePhase.UNKNOWN;
@@ -96,7 +96,7 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     playerTurnModel = gameModelConfig.getPlayerTurnModel ();
     rules = gameModelConfig.getRules ();
     turnDataCache = gameModelConfig.getTurnDataCache ();
-    internalCommHandler = gameModelConfig.getInternalCommunicationHandler ();
+    eventRegistry = gameModelConfig.getEventRegistry ();
     eventBus = gameModelConfig.getEventBus ();
 
     // unpack play map model configuration types
@@ -176,8 +176,8 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     // clear state data cache
     turnDataCache.clearAll ();
 
-    // clear inbound event cache
-    internalCommHandler.clearEventCache ();
+    // clear event registry
+    eventRegistry.clearRegistry ();
 
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
 
@@ -359,10 +359,10 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   }
 
   @Nullable
-  protected <T extends PlayerInputRequestEvent> T getOriginalRequestFor (final PlayerResponseRequestEvent <T> event,
-                                                                         final Class <T> originalRequestType)
+  protected <T extends PlayerInputEvent> T inputEventFor (final PlayerAnswerEvent <T> event,
+                                                          final Class <T> originalRequestType)
   {
-    final Optional <T> originalRequest = internalCommHandler.inputRequestFor (event, originalRequestType);
+    final Optional <T> originalRequest = eventRegistry.inputEventFor (event, originalRequestType);
     if (!originalRequest.isPresent ())
     {
       log.warn ("Unable to find request event matching response [{}].", event);

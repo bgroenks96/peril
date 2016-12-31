@@ -119,10 +119,10 @@ public final class DefaultTurnPhaseHandler extends AbstractGamePhaseHandler impl
     log.trace ("Event received [{}]", event);
 
     final PlayerPacket player = getCurrentPlayerPacket ();
-    final Optional <PlayerPacket> sender = internalCommHandler.senderOf (event);
+    final Optional <PlayerPacket> sender = eventRegistry.senderOf (event);
     if (!sender.isPresent () || player.isNot (sender.get ()))
     {
-      // defer to GameModel::onEvent(EndPlayerTurnRequestEvent) for publishing denial
+      // defer to GameModel::onEvent(PlayerEndTurnRequestEvent) for publishing denial
       return false;
     }
 
