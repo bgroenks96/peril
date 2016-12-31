@@ -19,8 +19,8 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Distr
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerReinforceCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerClaimCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerReinforceCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
@@ -264,7 +264,7 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
     {
       publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
               PlayerClaimCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_OVERFLOW));
-      internalCommHandler.republishFor (event);
+      eventRegistry.republishFor (event);
       return false;
     }
 
@@ -272,7 +272,7 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
     {
       publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
               PlayerClaimCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
-      internalCommHandler.republishFor (event);
+      eventRegistry.republishFor (event);
       return false;
     }
 
@@ -283,7 +283,7 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
     if (res1.failed ())
     {
       publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName, res1.getFailureReason ()));
-      internalCommHandler.republishFor (event);
+      eventRegistry.republishFor (event);
       return false;
     }
 
@@ -292,7 +292,7 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
     if (res2.failed ())
     {
       publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName, res2.getFailureReason ()));
-      internalCommHandler.republishFor (event);
+      eventRegistry.republishFor (event);
       return false;
     }
 

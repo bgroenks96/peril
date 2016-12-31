@@ -139,7 +139,7 @@ final class MultiplayerControllerEventCache
   {
     Arguments.checkIsNotNull (player, "player");
 
-    if (playerInputEventCache.containsKey (player)) return;
+    if (!playerInputEventCache.containsKey (player)) return;
 
     cancelAll (playerInputEventCache.get (player));
   }

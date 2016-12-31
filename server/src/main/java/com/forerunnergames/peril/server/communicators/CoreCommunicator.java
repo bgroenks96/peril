@@ -21,12 +21,8 @@ package com.forerunnergames.peril.server.communicators;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 
-import com.google.common.collect.ImmutableSet;
-
 public interface CoreCommunicator
 {
-  ImmutableSet <PlayerPacket> fetchCurrentPlayerData ();
-
   void requestSendGameStateTo (PlayerPacket player);
 
   void notifyInputEventTimedOut (PlayerInputEvent inputEvent);

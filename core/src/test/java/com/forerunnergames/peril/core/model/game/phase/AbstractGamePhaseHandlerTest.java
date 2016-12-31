@@ -19,7 +19,6 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInput
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
-import com.forerunnergames.peril.core.events.DefaultEventRegistry;
 import com.forerunnergames.peril.core.events.EventRegistry;
 import com.forerunnergames.peril.core.model.battle.BattleModel;
 import com.forerunnergames.peril.core.model.battle.DefaultBattleModel;
@@ -31,7 +30,6 @@ import com.forerunnergames.peril.core.model.game.DefaultGamePhaseEventFactory;
 import com.forerunnergames.peril.core.model.game.GameModel;
 import com.forerunnergames.peril.core.model.game.GameModelConfiguration;
 import com.forerunnergames.peril.core.model.game.GamePhaseEventFactory;
-import com.forerunnergames.peril.core.model.game.InternalCommunicationHandler;
 import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.playmap.DefaultPlayMapModelFactory;
@@ -66,6 +64,8 @@ import net.engio.mbassy.bus.MBassador;
 
 import org.junit.Before;
 
+import org.mockito.Mockito;
+
 import org.apache.commons.lang3.ArrayUtils;
 
 public abstract class AbstractGamePhaseHandlerTest
@@ -73,7 +73,7 @@ public abstract class AbstractGamePhaseHandlerTest
   protected final int defaultTestCountryCount = 30;
   protected final ImmutableList <String> defaultTestCountries = generateTestCountryNames (defaultTestCountryCount);
   protected MBassador <Event> eventBus;
-  protected EventRegistry eventRegistry;
+  protected EventRegistry mockEventRegistry;
   protected EventBusHandler eventHandler;
   protected int playerLimit;
   protected int initialArmies;
@@ -88,7 +88,6 @@ public abstract class AbstractGamePhaseHandlerTest
   protected CountryGraphModel countryGraphModel;
   protected BattleModel battleModel;
   protected CardModel cardModel;
-  protected InternalCommunicationHandler mockCommHandler;
   protected GamePhaseEventFactory eventFactory;
   protected ImmutableSet <Card> cardDeck = CardModelTest.generateTestCards ();
   protected GameRules gameRules;
@@ -139,13 +138,12 @@ public abstract class AbstractGamePhaseHandlerTest
   public void setup ()
   {
     eventBus = EventBusFactory.create (ImmutableSet.of (EventBusHandler.createEventBusFailureHandler ()));
-    eventRegistry = new DefaultEventRegistry (eventBus);
+    mockEventRegistry = mock (EventRegistry.class, Mockito.RETURNS_SMART_NULLS);
     eventHandler = new EventBusHandler ();
     eventHandler.subscribe (eventBus);
     // crate default play map + game model
     gameRules = ClassicGameRules.builder ().maxHumanPlayers ().totalCountryCount (defaultTestCountryCount).build ();
     playMapModel = createPlayMapModelWithDisjointMapGraph (generateTestCountryNames (defaultTestCountryCount));
-    mockCommHandler = mock (InternalCommunicationHandler.class);
     initializeGameModelWith (playMapModel);
     assert gameModel != null;
 
@@ -301,9 +299,9 @@ public abstract class AbstractGamePhaseHandlerTest
     initialArmies = gameRules.getInitialArmies ();
     playerLimit = playerModel.getPlayerLimit ();
     maxPlayers = gameRules.getMaxTotalPlayers ();
-    gameModelConfig = GameModelConfiguration.builder (gameRules).eventBus (eventBus).eventRegistry (eventRegistry)
+    gameModelConfig = GameModelConfiguration.builder (gameRules).eventBus (eventBus).eventRegistry (mockEventRegistry)
             .playMapModel (playMapModel).battleModel (battleModel).playerModel (playerModel)
-            .playerTurnModel (playerTurnModel).cardModel (cardModel).internalComms (mockCommHandler).build ();
+            .playerTurnModel (playerTurnModel).cardModel (cardModel).build ();
     gameModel = GameModel.create (gameModelConfig);
   }
 

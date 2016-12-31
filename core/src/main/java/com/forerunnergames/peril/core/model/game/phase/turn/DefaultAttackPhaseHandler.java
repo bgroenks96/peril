@@ -20,10 +20,10 @@ import com.forerunnergames.peril.common.net.events.server.inform.PlayerEndTurnAv
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerSelectAttackVectorEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndAttackPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerSelectAttackVectorWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerDefendCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerAttackCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerDefendCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerOccupyCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerSelectAttackVectorWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerInputCanceledEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerDefendCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
@@ -247,7 +247,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     turnDataCache.put (CacheKey.BATTLE_ATTACK_ORDER, result.getReturnValue ());
     turnDataCache.put (CacheKey.FINAL_BATTLE_ACTOR_ATTACKER, createFinalAttacker (attackVector, dieCount));
 
-    final Optional <PlayerAttackCountryEvent> staleEvent = internalCommHandler
+    final Optional <PlayerAttackCountryEvent> staleEvent = eventRegistry
             .lastOutboundEventOfType (PlayerAttackCountryEvent.class);
     if (staleEvent.isPresent ())
     {
@@ -271,7 +271,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
 
     turnDataCache.put (CacheKey.FINAL_BATTLE_ACTOR_DEFENDER, createFinalDefender (attackVector, dieCount));
 
-    final Optional <PlayerDefendCountryRequestEvent> staleEvent = internalCommHandler
+    final Optional <PlayerDefendCountryRequestEvent> staleEvent = eventRegistry
             .lastOutboundEventOfType (PlayerDefendCountryRequestEvent.class);
     if (staleEvent.isPresent ())
     {
@@ -346,7 +346,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
 
     log.trace ("Event received [{}]", event);
 
-    final Optional <PlayerPacket> sender = internalCommHandler.senderOf (event);
+    final Optional <PlayerPacket> sender = eventRegistry.senderOf (event);
     if (!sender.isPresent ())
     {
       log.warn ("No registered sender for event [{}].", event);
@@ -373,7 +373,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     {
       publish (new PlayerDefendCountryResponseDeniedEvent (sender.get (),
               PlayerDefendCountryResponseDeniedEvent.Reason.INVALID_DIE_COUNT));
-      internalCommHandler.republishFor (event);
+      eventRegistry.republishFor (event);
       return false;
     }
 
@@ -509,8 +509,8 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     {
       publish (new PlayerOccupyCountryResponseDeniedEvent (player,
               PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_UNDERFLOW,
-              getOriginalRequestFor (event, PlayerOccupyCountryRequestEvent.class), event));
-      internalCommHandler.republishFor (event);
+              inputEventFor (event, PlayerOccupyCountryRequestEvent.class), event));
+      eventRegistry.republishFor (event);
       return false;
     }
 
@@ -518,8 +518,8 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     {
       publish (new PlayerOccupyCountryResponseDeniedEvent (player,
               PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_OVERFLOW,
-              getOriginalRequestFor (event, PlayerOccupyCountryRequestEvent.class), event));
-      internalCommHandler.republishFor (event);
+              inputEventFor (event, PlayerOccupyCountryRequestEvent.class), event));
+      eventRegistry.republishFor (event);
       return false;
     }
 
@@ -534,8 +534,8 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     if (failure.isPresent ())
     {
       publish (new PlayerOccupyCountryResponseDeniedEvent (player, failure.get ().getFailureReason (),
-              getOriginalRequestFor (event, PlayerOccupyCountryRequestEvent.class), event));
-      internalCommHandler.republishFor (event);
+              inputEventFor (event, PlayerOccupyCountryRequestEvent.class), event));
+      eventRegistry.republishFor (event);
       return false;
     }
 

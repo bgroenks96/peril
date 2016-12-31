@@ -34,7 +34,7 @@ public class TurnPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     final PlayerPacket player = playerModel.playerPacketWith (PlayerTurnOrder.FIRST);
     final PlayerEndTurnRequestEvent endTurnRequest = new PlayerEndTurnRequestEvent ();
-    when (mockCommHandler.senderOf (endTurnRequest)).thenReturn (Optional.of (player));
+    when (mockEventRegistry.senderOf (endTurnRequest)).thenReturn (Optional.of (player));
 
     assertTrue (turnPhase.verifyPlayerEndTurnRequest (endTurnRequest));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerEndTurnSuccessEvent.class));
@@ -47,7 +47,7 @@ public class TurnPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     final PlayerPacket player = playerModel.playerPacketWith (PlayerTurnOrder.SECOND);
     final PlayerEndTurnRequestEvent endTurnRequest = new PlayerEndTurnRequestEvent ();
-    when (mockCommHandler.senderOf (endTurnRequest)).thenReturn (Optional.of (player));
+    when (mockEventRegistry.senderOf (endTurnRequest)).thenReturn (Optional.of (player));
 
     assertFalse (turnPhase.verifyPlayerEndTurnRequest (endTurnRequest));
     assertTrue (eventHandler.wasNeverFired (PlayerEndTurnSuccessEvent.class));

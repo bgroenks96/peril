@@ -14,8 +14,8 @@ import com.forerunnergames.peril.common.net.events.server.inform.PlayerSelectFor
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerSelectFortifyVectorWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerFortifyCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerSelectFortifyVectorWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerCancelFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectFortifyVectorSuccessEvent;
@@ -127,7 +127,7 @@ public final class DefaultFortifyPhaseHandler extends AbstractGamePhaseHandler i
     final Id currentPlayerId = getCurrentPlayerId ();
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
 
-    if (internalCommHandler.isNotSenderOf (event, currentPlayer))
+    if (eventRegistry.isNotSenderOf (event, currentPlayer))
     {
       publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
               PlayerSelectFortifyVectorDeniedEvent.Reason.PLAYER_NOT_IN_TURN));
@@ -219,7 +219,7 @@ public final class DefaultFortifyPhaseHandler extends AbstractGamePhaseHandler i
 
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
 
-    if (internalCommHandler.isNotSenderOf (event, currentPlayer))
+    if (eventRegistry.isNotSenderOf (event, currentPlayer))
     {
       publish (new PlayerFortifyCountryDeniedEvent (currentPlayer,
               PlayerFortifyCountryDeniedEvent.Reason.PLAYER_NOT_IN_TURN));
@@ -286,7 +286,7 @@ public final class DefaultFortifyPhaseHandler extends AbstractGamePhaseHandler i
     final CountryPacket targetCountryPacket = countryGraphModel.countryPacketWith (targetCountry);
 
     final PlayerPacket player = getCurrentPlayerPacket ();
-    final Optional <PlayerPacket> sender = internalCommHandler.senderOf (event);
+    final Optional <PlayerPacket> sender = eventRegistry.senderOf (event);
     if (!sender.isPresent () || player.isNot (sender.get ()))
     {
       publish (new PlayerCancelFortifyDeniedEvent (player, sourceCountryPacket, targetCountryPacket,

@@ -36,7 +36,6 @@ public final class GameModelConfiguration
   private final GameRules rules;
   private final EventRegistry eventRegistry;
   private final PlayerTurnDataCache <CacheKey> turnDataCache;
-  private final InternalCommunicationHandler internalCommHandler;
   private final MBassador <Event> eventBus;
 
   public GameModelConfiguration (final PlayerModel playerModel,
@@ -47,7 +46,6 @@ public final class GameModelConfiguration
                                  final GameRules rules,
                                  final EventRegistry eventRegistry,
                                  final PlayerTurnDataCache <CacheKey> turnDataCache,
-                                 final InternalCommunicationHandler internalCommHandler,
                                  final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (playerModel, "playerModel");
@@ -58,7 +56,6 @@ public final class GameModelConfiguration
     Arguments.checkIsNotNull (rules, "rules");
     Arguments.checkIsNotNull (eventRegistry, "eventRegistry");
     Arguments.checkIsNotNull (turnDataCache, "turnDataCache");
-    Arguments.checkIsNotNull (internalCommHandler, "internalCommHandler");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.playerModel = playerModel;
@@ -69,7 +66,6 @@ public final class GameModelConfiguration
     this.rules = rules;
     this.eventRegistry = eventRegistry;
     this.turnDataCache = turnDataCache;
-    this.internalCommHandler = internalCommHandler;
     this.eventBus = eventBus;
   }
 
@@ -118,11 +114,6 @@ public final class GameModelConfiguration
     return turnDataCache;
   }
 
-  public InternalCommunicationHandler getInternalCommunicationHandler ()
-  {
-    return internalCommHandler;
-  }
-
   public MBassador <Event> getEventBus ()
   {
     return eventBus;
@@ -138,18 +129,12 @@ public final class GameModelConfiguration
     private BattleModel battleModel;
     private EventRegistry eventRegistry;
     private PlayerTurnDataCache <CacheKey> turnDataCache;
-    private InternalCommunicationHandler internalCommHandler;
     private MBassador <Event> eventBus = EventBusFactory.create ();
 
     public GameModelConfiguration build ()
     {
-      if (internalCommHandler == null)
-      {
-        internalCommHandler = new InternalCommunicationHandler (eventRegistry, eventBus);
-      }
-
       return new GameModelConfiguration (playerModel, playMapModel, cardModel, playerTurnModel, battleModel, gameRules,
-              eventRegistry, turnDataCache, internalCommHandler, eventBus);
+              eventRegistry, turnDataCache, eventBus);
     }
 
     public Builder playMapModel (final PlayMapModel playMapModel)
@@ -197,14 +182,6 @@ public final class GameModelConfiguration
       Arguments.checkIsNotNull (turnDataCache, "turnDataCache");
 
       this.turnDataCache = turnDataCache;
-      return this;
-    }
-
-    public Builder internalComms (final InternalCommunicationHandler internalCommHandler)
-    {
-      Arguments.checkIsNotNull (internalCommHandler, "internalCommHandler");
-
-      this.internalCommHandler = internalCommHandler;
       return this;
     }
 

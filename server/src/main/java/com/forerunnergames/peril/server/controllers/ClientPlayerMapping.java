@@ -22,7 +22,6 @@ import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.server.remote.RemoteClient;
 
 import com.google.common.base.Optional;
@@ -72,7 +71,7 @@ public final class ClientPlayerMapping
   private static final PlayersBySentiencePredicate aiPredicate = new PlayersBySentiencePredicate (PersonSentience.AI);
   private final BiMap <RemoteClient, PlayerPacket> clientsToPlayers;
   private final BiMap <UUID, PlayerPacket> serverIdsToPlayers;
-  private final Set <PlayerPacket> unmappedPlayers;
+  private final Set <PlayerPacket> players;
   private final CoreCommunicator coreCommunicator;
 
   public ClientPlayerMapping (final CoreCommunicator coreCommunicator, final int playerLimit)
@@ -84,22 +83,18 @@ public final class ClientPlayerMapping
 
     clientsToPlayers = Maps.synchronizedBiMap (HashBiMap. <RemoteClient, PlayerPacket>create (playerLimit));
     serverIdsToPlayers = Maps.synchronizedBiMap (HashBiMap. <UUID, PlayerPacket>create (playerLimit));
-    unmappedPlayers = Sets.newConcurrentHashSet ();
+    players = Sets.newConcurrentHashSet ();
   }
 
+  /**
+   * Binds the given client to the given player.
+   *
+   * @return the player previously bound to this client, if one existed.
+   */
   public Optional <PlayerPacket> bind (final RemoteClient client, final PlayerPacket player)
   {
     Arguments.checkIsNotNull (client, "client");
     Arguments.checkIsNotNull (player, "player");
-
-    final Optional <PlayerPacket> previousPlayer = Optional.fromNullable (clientsToPlayers.forcePut (client, player));
-
-    // if the player already exists but does not have an assigned client, removed it from the unmapped players
-    // collection
-    if (unmappedPlayers.contains (player))
-    {
-      unmappedPlayers.remove (player);
-    }
 
     // map player to a new unique server id, if necessary
     if (!isMapped (player))
@@ -107,7 +102,48 @@ public final class ClientPlayerMapping
       map (UUID.randomUUID (), player);
     }
 
+    // if player already exists in players, remove it so the
+    if (players.contains (player))
+    {
+      players.remove (player);
+    }
+
+    players.add (player);
+
+    final Optional <PlayerPacket> previousPlayer = Optional.fromNullable (clientsToPlayers.forcePut (client, player));
     return previousPlayer;
+  }
+
+  public boolean makeCurrent (final PlayerPacket player)
+  {
+    // remove previous value from player set, if existent;
+    // otherwise, the new packet will NOT be added since they evaluate as equal
+    final boolean exists = players.remove (player);
+    if (!exists)
+    {
+      return false;
+    }
+
+    // re-add new value
+    players.add (player);
+
+    // update bound client <=> player mapping, if necessary
+    final BiMap <PlayerPacket, RemoteClient> playersToClients = clientsToPlayers.inverse ();
+    if (playersToClients.containsKey (player))
+    {
+      final RemoteClient client = playersToClients.get (player);
+      clientsToPlayers.forcePut (client, player);
+    }
+
+    // update id <=> player mapping, if necessary
+    final BiMap <PlayerPacket, UUID> playersToServerIds = serverIdsToPlayers.inverse ();
+    if (playersToServerIds.containsKey (player))
+    {
+      final UUID id = playersToServerIds.get (player);
+      playersToServerIds.forcePut (player, id);
+    }
+
+    return true;
   }
 
   /**
@@ -126,7 +162,7 @@ public final class ClientPlayerMapping
     final PlayerPacket oldPlayerPacket = clientsToPlayers.get (client);
 
     // fetch updated player data from core
-    syncPlayerData ();
+    // syncPlayerData ();
 
     final Optional <PlayerPacket> newPlayerQuery = Optional.fromNullable (clientsToPlayers.get (client));
     if (!newPlayerQuery.isPresent ())
@@ -141,7 +177,7 @@ public final class ClientPlayerMapping
   {
     Arguments.checkIsNotNull (player, "player");
 
-    syncPlayerData ();
+    // syncPlayerData ();
     return Optional.fromNullable (clientsToPlayers.inverse ().get (player));
   }
 
@@ -196,9 +232,9 @@ public final class ClientPlayerMapping
   {
     Arguments.checkIsNotNull (name, "name");
 
-    syncPlayerData ();
+    // syncPlayerData ();
 
-    for (final PlayerPacket player : Sets.union (clientsToPlayers.values (), unmappedPlayers))
+    for (final PlayerPacket player : players)
     {
       if (player.hasName (name)) return Optional.of (player);
     }
@@ -208,13 +244,13 @@ public final class ClientPlayerMapping
 
   public ImmutableSet <PlayerPacket> humanPlayers ()
   {
-    syncPlayerData ();
+    // syncPlayerData ();
     return filter (clientsToPlayers.values (), humanPredicate);
   }
 
   public ImmutableSet <PlayerPacket> aiPlayers ()
   {
-    syncPlayerData ();
+    // syncPlayerData ();
     return filter (clientsToPlayers.values (), aiPredicate);
   }
 
@@ -222,7 +258,7 @@ public final class ClientPlayerMapping
   {
     Arguments.checkIsNotNull (player, "player");
 
-    syncPlayerData ();
+    // syncPlayerData ();
     return ImmutableSet.copyOf (Sets.filter (Sets.difference (clientsToPlayers.values (), ImmutableSet.of (player)),
                                              humanPredicate));
   }
@@ -231,39 +267,39 @@ public final class ClientPlayerMapping
   {
     Arguments.checkIsNotNull (player, "player");
 
-    syncPlayerData ();
+    // syncPlayerData ();
     return ImmutableSet
             .copyOf (Sets.filter (Sets.difference (clientsToPlayers.values (), ImmutableSet.of (player)), aiPredicate));
   }
 
   public ImmutableSet <PlayerPacket> players ()
   {
-    syncPlayerData ();
+    // syncPlayerData ();
     return ImmutableSet.copyOf (clientsToPlayers.values ());
   }
 
   public ImmutableSet <RemoteClient> clients ()
   {
-    syncPlayerData ();
+    // syncPlayerData ();
     return ImmutableSet.copyOf (clientsToPlayers.keySet ());
   }
 
   public ImmutableSet <PlayerPacket> unmappedPlayers ()
   {
-    syncPlayerData ();
-    return ImmutableSet.copyOf (unmappedPlayers);
+    // syncPlayerData ();
+    return ImmutableSet.copyOf (Sets.difference (players, serverIdsToPlayers.values ()));
   }
 
   public ImmutableSet <PlayerPacket> unmappedHumanPlayers ()
   {
-    syncPlayerData ();
-    return filter (unmappedPlayers, humanPredicate);
+    // syncPlayerData ();
+    return filter (unmappedPlayers (), humanPredicate);
   }
 
   public ImmutableSet <PlayerPacket> unmappedAiPlayers ()
   {
-    syncPlayerData ();
-    return filter (unmappedPlayers, aiPredicate);
+    // syncPlayerData ();
+    return filter (unmappedPlayers (), aiPredicate);
   }
 
   /**
@@ -294,7 +330,8 @@ public final class ClientPlayerMapping
     final Optional <PlayerPacket> removedPlayer = Optional.fromNullable (serverIdsToPlayers.remove (serverId));
     if (removedPlayer.isPresent ())
     {
-      unmappedPlayers.add (removedPlayer.get ());
+      assert players.contains (removedPlayer.get ());
+      clientsToPlayers.inverse ().remove (removedPlayer.get ());
     }
 
     return removedPlayer;
@@ -307,14 +344,14 @@ public final class ClientPlayerMapping
   {
     clientsToPlayers.inverse ().remove (player);
     serverIdsToPlayers.inverse ().remove (player);
-    unmappedPlayers.remove (player);
+    players.remove (player);
   }
 
-  public void clear ()
+  public void reset ()
   {
     clientsToPlayers.clear ();
     serverIdsToPlayers.clear ();
-    unmappedPlayers.clear ();
+    players.clear ();
   }
 
   @Override
@@ -326,32 +363,6 @@ public final class ClientPlayerMapping
   private void map (final UUID serverId, final PlayerPacket player)
   {
     serverIdsToPlayers.forcePut (serverId, player);
-  }
-
-  private void syncPlayerData ()
-  {
-    final ImmutableSet <PlayerPacket> updatedPlayerData = coreCommunicator.fetchCurrentPlayerData ();
-    for (final PlayerPacket current : updatedPlayerData)
-    {
-      // PlayerPackets by contract must evaluate as equal for the same player, so get will work here even
-      // with updated data.
-      final Optional <RemoteClient> client = Optional.fromNullable (clientsToPlayers.inverse ().get (current));
-      final boolean noClientMapping = !client.isPresent ();
-
-      // if no client mapping exists and the player is not marked as unmapped, log a warning
-      if (noClientMapping && !unmappedPlayers.contains (current))
-      {
-        log.warn ("Received player [{}] from core with no client mapping.", current);
-      }
-
-      // if no client mapping exists, do not add to client/player mapping
-      if (noClientMapping)
-      {
-        continue;
-      }
-
-      clientsToPlayers.forcePut (client.get (), current);
-    }
   }
 
   private static <T> ImmutableSet <T> filter (final Collection <T> objects, final Predicate <T> predicate)
@@ -376,23 +387,6 @@ public final class ClientPlayerMapping
       Arguments.checkIsNotNull (input, "input");
 
       return input.has (sentience);
-    }
-  }
-
-  /**
-   * Thrown to indicate that the player registered to a client no longer exists. This is an exceptional case (and likely
-   * the result of a bug or state violation in core) so it needs to be handled by server appropriately.
-   */
-  final class RegisteredClientPlayerNotFoundException extends Exception
-  {
-    final String message;
-
-    RegisteredClientPlayerNotFoundException (final String playerName, final RemoteClient client)
-    {
-      Arguments.checkIsNotNull (playerName, "playerName");
-      Arguments.checkIsNotNull (client, "client");
-
-      message = Strings.format ("Player [{}] not found for client [{}].", playerName, client);
     }
   }
 }
