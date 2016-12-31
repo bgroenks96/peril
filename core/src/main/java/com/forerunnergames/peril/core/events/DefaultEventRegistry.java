@@ -41,11 +41,13 @@ public class DefaultEventRegistry implements EventRegistry
   private final Multimap <PlayerPacket, Event> playersToEvents = HashMultimap.create ();
   private final Set <PlayerInputEvent> unmappedInputEvents = Sets.newHashSet ();
   private final BiMap <PlayerAnswerEvent <?>, PlayerInputEvent> answerToInputEvents;
-  private final MBassador <Event> eventBus = new MBassador <> ();
+  private final MBassador <Event> eventBus;
 
   public DefaultEventRegistry (final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (eventBus, "eventBus");
+
+    this.eventBus = eventBus;
 
     answerToInputEvents = HashBiMap.create ();
 
