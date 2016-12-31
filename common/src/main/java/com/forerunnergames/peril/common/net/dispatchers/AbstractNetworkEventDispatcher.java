@@ -36,9 +36,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Uses {@link MBassador} to resolve the runtime types of various events. It is the responsibility of implementors to
- * provide {@link Handler} methods for the interested events. Remembers the original remote client sender called via
- * {@link #dispatch(Event, RemoteClient)}, providing a mechanism to resolve the sender, for implementors to use, via
- * {@link #senderOfDispatchedEvent(Event)}.
+ * provide {@link Handler} methods for the interested events. This class remembers the original remote client sender
+ * called via {@link #dispatch(Event, RemoteClient)}, providing a mechanism to resolve the sender, for implementors to
+ * use, via {@link #senderOfDispatchedEvent(Event)}.
  */
 public abstract class AbstractNetworkEventDispatcher implements NetworkEventDispatcher
 {
