@@ -17,14 +17,12 @@
   -->
 
 [![Travis CI Build Status](https://img.shields.io/travis/forerunnergames/peril/master.svg)][travis]
-[![CircleCI Build Status](https://img.shields.io/circleci/project/forerunnergames/peril/master.svg)][circle]
 [![Code Coverage](https://img.shields.io/codecov/c/github/forerunnergames/peril/master.svg)][codecov]
 [![Code Quality](https://img.shields.io/codacy/grade/bf2b210c63de4349827e7aadaf019825/master.svg)][codacy]
 [![License (code): GPLv3](https://img.shields.io/badge/license%20[code]-GPLv3-blue.svg)][gpl-v3]
 [![License (assets): CC BY-SA 4.0](https://img.shields.io/badge/license%20[assets]-CC%20BY--SA%204.0-blue.svg)][cc-by-sa-4]
 
 [travis]: https://travis-ci.org/forerunnergames/peril
-[circle]: https://circleci.com/gh/forerunnergames/peril/tree/master
 [codecov]: https://codecov.io/github/forerunnergames/peril?branch=master
 [codacy]: https://www.codacy.com/app/forerunnergames/peril
 [gpl-v3]: /legal/GPLv3.txt

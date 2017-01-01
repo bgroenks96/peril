@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright © 2011 - 2013 Aaron Mahan.
-# Copyright © 2013 - 2016 Forerunner Games, LLC.
+# Copyright © 2016 Forerunner Games, LLC.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,24 +20,22 @@ THIS_DIR="${BASH_SOURCE%/*}"
 [[ ! -d "$THIS_DIR" ]] && THIS_DIR="$PWD"
 [[ ! -v $BUILD_SETTINGS ]] && . "$THIS_DIR/build-settings.sh"
 
-if [[ $TRAVIS = true && $TRAVIS_REPO_SLUG = "$PROJECT_REPO_OWNER/$ROOT_PROJECT" ]]
+if [[ $TRAVIS = true ]] && [[ $TRAVIS_BRANCH = "develop" || $TRAVIS_BRANCH = "master" ]] && [[ $TRAVIS_PULL_REQUEST != false && $TRAVIS_REPO_SLUG = "$PROJECT_REPO_OWNER/$ROOT_PROJECT" ]]
 then
-  ./scripts/collect-build-artifacts.sh &&
-
-  if [[ $TRAVIS_PULL_REQUEST = false ]]
-  then
-    ./scripts/upload-build-artifacts.sh "$TRAVIS_BRANCH" "$TRAVIS_BUILD_NUMBER"
-  else
-    ./scripts/upload-build-artifacts.sh "$TRAVIS_BRANCH/pr$TRAVIS_PULL_REQUEST" "$TRAVIS_BUILD_NUMBER"
-  fi
-
-  ./scripts/remove-collected-build-artifacts.sh
+  curl -o /tmp/travis-automerge https://raw.githubusercontent.com/forerunnergames/travis-automerge/master/travis-automerge &&
+  chmod a+x /tmp/travis-automerge &&
+  BRANCHES_TO_MERGE_REGEX='.*'
+  BRANCH_TO_MERGE_INTO=${TRAVIS_BRANCH}
+  GITHUB_REPO=${TRAVIS_REPO_SLUG}
+  /tmp/travis-automerge
 else
   printf "\n"
-  printf "Skipping build artifact uploading. Environment does not match requirements.\n\n"
+  printf "Skipping GitHub auto-merge. Environment does not match requirements.\n\n"
   printf "Relevant environment variables:\n\n"
-  printf "  \$TRAVIS = $TRAVIS (expects: [true])\n"
-  printf "  \$TRAVIS_REPO_SLUG = $TRAVIS_REPO_SLUG (expects: [$PROJECT_REPO_OWNER/$ROOT_PROJECT])\n"
+  printf "  \$TRAVIS = [$TRAVIS] (expects: [true])\n"
+  printf "  \$TRAVIS_BRANCH = [$TRAVIS_BRANCH] (expects: [develop])\n"
+  printf "  \$TRAVIS_PULL_REQUEST = [$TRAVIS_PULL_REQUEST] (expects: [pull request number])\n"
+  printf "  \$TRAVIS_REPO_SLUG = [$TRAVIS_REPO_SLUG] (expects: [$PROJECT_REPO_OWNER/$ROOT_PROJECT])\n"
   printf "\n"
   printf "See https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables for more information.\n\n"
 fi
