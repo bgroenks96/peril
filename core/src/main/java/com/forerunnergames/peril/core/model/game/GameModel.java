@@ -227,10 +227,7 @@ public final class GameModel extends AbstractGamePhaseHandler
   @Handler (priority = Integer.MIN_VALUE)
   void onEvent (final PlayerEndTurnRequestEvent event)
   {
-    if (turnDataCache.isSet (CacheKey.END_PLAYER_TURN_VERIFIED))
-    {
-      return;
-    }
+    if (turnDataCache.isSet (CacheKey.END_PLAYER_TURN_VERIFIED)) return;
 
     final Optional <PlayerPacket> sender = eventRegistry.senderOf (event);
     if (!sender.isPresent () || sender.get ().isNot (getCurrentPlayerPacket ()))

@@ -771,10 +771,7 @@ public final class MultiplayerController extends ControllerAdapter
     final boolean wasAdded = eventCache.add (event.getPerson (), event);
     assert wasAdded;
 
-    if (clientsToPlayers.existsClientFor (event.getPerson ()))
-    {
-      return;
-    }
+    if (clientsToPlayers.existsClientFor (event.getPerson ())) return;
 
     // publish suspend game event for new input events that come in while no client
     // is present for the player
@@ -1057,10 +1054,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     remove (client);
 
-    if (!player.isPresent ())
-    {
-      return;
-    }
+    if (!player.isPresent ()) return;
 
     clientsToPlayers.unmap (player.get ());
   }
@@ -1120,10 +1114,7 @@ public final class MultiplayerController extends ControllerAdapter
     sendToAllPlayersExcept (disconnectedPlayer, disconnectEvent);
     sendToAllSpectators (disconnectEvent);
 
-    if (!eventCache.hasPendingEvents (disconnectedPlayer))
-    {
-      return;
-    }
+    if (!eventCache.hasPendingEvents (disconnectedPlayer)) return;
 
     publish (new SuspendGameEvent (SuspendGameEvent.Reason.PLAYER_UNAVAILABLE));
   }
@@ -1183,10 +1174,7 @@ public final class MultiplayerController extends ControllerAdapter
     // send current game state to player
     coreCommunicator.requestSendGameStateTo (updatedPlayer);
 
-    if (!eventCache.hasPendingEvents (updatedPlayer))
-    {
-      return;
-    }
+    if (!eventCache.hasPendingEvents (updatedPlayer)) return;
 
     // resume game and republish pending input events
     publish (new ResumeGameEvent ());
