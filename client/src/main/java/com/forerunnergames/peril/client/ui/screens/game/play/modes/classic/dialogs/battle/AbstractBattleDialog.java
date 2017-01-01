@@ -35,6 +35,7 @@ import com.forerunnergames.peril.client.settings.PlayMapSettings;
 import com.forerunnergames.peril.client.settings.ScreenSettings;
 import com.forerunnergames.peril.client.settings.StyleSettings;
 import com.forerunnergames.peril.client.ui.EmptyTimerTask;
+import com.forerunnergames.peril.client.ui.music.MusicWrapper;
 import com.forerunnergames.peril.client.ui.screens.ScreenShaker;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice.Dice;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice.DiceArrows;
@@ -96,7 +97,7 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   private final AtomicBoolean isBattling = new AtomicBoolean (false);
   private final Timer timer = new NonDelayingTimer ();
   private Sound battleSingleExplosionSoundEffect;
-  private Music battleAmbienceSoundEffect;
+  private MusicWrapper battleAmbienceSoundEffect;
   private Timer.Task battleTask = new EmptyTimerTask ();
   private Timer.Task playBattleEffectsTask = new EmptyTimerTask ();
   private Timer.Task showBattleResultCompleteTask = new EmptyTimerTask ();

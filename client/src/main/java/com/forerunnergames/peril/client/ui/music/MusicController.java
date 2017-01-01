@@ -27,6 +27,8 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 
+import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +37,7 @@ public final class MusicController extends ControllerAdapter implements MusicCha
   private static final Logger log = LoggerFactory.getLogger (MusicController.class);
   private final MusicFactory musicFactory;
   private final MusicVolume masterVolume;
-  private Music currentMusic = new NullMusic ();
+  private MusicWrapper currentMusic = MusicWrapper.NULL;
 
   public MusicController (final MusicFactory musicFactory, final MusicVolume masterVolume)
   {
@@ -64,9 +66,9 @@ public final class MusicController extends ControllerAdapter implements MusicCha
 
     if (!MusicSettings.IS_ENABLED) return;
 
-    final Music newMusic = musicFactory.create (screen);
+    final MusicWrapper newMusic = musicFactory.create (screen);
 
-    if (newMusic.equals (currentMusic)) return;
+    if (Objects.equals (newMusic, currentMusic)) return;
     if (currentMusic.isPlaying ()) stopMusicWithFadeOut (currentMusic);
 
     log.debug ("Changing music from [{}] to [{}] for screen [{}].", currentMusic, newMusic, screen);

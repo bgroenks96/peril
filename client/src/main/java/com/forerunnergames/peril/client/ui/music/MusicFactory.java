@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.client.ui.music;
 
+import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.audio.Music;
 
 import com.forerunnergames.peril.client.assets.AssetManager;
@@ -27,7 +28,6 @@ import com.forerunnergames.tools.common.Arguments;
 
 public final class MusicFactory
 {
-  private static final Music NULL_MUSIC = new NullMusic ();
   private final AssetManager assetManager;
 
   public MusicFactory (final AssetManager assetManager)
@@ -37,7 +37,7 @@ public final class MusicFactory
     this.assetManager = assetManager;
   }
 
-  public Music create (final ScreenId screenId)
+  public MusicWrapper create (final ScreenId screenId)
   {
     Arguments.checkIsNotNull (screenId, "screenId");
 
@@ -46,7 +46,7 @@ public final class MusicFactory
       case NONE:
       case SPLASH:
       {
-        return NULL_MUSIC;
+        return MusicWrapper.NULL;
       }
       case MAIN_MENU:
       case GAME_MODES_MENU:
@@ -56,22 +56,26 @@ public final class MusicFactory
       case CLASSIC_GAME_MODE_JOIN_GAME_MENU:
       case MENU_TO_PLAY_LOADING:
       {
-        if (!assetManager.isLoaded (AssetSettings.MENU_SCREEN_MUSIC_ASSET_DESCRIPTOR)) return NULL_MUSIC;
-
-        return assetManager.get (AssetSettings.MENU_SCREEN_MUSIC_ASSET_DESCRIPTOR);
+        return getMusic (AssetSettings.MENU_SCREEN_MUSIC_ASSET_DESCRIPTOR);
       }
       case PLAY_CLASSIC:
       case PLAY_PERIL:
       case PLAY_TO_MENU_LOADING:
       {
-        if (!assetManager.isLoaded (AssetSettings.PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR)) return NULL_MUSIC;
-
-        return assetManager.get (AssetSettings.PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR);
+        return getMusic (AssetSettings.PLAY_SCREEN_MUSIC_ASSET_DESCRIPTOR);
       }
       default:
       {
         throw new IllegalStateException ("Unknown " + ScreenId.class.getSimpleName () + " [" + screenId + "].");
       }
     }
+  }
+
+  private MusicWrapper getMusic (final AssetDescriptor <Music> descriptor)
+  {
+    assert descriptor != null;
+    if (!assetManager.isLoaded (descriptor)) return MusicWrapper.NULL;
+    final Music music = assetManager.get (descriptor);
+    return new DefaultMusicWrapper (music, descriptor.fileName);
   }
 }
