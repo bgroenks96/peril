@@ -28,9 +28,9 @@ else
   printf "\n"
   printf "Skipping test results copying. Environment does not match requirements.\n\n"
   printf "Relevant environment variables:\n\n"
-  printf "  \$CIRCLECI = $CIRCLECI (expects: true)\n"
-  printf "  \$CIRCLE_PROJECT_USERNAME = $CIRCLE_PROJECT_USERNAME (expects: $PROJECT_REPO_OWNER)\n"
-  printf "  \$CIRCLE_PROJECT_REPONAME = $CIRCLE_PROJECT_REPONAME (expects: $ROOT_PROJECT)\n"
+  printf "  \$CIRCLECI = [$CIRCLECI] (expects: [true])\n"
+  printf "  \$CIRCLE_PROJECT_USERNAME = [$CIRCLE_PROJECT_USERNAME] (expects: [$PROJECT_REPO_OWNER])\n"
+  printf "  \$CIRCLE_PROJECT_REPONAME = [$CIRCLE_PROJECT_REPONAME] (expects: [$ROOT_PROJECT])\n"
   printf "\n"
   printf "See https://circleci.com/docs/environment-variables for more information.\n\n"
 fi
