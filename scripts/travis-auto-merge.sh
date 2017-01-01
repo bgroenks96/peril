@@ -27,7 +27,7 @@ then
   BRANCHES_TO_MERGE_REGEX='.*'
   BRANCH_TO_MERGE_INTO=${TRAVIS_BRANCH}
   GITHUB_REPO=${TRAVIS_REPO_SLUG}
-  /tmp/travis-automerge
+  . /tmp/travis-automerge
 else
   printf "\n"
   printf "Skipping GitHub auto-merge. Environment does not match requirements.\n\n"
