@@ -212,7 +212,7 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   }
 
   @Override
-  @SuppressWarnings ("RefusedBequest")
+  @SuppressWarnings ({"RefusedBequest", "MethodDoesntCallSuperMethod"})
   public final void hide ()
   {
     timer.scheduleTask (new Timer.Task ()
@@ -227,8 +227,8 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   }
 
   @Override
-  @SuppressWarnings ("RefusedBequest")
-  public void hide (@Nullable final Action action)
+  @SuppressWarnings ({"RefusedBequest", "MethodDoesntCallSuperMethod"})
+  public final void hide (@Nullable final Action action)
   {
     timer.scheduleTask (new Timer.Task ()
     {
@@ -242,14 +242,14 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   }
 
   @Override
-  public void enableInput ()
+  public final void enableInput ()
   {
     super.enableInput ();
     setDiceTouchable (GameSettings.CAN_ADD_REMOVE_DICE_IN_BATTLE);
   }
 
   @Override
-  public void disableInput ()
+  public final void disableInput ()
   {
     super.disableInput ();
     setDiceTouchable (false);
@@ -257,7 +257,7 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
 
   @Override
   @OverridingMethodsMustInvokeSuper
-  public void update (final float delta)
+  public final void update (final float delta)
   {
     super.update (delta);
 
@@ -270,7 +270,7 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
 
   @Override
   @OverridingMethodsMustInvokeSuper
-  public void refreshAssets ()
+  public final void refreshAssets ()
   {
     super.refreshAssets ();
 
@@ -313,7 +313,7 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   }
 
   @Override
-  public void continueBattle (final DieRange attackerDieRange, final DieRange defenderDieRange)
+  public final void continueBattle (final DieRange attackerDieRange, final DieRange defenderDieRange)
   {
     Arguments.checkIsNotNull (attackerDieRange, "attackerDieRange");
     Arguments.checkIsNotNull (defenderDieRange, "defenderDieRange");
@@ -401,7 +401,7 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   }
 
   @Override
-  public void updateCountries (final Country attackingCountry, final Country defendingCountry)
+  public final void updateCountries (final Country attackingCountry, final Country defendingCountry)
   {
     Arguments.checkIsNotNull (attackingCountry, "attackingCountry");
     Arguments.checkIsNotNull (defendingCountry, "defendingCountry");
@@ -410,7 +410,7 @@ public abstract class AbstractBattleDialog extends OkDialog implements BattleDia
   }
 
   @Override
-  public boolean isBattling ()
+  public final boolean isBattling ()
   {
     return isBattling.get ();
   }
