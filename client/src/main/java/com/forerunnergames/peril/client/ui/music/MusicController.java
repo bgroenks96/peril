@@ -81,6 +81,8 @@ public final class MusicController extends ControllerAdapter implements MusicCha
 
   private void stopMusicWithFadeOut (final Music music)
   {
+    log.trace ("Fading out music [{}]...", music);
+
     Timer.schedule (new Timer.Task ()
     {
       @Override
@@ -97,8 +99,6 @@ public final class MusicController extends ControllerAdapter implements MusicCha
         final float delta = masterVolume.getVolume () / MusicSettings.FADE_VOLUME_REPEAT_COUNT;
         final float newVolume = currentVolume - delta;
 
-        log.trace ("Fading out music [{}] from volume [{}] to volume [{}].", music, currentVolume, newVolume);
-
         if (newVolume <= MusicSettings.MIN_VOLUME)
         {
           music.stop ();
@@ -114,6 +114,8 @@ public final class MusicController extends ControllerAdapter implements MusicCha
 
   private void startMusicWithFadeIn (final Music music)
   {
+    log.trace ("Fading in music [{}]...", music);
+
     music.setVolume (MusicSettings.MIN_VOLUME);
     music.play ();
 
@@ -132,8 +134,6 @@ public final class MusicController extends ControllerAdapter implements MusicCha
         final float currentVolume = music.getVolume ();
         final float delta = masterVolume.getVolume () / MusicSettings.FADE_VOLUME_REPEAT_COUNT;
         final float newVolume = currentVolume + delta;
-
-        log.trace ("Fading in music [{}] from volume [{}] to volume [{}].", music, currentVolume, newVolume);
 
         if (newVolume > masterVolume.getVolume ())
         {
