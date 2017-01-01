@@ -75,7 +75,11 @@ public final class MusicController extends ControllerAdapter implements MusicCha
 
     currentMusic = newMusic;
 
-    if (currentMusic.isPlaying ()) return;
+    if (currentMusic.isPlaying ())
+    {
+      log.debug ("Already playing change-to music [{}].", currentMusic);
+      return;
+    }
 
     currentMusic.setLooping (true);
     startMusicWithFadeIn (currentMusic);
@@ -99,17 +103,16 @@ public final class MusicController extends ControllerAdapter implements MusicCha
 
         final float currentVolume = music.getVolume ();
         final float delta = masterVolume.getVolume () / MusicSettings.FADE_VOLUME_REPEAT_COUNT;
-        final float newVolume = currentVolume - delta;
+        final float newVolume = MusicSettings.clampVolume (currentVolume - delta);
 
-        if (newVolume <= MusicSettings.MIN_VOLUME)
+        music.setVolume (newVolume);
+
+        if (MusicSettings.volumeIsLessThanOrEqualToMin (newVolume))
         {
           music.stop ();
           cancel ();
           log.trace ("Done fading out & stopping music [{}].", music);
-          return;
         }
-
-        music.setVolume (newVolume);
       }
     }, 0.0f, MusicSettings.FADE_VOLUME_INTERVAL_SECONDS, MusicSettings.FADE_VOLUME_REPEAT_COUNT);
   }
@@ -135,16 +138,15 @@ public final class MusicController extends ControllerAdapter implements MusicCha
 
         final float currentVolume = music.getVolume ();
         final float delta = masterVolume.getVolume () / MusicSettings.FADE_VOLUME_REPEAT_COUNT;
-        final float newVolume = currentVolume + delta;
+        final float newVolume = MusicSettings.clampVolume (currentVolume + delta);
 
-        if (newVolume > masterVolume.getVolume ())
+        music.setVolume (newVolume);
+
+        if (MusicSettings.volumeIsGreaterThanOrEqualTo (newVolume, masterVolume.getVolume ()))
         {
           cancel ();
           log.trace ("Done fading in music [{}].", music);
-          return;
         }
-
-        music.setVolume (newVolume);
       }
     }, 0.0f, MusicSettings.FADE_VOLUME_INTERVAL_SECONDS, MusicSettings.FADE_VOLUME_REPEAT_COUNT);
   }
