@@ -20,7 +20,6 @@ package com.forerunnergames.peril.common.net.events.server.denied;
 
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -30,24 +29,24 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 
 import javax.annotation.Nullable;
 
-public final class PlayerOccupyCountryResponseDeniedEvent extends AbstractPlayerChangeCountryDeniedEvent
-        implements PlayerResponseDeniedEvent <Reason>
+public final class PlayerOccupyCountryResponseDeniedEvent
+        extends AbstractPlayerChangeCountryDeniedEvent <PlayerOccupyCountryResponseRequestEvent> implements
+        PlayerResponseDeniedEvent <PlayerOccupyCountryResponseRequestEvent, AbstractPlayerChangeCountryDeniedEvent.Reason>
 {
-  private final PlayerOccupyCountryResponseRequestEvent originalResponse;
   @Nullable
   private final PlayerOccupyCountryRequestEvent originalRequest;
 
   public PlayerOccupyCountryResponseDeniedEvent (final PlayerPacket player,
-                                                 final Reason reason,
+                                                 // FIXME This should not be necessary.
                                                  @Nullable final PlayerOccupyCountryRequestEvent originalRequest,
-                                                 final PlayerOccupyCountryResponseRequestEvent originalResponse)
+                                                 final PlayerOccupyCountryResponseRequestEvent deniedRequest,
+                                                 final Reason reason)
   {
-    super (player, reason);
+    super (player, deniedRequest, reason);
 
-    Arguments.checkIsNotNull (originalResponse, "originalResponse");
+    Arguments.checkIsNotNull (originalRequest, "originalRequest");
 
     this.originalRequest = originalRequest;
-    this.originalResponse = originalResponse;
   }
 
   public boolean hasOriginalRequest ()
@@ -59,11 +58,6 @@ public final class PlayerOccupyCountryResponseDeniedEvent extends AbstractPlayer
   public PlayerOccupyCountryRequestEvent getOriginalRequest ()
   {
     return originalRequest;
-  }
-
-  public PlayerOccupyCountryResponseRequestEvent getOriginalResponse ()
-  {
-    return originalResponse;
   }
 
   public String getSourceCountryName ()
@@ -79,14 +73,12 @@ public final class PlayerOccupyCountryResponseDeniedEvent extends AbstractPlayer
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | OriginalRequest: [{}] | OriginalResponse: [{}]", super.toString (), originalRequest,
-                           originalResponse);
+    return Strings.format ("{} | OriginalRequest: [{}]", super.toString (), originalRequest);
   }
 
   @RequiredForNetworkSerialization
   private PlayerOccupyCountryResponseDeniedEvent ()
   {
     originalRequest = null;
-    originalResponse = null;
   }
 }

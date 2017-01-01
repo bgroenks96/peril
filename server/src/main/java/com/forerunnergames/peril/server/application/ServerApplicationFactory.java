@@ -93,11 +93,11 @@ public final class ServerApplicationFactory
 
     final MBassador <Event> serverEventBus = EventBusFactory.create ();
 
-    final EventRegistry eventRegistry = new DefaultEventRegistry (serverEventBus);
-
     final Server server = new KryonetServer ();
 
     final AsyncExecution mainThreadExecutor = new AsyncExecution ();
+
+    final EventRegistry eventRegistry = new DefaultEventRegistry (serverEventBus, mainThreadExecutor);
 
     final ServerController serverController = new EventBasedServerController (server, args.serverTcpPort,
             KryonetRegistration.CLASSES, serverEventBus, mainThreadExecutor);
@@ -135,7 +135,8 @@ public final class ServerApplicationFactory
 
     final GameModelConfiguration gameModelConfig = GameModelConfiguration.builder (gameRules)
             .playMapModel (playMapModel).playerModel (playerModel).cardModel (cardModel).battleModel (battleModel)
-            .playerTurnModel (playerTurnModel).eventRegistry (eventRegistry).eventBus (serverEventBus).build ();
+            .playerTurnModel (playerTurnModel).asyncExecutor (mainThreadExecutor).eventRegistry (eventRegistry)
+            .eventBus (serverEventBus).build ();
 
     final GameModel gameModel = GameModel.create (gameModelConfig);
     final GamePhaseHandlers gamePhaseHandlers = GamePhaseHandlers.createDefault (gameModelConfig);

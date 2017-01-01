@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.forerunnergames.peril.common.game.GamePhase;
@@ -344,7 +342,6 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasNeverFired (PlayerClaimCountryResponseSuccessEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerArmiesChangedEvent.class));
-    verify (mockEventRegistry).republishFor (eq (responseRequest));
   }
 
   @Test
@@ -378,8 +375,6 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerClaimCountryResponseSuccessEvent.class));
     // should not have received any more PlayerArmiesChangedEvents
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
-    // verify that republish was called
-    verify (mockEventRegistry).republishFor (eq (responseRequest));
   }
 
   @Test

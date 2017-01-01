@@ -105,11 +105,12 @@ public class TestServerApplicationFactory
     final ContinentGraphModel continentGraphModel = ContinentGraphModel.disjointContinentGraphFrom (continents, countryGraphModel);
     final PlayMapModel playMapModel = playMapModelFactory.create (countryGraphModel, continentGraphModel);
     final BattleModel battleModel = new DefaultBattleModel(playMapModel);
-    final EventRegistry eventRegistry = new DefaultEventRegistry (eventBus);
-    final GameModelConfiguration gameModelConfig = GameModelConfiguration.builder (gameRules).playMapModel (playMapModel).battleModel (battleModel).eventRegistry (eventRegistry).eventBus (eventBus).build ();
+    final AsyncExecution mainThreadExecutor = new AsyncExecution();
+    final EventRegistry eventRegistry = new DefaultEventRegistry (eventBus, mainThreadExecutor);
+    final GameModelConfiguration gameModelConfig = GameModelConfiguration.builder (gameRules).playMapModel (playMapModel).battleModel (battleModel).asyncExecutor (mainThreadExecutor).eventRegistry (eventRegistry).eventBus (eventBus).build ();
     final GameStateMachineConfig config = CoreFactory.createDefaultConfigurationFrom (GameModel.create (gameModelConfig));
     final StateMachineEventHandler stateMachine = CoreFactory.createGameStateMachine (config);
-    return newTestServer (eventBus, eventRegistry, type, gameMode, PLAY_MAP_METADATA, gameRules, stateMachine, serverAddress, serverPort);
+    return newTestServer (eventBus, eventRegistry, type, gameMode, PLAY_MAP_METADATA, gameRules, mainThreadExecutor, stateMachine, serverAddress, serverPort);
     // @formatter:on
   }
 
@@ -117,6 +118,7 @@ public class TestServerApplicationFactory
                                                         final EventRegistry eventRegistry,
                                                         final GameServerType type,
                                                         final GameRules gameRules,
+                                                        final AsyncExecution mainThreadExecutor,
                                                         final StateMachineEventHandler stateMachine,
                                                         final String serverAddress,
                                                         final int serverPort)
@@ -128,8 +130,8 @@ public class TestServerApplicationFactory
     Arguments.checkIsNotNull (serverAddress, "serverAddress");
     Arguments.checkIsNotNegative (serverPort, "serverPort");
 
-    return newTestServer (eventBus, eventRegistry, type, GameMode.CLASSIC, PLAY_MAP_METADATA, gameRules, stateMachine,
-                          serverAddress, serverPort);
+    return newTestServer (eventBus, eventRegistry, type, GameMode.CLASSIC, PLAY_MAP_METADATA, gameRules,
+                          mainThreadExecutor, stateMachine, serverAddress, serverPort);
   }
 
   private static TestServerApplication newTestServer (final MBassador <Event> eventBus,
@@ -138,6 +140,7 @@ public class TestServerApplicationFactory
                                                       final GameMode gameMode,
                                                       final PlayMapMetadata playMapMetadata,
                                                       final GameRules gameRules,
+                                                      final AsyncExecution mainThreadExecutor,
                                                       final StateMachineEventHandler stateMachine,
                                                       final String serverAddress,
                                                       final int serverPort)
@@ -146,8 +149,6 @@ public class TestServerApplicationFactory
     final int gameServerPort = serverPort;
 
     final KryonetServer server = new KryonetServer ();
-
-    final AsyncExecution mainThreadExecutor = new AsyncExecution ();
 
     final ServerController serverController = new EventBasedServerController (server, gameServerPort,
             KryonetRegistration.CLASSES, eventBus, mainThreadExecutor);

@@ -27,6 +27,8 @@ import com.forerunnergames.peril.common.game.rules.GameRules;
 import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ResumeGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SuspendGameEvent;
+import com.forerunnergames.peril.core.events.DefaultEventRegistry;
+import com.forerunnergames.peril.core.events.EventRegistry;
 import com.forerunnergames.peril.core.model.game.GameModel;
 import com.forerunnergames.peril.core.model.game.GameModelConfiguration;
 import com.forerunnergames.peril.core.model.state.StateMachineEventHandler;
@@ -36,6 +38,8 @@ import com.forerunnergames.peril.integration.core.CoreFactory.GameStateMachineCo
 import com.forerunnergames.peril.integration.core.StateMachineMonitor;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Randomness;
+
+import de.matthiasmann.AsyncExecution;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -48,6 +52,7 @@ import net.engio.mbassy.bus.MBassador;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -57,6 +62,7 @@ public class GameStateMachineSmokeTest
   private static final int TEST_COUNTRY_COUNT = 20;
   // TODO: handle event bus errors
   private final MBassador <Event> eventBus = EventBusFactory.create ();
+  private final ScheduledExecutorService updateExecutor = Executors.newSingleThreadScheduledExecutor ();
   private StateMachineEventHandler gameStateMachine;
   private StateMachineMonitor monitor;
   private GameModel gameModel;
@@ -66,12 +72,31 @@ public class GameStateMachineSmokeTest
   {
     final GameRules rules = ClassicGameRules.builder ().maxHumanPlayers ().totalCountryCount (TEST_COUNTRY_COUNT)
             .build ();
-    final GameModelConfiguration gameModelConfig = GameModelConfiguration.builder (rules).eventBus (eventBus).build ();
+    final AsyncExecution asyncExecutor = new AsyncExecution ();
+    final EventRegistry eventRegistry = new DefaultEventRegistry (eventBus, asyncExecutor);
+    final GameModelConfiguration gameModelConfig = GameModelConfiguration.builder (rules).eventBus (eventBus)
+            .eventRegistry (eventRegistry).asyncExecutor (asyncExecutor).build ();
     gameModel = GameModel.create (gameModelConfig);
     final GameStateMachineConfig config = CoreFactory.createDefaultConfigurationFrom (gameModel);
     gameStateMachine = CoreFactory.createGameStateMachine (config);
     monitor = new StateMachineMonitor (gameStateMachine, log);
     eventBus.subscribe (gameStateMachine);
+    updateExecutor.scheduleAtFixedRate (new Runnable ()
+    {
+
+      @Override
+      public void run ()
+      {
+        asyncExecutor.executeQueuedJobs ();
+      }
+
+    }, 0, 250, TimeUnit.MILLISECONDS);
+  }
+
+  @AfterClass
+  public void tearDown ()
+  {
+    updateExecutor.shutdown ();
   }
 
   @Test
@@ -105,7 +130,7 @@ public class GameStateMachineSmokeTest
       }, initialDelaySeconds, TimeUnit.SECONDS);
 
       final long stateChangeTimeoutMs = 10000;
-      monitor.waitForStateChange ("PlayingGame", stateChangeTimeoutMs);
+      monitor.waitForStateChangeWithPrior ("PlayingGame", stateChangeTimeoutMs);
     }
     finally
     {

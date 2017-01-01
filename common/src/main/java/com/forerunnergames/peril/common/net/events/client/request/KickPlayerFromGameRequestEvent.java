@@ -18,13 +18,13 @@
 
 package com.forerunnergames.peril.common.net.events.client.request;
 
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.KickEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 
-public final class KickPlayerFromGameRequestEvent implements KickEvent, ClientRequestEvent
+public final class KickPlayerFromGameRequestEvent implements KickEvent, PlayerRequestEvent
 {
   private final String reasonForKick;
 

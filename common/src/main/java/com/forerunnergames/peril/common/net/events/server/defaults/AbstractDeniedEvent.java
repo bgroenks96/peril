@@ -21,27 +21,38 @@ package com.forerunnergames.peril.common.net.events.server.defaults;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
+import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 
-public abstract class AbstractDeniedEvent <T> implements DeniedEvent <T>
+public abstract class AbstractDeniedEvent <T extends ClientRequestEvent, R> implements DeniedEvent <T, R>
 {
-  private final T reason;
+  private final T deniedRequest;
+  private final R reason;
 
-  protected AbstractDeniedEvent (final T reason)
+  protected AbstractDeniedEvent (final T deniedRequest, final R reason)
   {
+    Arguments.checkIsNotNull (deniedRequest, "deniedRequest");
     Arguments.checkIsNotNull (reason, "reason");
 
+    this.deniedRequest = deniedRequest;
     this.reason = reason;
   }
 
   @RequiredForNetworkSerialization
   protected AbstractDeniedEvent ()
   {
+    deniedRequest = null;
     reason = null;
   }
 
   @Override
-  public final T getReason ()
+  public final T getDeniedRequest ()
+  {
+    return deniedRequest;
+  }
+
+  @Override
+  public final R getReason ()
   {
     return reason;
   }
@@ -49,6 +60,6 @@ public abstract class AbstractDeniedEvent <T> implements DeniedEvent <T>
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Reason for denial: {}", getClass ().getSimpleName (), reason);
+    return Strings.format ("{}: DeniedRequest: [{}] | Reason: {}", getClass ().getSimpleName (), deniedRequest, reason);
   }
 }

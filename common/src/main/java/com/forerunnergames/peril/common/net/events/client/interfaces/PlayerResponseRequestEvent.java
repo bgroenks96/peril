@@ -4,6 +4,6 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInput
 import com.forerunnergames.tools.net.events.remote.origin.client.ResponseRequestEvent;
 
 public interface PlayerResponseRequestEvent <T extends PlayerInputRequestEvent>
-        extends ResponseRequestEvent <T>, PlayerAnswerEvent <T>
+        extends ResponseRequestEvent <T>, PlayerAnswerEvent <T>, PlayerRequestEvent
 {
 }

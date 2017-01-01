@@ -18,13 +18,14 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
+import com.forerunnergames.peril.common.net.events.client.request.SpectatorJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent.Reason;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class SpectatorJoinGameDeniedEvent extends AbstractDeniedEvent <Reason>
+public final class SpectatorJoinGameDeniedEvent extends AbstractDeniedEvent <SpectatorJoinGameRequestEvent, Reason>
 {
   private final String spectatorName;
   private final int spectatorLimit;
@@ -38,9 +39,12 @@ public final class SpectatorJoinGameDeniedEvent extends AbstractDeniedEvent <Rea
     DUPLICATE_SPECTATOR_NAME
   }
 
-  public SpectatorJoinGameDeniedEvent (final String deniedName, final int spectatorLimit, final Reason reason)
+  public SpectatorJoinGameDeniedEvent (final String deniedName,
+                                       final int spectatorLimit,
+                                       final SpectatorJoinGameRequestEvent deniedRequest,
+                                       final Reason reason)
   {
-    super (reason);
+    super (deniedRequest, reason);
 
     Arguments.checkIsNotNull (deniedName, "deniedName");
     Arguments.checkIsNotNegative (spectatorLimit, "spectatorLimit");

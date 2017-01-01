@@ -133,14 +133,14 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
 
     if (!countryGraphModel.existsCountryWith (sourceCountryName))
     {
-      publish (new PlayerSelectAttackVectorDeniedEvent (currentPlayerPacket,
+      publish (new PlayerSelectAttackVectorDeniedEvent (currentPlayerPacket, event,
               PlayerSelectAttackVectorDeniedEvent.Reason.SOURCE_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
 
     if (!countryGraphModel.existsCountryWith (targetCountryName))
     {
-      publish (new PlayerSelectAttackVectorDeniedEvent (currentPlayerPacket,
+      publish (new PlayerSelectAttackVectorDeniedEvent (currentPlayerPacket, event,
               PlayerSelectAttackVectorDeniedEvent.Reason.TARGET_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
@@ -149,7 +149,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     result = battleModel.newPlayerAttackVector (currentPlayer, sourceCountry, targetCountry);
     if (result.failed ())
     {
-      publish (new PlayerSelectAttackVectorDeniedEvent (currentPlayerPacket, result.getFailureReason ()));
+      publish (new PlayerSelectAttackVectorDeniedEvent (currentPlayerPacket, event, result.getFailureReason ()));
       return false;
     }
 
@@ -206,7 +206,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
 
     if (result.failed ())
     {
-      publish (new PlayerAttackCountryDeniedEvent (currentPlayerPacket, result.getFailureReason ()));
+      publish (new PlayerAttackCountryDeniedEvent (currentPlayerPacket, event, result.getFailureReason ()));
       return false;
     }
 
@@ -302,6 +302,7 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
 
     publish (new PlayerRetreatSuccessEvent (attackingPlayer, defendingPlayer, attackingCountry, defendingCountry));
 
+    // TODO FIXME This whole thing is a horrible hack.
     // Handle the corner case where PlayerDefendCountryResponseRequest was received BEFORE
     // PlayerRetreatRequestEvent. PlayerDefendCountryResponseRequestEvent should always be answered, and the only
     // appropriate response here is a denial.
@@ -311,7 +312,11 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     // the attacking player to select a new attack vector.
     if (turnDataCache.isSet (CacheKey.FINAL_BATTLE_ACTOR_DEFENDER))
     {
-      publish (new PlayerDefendCountryResponseDeniedEvent (defendingPlayer,
+      // I can't watch .... it's too horrible :_(
+      final Optional <PlayerDefendCountryResponseRequestEvent> defendResponse = eventRegistry
+              .lastInboundEventOfType (PlayerDefendCountryResponseRequestEvent.class);
+      assert defendResponse.isPresent ();
+      publish (new PlayerDefendCountryResponseDeniedEvent (defendingPlayer, defendResponse.get (),
               PlayerDefendCountryResponseDeniedEvent.Reason.ATTACKER_RETREATED));
 
       clearCacheValues (CacheKey.FINAL_BATTLE_ACTOR_DEFENDER);
@@ -371,9 +376,8 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     if (dieCount < rules.getMinDefenderDieCount (defendingCountry.getArmyCount ())
             || dieCount > rules.getMaxDefenderDieCount (defendingCountry.getArmyCount ()))
     {
-      publish (new PlayerDefendCountryResponseDeniedEvent (sender.get (),
+      publish (new PlayerDefendCountryResponseDeniedEvent (sender.get (), event,
               PlayerDefendCountryResponseDeniedEvent.Reason.INVALID_DIE_COUNT));
-      eventRegistry.republishFor (event);
       return false;
     }
 
@@ -508,18 +512,16 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     if (deltaArmyCount < minDeltaArmyCount)
     {
       publish (new PlayerOccupyCountryResponseDeniedEvent (player,
-              PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_UNDERFLOW,
-              inputEventFor (event, PlayerOccupyCountryRequestEvent.class), event));
-      eventRegistry.republishFor (event);
+              inputEventFor (event, PlayerOccupyCountryRequestEvent.class), event,
+              PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_UNDERFLOW));
       return false;
     }
 
     if (deltaArmyCount > rules.getMaxOccupyArmyCount (sourceCountry.getArmyCount ()))
     {
       publish (new PlayerOccupyCountryResponseDeniedEvent (player,
-              PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_OVERFLOW,
-              inputEventFor (event, PlayerOccupyCountryRequestEvent.class), event));
-      eventRegistry.republishFor (event);
+              inputEventFor (event, PlayerOccupyCountryRequestEvent.class), event,
+              PlayerOccupyCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_OVERFLOW));
       return false;
     }
 
@@ -533,9 +535,8 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     failure = Result.firstFailedFrom (ImmutableSet.of (res1, res2));
     if (failure.isPresent ())
     {
-      publish (new PlayerOccupyCountryResponseDeniedEvent (player, failure.get ().getFailureReason (),
-              inputEventFor (event, PlayerOccupyCountryRequestEvent.class), event));
-      eventRegistry.republishFor (event);
+      publish (new PlayerOccupyCountryResponseDeniedEvent (player,
+              inputEventFor (event, PlayerOccupyCountryRequestEvent.class), event, failure.get ().getFailureReason ()));
       return false;
     }
 

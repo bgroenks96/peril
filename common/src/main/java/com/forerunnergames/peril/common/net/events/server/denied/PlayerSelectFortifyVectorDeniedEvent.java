@@ -18,12 +18,14 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectFortifyVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectFortifyVectorDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public class PlayerSelectFortifyVectorDeniedEvent extends AbstractPlayerDeniedEvent <Reason>
+public class PlayerSelectFortifyVectorDeniedEvent
+        extends AbstractPlayerDeniedEvent <PlayerSelectFortifyVectorRequestEvent, Reason>
 {
   public enum Reason
   {
@@ -37,9 +39,11 @@ public class PlayerSelectFortifyVectorDeniedEvent extends AbstractPlayerDeniedEv
     PLAYER_NOT_IN_TURN
   }
 
-  public PlayerSelectFortifyVectorDeniedEvent (final PlayerPacket player, final Reason reason)
+  public PlayerSelectFortifyVectorDeniedEvent (final PlayerPacket player,
+                                               final PlayerSelectFortifyVectorRequestEvent deniedRequest,
+                                               final Reason reason)
   {
-    super (player, reason);
+    super (player, deniedRequest, reason);
   }
 
   @RequiredForNetworkSerialization

@@ -18,11 +18,13 @@
 
 package com.forerunnergames.peril.common.net.events.server.defaults;
 
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public abstract class AbstractPlayerChangeCountryDeniedEvent extends AbstractPlayerDeniedEvent <Reason>
+public abstract class AbstractPlayerChangeCountryDeniedEvent <T extends PlayerRequestEvent>
+        extends AbstractPlayerDeniedEvent <T, Reason>
 {
   public enum Reason
   {
@@ -41,9 +43,11 @@ public abstract class AbstractPlayerChangeCountryDeniedEvent extends AbstractPla
     COUNTRY_DISABLED
   }
 
-  protected AbstractPlayerChangeCountryDeniedEvent (final PlayerPacket player, final Reason reason)
+  protected AbstractPlayerChangeCountryDeniedEvent (final PlayerPacket player,
+                                                    final T deniedRequest,
+                                                    final Reason reason)
   {
-    super (player, reason);
+    super (player, deniedRequest, reason);
   }
 
   @RequiredForNetworkSerialization

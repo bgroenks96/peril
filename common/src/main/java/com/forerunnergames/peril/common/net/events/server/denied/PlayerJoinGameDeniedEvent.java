@@ -18,12 +18,14 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <PlayerJoinGameDeniedEvent.Reason>
+public final class PlayerJoinGameDeniedEvent
+        extends AbstractDeniedEvent <PlayerJoinGameRequestEvent, PlayerJoinGameDeniedEvent.Reason>
 {
   private final String playerName;
 
@@ -39,9 +41,11 @@ public final class PlayerJoinGameDeniedEvent extends AbstractDeniedEvent <Player
     NAME_MISMATCH
   }
 
-  public PlayerJoinGameDeniedEvent (final String playerName, final Reason reason)
+  public PlayerJoinGameDeniedEvent (final String playerName,
+                                    final PlayerJoinGameRequestEvent deniedRequest,
+                                    final Reason reason)
   {
-    super (reason);
+    super (deniedRequest, reason);
 
     Arguments.checkIsNotNull (playerName, "playerName");
 

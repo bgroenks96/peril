@@ -17,6 +17,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerCancelFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -24,7 +25,7 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 
 public final class PlayerCancelFortifyDeniedEvent
-        extends AbstractPlayerDeniedEvent <PlayerCancelFortifyDeniedEvent.Reason>
+        extends AbstractPlayerDeniedEvent <PlayerCancelFortifyRequestEvent, PlayerCancelFortifyDeniedEvent.Reason>
 {
   private final CountryPacket sourceCountry;
   private final CountryPacket targetCountry;
@@ -37,9 +38,10 @@ public final class PlayerCancelFortifyDeniedEvent
   public PlayerCancelFortifyDeniedEvent (final PlayerPacket player,
                                          final CountryPacket sourceCountry,
                                          final CountryPacket targetCountry,
+                                         final PlayerCancelFortifyRequestEvent deniedRequest,
                                          final Reason reason)
   {
-    super (player, reason);
+    super (player, deniedRequest, reason);
 
     Arguments.checkIsNotNull (sourceCountry, "sourceCountry");
     Arguments.checkIsNotNull (targetCountry, "targetCountry");

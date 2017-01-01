@@ -18,21 +18,27 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerClaimCountryResponseDeniedEvent extends AbstractPlayerChangeCountryDeniedEvent
+public final class PlayerClaimCountryResponseDeniedEvent
+        extends AbstractPlayerChangeCountryDeniedEvent <PlayerClaimCountryResponseRequestEvent> implements
+        PlayerResponseDeniedEvent <PlayerClaimCountryResponseRequestEvent, AbstractPlayerChangeCountryDeniedEvent.Reason>
+
 {
   private final String claimedCountryName;
 
   public PlayerClaimCountryResponseDeniedEvent (final PlayerPacket player,
                                                 final String claimedCountryName,
+                                                final PlayerClaimCountryResponseRequestEvent deniedRequest,
                                                 final Reason reason)
   {
-    super (player, reason);
+    super (player, deniedRequest, reason);
 
     Arguments.checkIsNotNull (claimedCountryName, "claimedCountryName");
 

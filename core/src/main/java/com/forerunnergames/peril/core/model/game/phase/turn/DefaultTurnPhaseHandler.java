@@ -5,7 +5,7 @@ import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndTurnRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayerCardsChangedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerEndTurnSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
@@ -74,7 +74,7 @@ public final class DefaultTurnPhaseHandler extends AbstractGamePhaseHandler impl
 
     final Id playerId = playerModel.idOf (getCurrentPlayerName ());
 
-    Result <PlayerTradeInCardsResponseDeniedEvent.Reason> result = Result.success ();
+    Result <PlayerTradeInCardsDeniedEvent.Reason> result = Result.success ();
 
     final CardSetPacket tradeIn = event.getTradeIn ();
 
@@ -82,7 +82,7 @@ public final class DefaultTurnPhaseHandler extends AbstractGamePhaseHandler impl
     final CardSet cardSet = new CardSet (rules, cards);
     if (!cardSet.isEmpty () && !cardSet.isMatch ())
     {
-      result = Result.failure (PlayerTradeInCardsResponseDeniedEvent.Reason.INVALID_CARD_SET);
+      result = Result.failure (PlayerTradeInCardsDeniedEvent.Reason.INVALID_CARD_SET);
     }
 
     final int cardTradeInBonus = cardModel.getNextTradeInBonus ();
@@ -98,7 +98,7 @@ public final class DefaultTurnPhaseHandler extends AbstractGamePhaseHandler impl
     }
     else if (result.failed ())
     {
-      publish (new PlayerTradeInCardsResponseDeniedEvent (getCurrentPlayerPacket (), result.getFailureReason ()));
+      publish (new PlayerTradeInCardsDeniedEvent (getCurrentPlayerPacket (), event, result.getFailureReason ()));
       return false;
     }
 

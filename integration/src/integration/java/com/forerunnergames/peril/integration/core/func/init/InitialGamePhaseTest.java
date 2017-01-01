@@ -205,6 +205,9 @@ public final class InitialGamePhaseTest
             .waitForEventCommunication (PlayerClaimCountryResponseDeniedEvent.class);
     assertTrue (deniedEvent.isPresent ());
     assertEquals (PlayerClaimCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST, deniedEvent.get ().getReason ());
+    final Optional <PlayerClaimCountryRequestEvent> resentRequest = firstClient
+            .waitForEventCommunication (PlayerClaimCountryRequestEvent.class);
+    assertTrue (resentRequest.isPresent ());
     assertFalse (stateMachineMonitor.checkError ().isPresent ());
   }
 

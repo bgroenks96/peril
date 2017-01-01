@@ -18,31 +18,26 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.DefaultDeniedEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.JoinGameServerRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractDeniedEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
-import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 
-public final class JoinGameServerDeniedEvent implements DeniedEvent <String>
+public final class JoinGameServerDeniedEvent extends AbstractDeniedEvent <JoinGameServerRequestEvent, String>
 {
   private final ClientConfiguration clientConfig;
-  private final DeniedEvent <String> deniedEvent;
 
-  public JoinGameServerDeniedEvent (final ClientConfiguration clientConfig, final String reason)
+  public JoinGameServerDeniedEvent (final ClientConfiguration clientConfig,
+                                    final JoinGameServerRequestEvent deniedRequest,
+                                    final String reason)
   {
+    super (deniedRequest, reason);
+
     Arguments.checkIsNotNull (clientConfig, "clientConfig");
-    Arguments.checkIsNotNull (reason, "reason");
 
     this.clientConfig = clientConfig;
-    deniedEvent = new DefaultDeniedEvent (reason);
-  }
-
-  @Override
-  public String getReason ()
-  {
-    return deniedEvent.getReason ();
   }
 
   public ClientConfiguration getClientConfiguration ()
@@ -58,14 +53,12 @@ public final class JoinGameServerDeniedEvent implements DeniedEvent <String>
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Client Configuration: {} | {}", getClass ().getSimpleName (), clientConfig,
-                           deniedEvent);
+    return Strings.format ("{} | Client Configuration: {} | {}", super.toString (), clientConfig);
   }
 
   @RequiredForNetworkSerialization
   private JoinGameServerDeniedEvent ()
   {
     clientConfig = null;
-    deniedEvent = null;
   }
 }

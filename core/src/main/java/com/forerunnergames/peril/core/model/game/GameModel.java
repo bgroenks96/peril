@@ -152,7 +152,7 @@ public final class GameModel extends AbstractGamePhaseHandler
       final PlayerPacket player = result.getPlayer ();
       if (result.failed ())
       {
-        publish (new PlayerJoinGameDeniedEvent (player.getName (), result.getFailureReason ()));
+        publish (new PlayerJoinGameDeniedEvent (player.getName (), event, result.getFailureReason ()));
         continue;
       }
 
@@ -232,11 +232,12 @@ public final class GameModel extends AbstractGamePhaseHandler
     final Optional <PlayerPacket> sender = eventRegistry.senderOf (event);
     if (!sender.isPresent () || sender.get ().isNot (getCurrentPlayerPacket ()))
     {
-      publish (new PlayerEndTurnDeniedEvent (sender.get (), PlayerEndTurnDeniedEvent.Reason.NOT_IN_TURN));
+      publish (new PlayerEndTurnDeniedEvent (sender.get (), event, PlayerEndTurnDeniedEvent.Reason.NOT_IN_TURN));
       return;
     }
 
-    publish (new PlayerEndTurnDeniedEvent (getCurrentPlayerPacket (), PlayerEndTurnDeniedEvent.Reason.ACTION_REQUIRED));
+    publish (new PlayerEndTurnDeniedEvent (getCurrentPlayerPacket (), event,
+            PlayerEndTurnDeniedEvent.Reason.ACTION_REQUIRED));
   }
 
   @Handler

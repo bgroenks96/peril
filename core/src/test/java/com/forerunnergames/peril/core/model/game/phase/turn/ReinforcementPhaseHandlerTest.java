@@ -10,7 +10,7 @@ import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerCardTradeInAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforceCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
@@ -402,9 +402,9 @@ public class ReinforcementPhaseHandlerTest extends AbstractGamePhaseHandlerTest
 
     assertTrue (eventHandler.wasNeverFired (PlayerTradeInCardsResponseSuccessEvent.class));
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerReinforceCountrySuccessEvent.class));
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerTradeInCardsResponseDeniedEvent.class));
-    assertTrue (eventHandler.lastEventOfType (PlayerTradeInCardsResponseDeniedEvent.class).getReason ()
-            .equals (PlayerTradeInCardsResponseDeniedEvent.Reason.CARDS_NOT_IN_HAND));
+    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerTradeInCardsDeniedEvent.class));
+    assertTrue (eventHandler.lastEventOfType (PlayerTradeInCardsDeniedEvent.class).getReason ()
+            .equals (PlayerTradeInCardsDeniedEvent.Reason.CARDS_NOT_IN_HAND));
     assertGamePhaseIs (GamePhase.REINFORCEMENT);
   }
 

@@ -198,11 +198,11 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
-    log.error ("Error. Could not reinforce {} with {}. Reason: {}.", event.getOriginalRequest ().getCountryName (),
-               Strings.pluralize (event.getOriginalRequest ().getReinforcementCount (), "army", "armies"),
+    log.error ("Error. Could not reinforce {} with {}. Reason: {}.", event.getDeniedRequest ().getCountryName (),
+               Strings.pluralize (event.getDeniedRequest ().getReinforcementCount (), "army", "armies"),
                event.getReason ());
 
-    final PlayerReinforceCountryRequestEvent originalRequest = event.getOriginalRequest ();
+    final PlayerReinforceCountryRequestEvent originalRequest = event.getDeniedRequest ();
     rollBackPreemptiveUpdates (originalRequest.getCountryName (), originalRequest.getReinforcementCount ());
     reset ();
   }

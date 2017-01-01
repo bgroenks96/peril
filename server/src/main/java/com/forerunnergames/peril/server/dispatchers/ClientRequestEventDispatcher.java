@@ -19,10 +19,9 @@
 package com.forerunnergames.peril.server.dispatchers;
 
 import com.forerunnergames.peril.common.net.dispatchers.AbstractNetworkEventDispatcher;
-import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerInformRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerAnswerEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerOriginatedRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.AiJoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
@@ -115,7 +114,7 @@ public final class ClientRequestEventDispatcher extends AbstractNetworkEventDisp
   }
 
   @Handler
-  void onEvent (final PlayerRequestEvent event)
+  void onEvent (final PlayerOriginatedRequestEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -125,17 +124,7 @@ public final class ClientRequestEventDispatcher extends AbstractNetworkEventDisp
   }
 
   @Handler
-  void onEvent (final PlayerResponseRequestEvent <?> event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Event [{}] received", event);
-
-    listener.handleEvent (event, senderOfDispatchedEvent (event));
-  }
-
-  @Handler
-  void onEvent (final PlayerInformRequestEvent <?> event)
+  void onEvent (final PlayerAnswerEvent <?> event)
   {
     Arguments.checkIsNotNull (event, "event");
 

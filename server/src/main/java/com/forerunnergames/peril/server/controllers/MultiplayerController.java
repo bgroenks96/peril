@@ -31,7 +31,7 @@ import com.forerunnergames.peril.common.net.dispatchers.NetworkEventDispatcher;
 import com.forerunnergames.peril.common.net.events.client.interfaces.JoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerAnswerEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerOriginatedRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.AiJoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
@@ -219,7 +219,8 @@ public final class MultiplayerController extends ControllerAdapter
     // This reeks of hacking...
     if (!NetworkTools.isValidIpAddress (client.getAddress ()))
     {
-      sendJoinGameServerDeniedToHumanClient (client, "Your IP address [" + client.getAddress () + "] is invalid.");
+      sendJoinGameServerDeniedToHumanClient (client, event,
+                                             "Your IP address [" + client.getAddress () + "] is invalid.");
       return;
     }
 
@@ -230,7 +231,7 @@ public final class MultiplayerController extends ControllerAdapter
     // is required for LAN clients to join using the server's internal network address, which circumvents this problem.
     if (serverHasAddress () && client.getAddress ().equals (getServerAddress ()))
     {
-      sendJoinGameServerDeniedToHumanClient (client, "You cannot join this game having the same IP address ["
+      sendJoinGameServerDeniedToHumanClient (client, event, "You cannot join this game having the same IP address ["
               + client.getAddress () + "] as the game server.\nIf you are on the same network as the server, "
               + "you can join using the game server's internal IP address to play a LAN game.");
       return;
@@ -239,28 +240,28 @@ public final class MultiplayerController extends ControllerAdapter
     // check if client is already in server
     if (clientsInServer.contains (client))
     {
-      sendJoinGameServerDeniedToHumanClient (client, "You have already joined this game server.");
+      sendJoinGameServerDeniedToHumanClient (client, event, "You have already joined this game server.");
       return;
     }
 
     // local host cannot join a dedicated server
     if (!isHostAndPlay () && isLocalHost (client))
     {
-      sendJoinGameServerDeniedToHumanClient (client, "You cannot join a dedicated game server as localhost.");
+      sendJoinGameServerDeniedToHumanClient (client, event, "You cannot join a dedicated game server as localhost.");
       return;
     }
 
     // local host must join first in a host-and-play server
     if (isHostAndPlay () && !isHostConnected () && !isLocalHost (client))
     {
-      sendJoinGameServerDeniedToHumanClient (client, "Waiting for the host to connect...");
+      sendJoinGameServerDeniedToHumanClient (client, event, "Waiting for the host to connect...");
       return;
     }
 
     // only one local host can join a host-and-play server
     if (isHostAndPlay () && isHostConnected () && isLocalHost (client))
     {
-      sendJoinGameServerDeniedToHumanClient (client, "The host has already joined this game server.");
+      sendJoinGameServerDeniedToHumanClient (client, event, "The host has already joined this game server.");
       return;
     }
 
@@ -281,7 +282,7 @@ public final class MultiplayerController extends ControllerAdapter
     if (NetworkTools.isValidIpAddress (client.getAddress ()))
     {
       // It's a human client. Send the denial to the human client.
-      sendJoinGameServerDeniedToHumanClient (client, Strings.format ("Invalid AI client: [{}]", client));
+      sendJoinGameServerDeniedToHumanClient (client, event, Strings.format ("Invalid AI client: [{}]", client));
       return;
     }
 
@@ -291,7 +292,7 @@ public final class MultiplayerController extends ControllerAdapter
     // check if client is already in server
     if (clientsInServer.contains (client))
     {
-      sendJoinGameServerDeniedToAiClient (client, "You have already joined this game server.");
+      sendJoinGameServerDeniedToAiClient (client, event, "You have already joined this game server.");
       return;
     }
 
@@ -322,7 +323,7 @@ public final class MultiplayerController extends ControllerAdapter
                 event.getClass ().getSimpleName (), client,
                 clientsToSpectators.clientFor (nameConflictSpectator).get (), nameConflictSpectator);
       // this will bypass core and immediately publish the event using the existing event handler in this class
-      eventBus.publish (new PlayerJoinGameDeniedEvent (event.getPlayerName (),
+      eventBus.publish (new PlayerJoinGameDeniedEvent (event.getPlayerName (), event,
               PlayerJoinGameDeniedEvent.Reason.DUPLICATE_NAME));
       return;
     }
@@ -365,7 +366,8 @@ public final class MultiplayerController extends ControllerAdapter
 
     if (!playerMaybe.isPresent ())
     {
-      sendToClient (client, new PlayerQuitGameDeniedEvent (PlayerQuitGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST));
+      sendToClient (client,
+                    new PlayerQuitGameDeniedEvent (event, PlayerQuitGameDeniedEvent.Reason.PLAYER_DOES_NOT_EXIST));
       return;
     }
 
@@ -392,21 +394,22 @@ public final class MultiplayerController extends ControllerAdapter
 
     if (gameServerConfig.getSpectatorLimit () == 0)
     {
-      sendSpectatorJoinGameDenied (client, event.getSpectatorName (),
+      sendSpectatorJoinGameDenied (client, event.getSpectatorName (), event,
                                    SpectatorJoinGameDeniedEvent.Reason.SPECTATING_DISABLED);
       return;
     }
 
     if (clientsToSpectators.spectatorCount () >= gameServerConfig.getSpectatorLimit ())
     {
-      sendSpectatorJoinGameDenied (client, event.getSpectatorName (), SpectatorJoinGameDeniedEvent.Reason.GAME_IS_FULL);
+      sendSpectatorJoinGameDenied (client, event.getSpectatorName (), event,
+                                   SpectatorJoinGameDeniedEvent.Reason.GAME_IS_FULL);
       return;
     }
 
     final Result <SpectatorJoinGameDeniedEvent.Reason> validateName = validateSpectatorName (event.getSpectatorName ());
     if (validateName.failed ())
     {
-      sendSpectatorJoinGameDenied (client, event.getSpectatorName (), validateName.getFailureReason ());
+      sendSpectatorJoinGameDenied (client, event.getSpectatorName (), event, validateName.getFailureReason ());
       return;
     }
 
@@ -463,12 +466,10 @@ public final class MultiplayerController extends ControllerAdapter
   }
 
   @Override
-  public void handleEvent (final PlayerRequestEvent event, final RemoteClient client)
+  public void handleEvent (final PlayerOriginatedRequestEvent event, final RemoteClient client)
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
-
-    assert !(event instanceof PlayerAnswerEvent);
 
     log.trace ("Event received [{}]", event);
 
@@ -499,8 +500,6 @@ public final class MultiplayerController extends ControllerAdapter
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
-
-    assert !(event instanceof PlayerRequestEvent);
 
     log.trace ("Event received [{}]", event);
 
@@ -878,26 +877,31 @@ public final class MultiplayerController extends ControllerAdapter
     log.info ("Client [{}] successfully joined game server.", client);
   }
 
-  private void sendJoinGameServerDeniedToHumanClient (final RemoteClient client, final String reason)
+  private void sendJoinGameServerDeniedToHumanClient (final RemoteClient client,
+                                                      final JoinGameServerRequestEvent deniedRequest,
+                                                      final String reason)
   {
-    sendToHumanClient (client, new JoinGameServerDeniedEvent (createHumanClientConfig (client), reason));
+    sendToHumanClient (client, new JoinGameServerDeniedEvent (createHumanClientConfig (client), deniedRequest, reason));
     disconnectHuman (client);
 
     log.warn ("Denied [{}] from [{}]; REASON: {}", JoinGameServerRequestEvent.class.getSimpleName (), client, reason);
   }
 
-  private void sendJoinGameServerDeniedToAiClient (final RemoteClient client, final String reason)
+  private void sendJoinGameServerDeniedToAiClient (final RemoteClient client,
+                                                   final JoinGameServerRequestEvent deniedRequest,
+                                                   final String reason)
   {
-    sendToAiClient (client, new JoinGameServerDeniedEvent (createAiClientConfig (client), reason));
+    sendToAiClient (client, new JoinGameServerDeniedEvent (createAiClientConfig (client), deniedRequest, reason));
 
     log.warn ("Denied [{}] from [{}]; REASON: {}", JoinGameServerRequestEvent.class.getSimpleName (), client, reason);
   }
 
   private void sendSpectatorJoinGameDenied (final RemoteClient client,
                                             final String name,
+                                            final SpectatorJoinGameRequestEvent deniedRequest,
                                             final SpectatorJoinGameDeniedEvent.Reason reason)
   {
-    sendToSpectator (client, new SpectatorJoinGameDeniedEvent (name, getSpectatorLimit (), reason));
+    sendToSpectator (client, new SpectatorJoinGameDeniedEvent (name, getSpectatorLimit (), deniedRequest, reason));
     disconnectHuman (client);
   }
 
@@ -1127,7 +1131,7 @@ public final class MultiplayerController extends ControllerAdapter
     if (!NetworkTools.isValidIpAddress (client.getAddress ()))
     {
       log.warn ("Client [{}] does not have a valid IP address for reconnection.", client);
-      eventBus.publish (new PlayerJoinGameDeniedEvent (event.getPlayerName (),
+      eventBus.publish (new PlayerJoinGameDeniedEvent (event.getPlayerName (), event,
               PlayerJoinGameDeniedEvent.Reason.INVALID_ADDRESS));
       return;
     }
@@ -1138,7 +1142,7 @@ public final class MultiplayerController extends ControllerAdapter
     {
       log.warn ("Received unrecognized server ID [{}] from client [{}]. Aborting reconnection attempt.", playerServerId,
                 client);
-      eventBus.publish (new PlayerJoinGameDeniedEvent (event.getPlayerName (),
+      eventBus.publish (new PlayerJoinGameDeniedEvent (event.getPlayerName (), event,
               PlayerJoinGameDeniedEvent.Reason.INVALID_ID));
       return;
     }
@@ -1148,7 +1152,7 @@ public final class MultiplayerController extends ControllerAdapter
     {
       log.warn ("Unexpected name '{}' for player [{}] with server ID [{}]. Aborting reconnection attempt.",
                 event.getPlayerName (), mappedPlayer, playerServerId);
-      eventBus.publish (new PlayerJoinGameDeniedEvent (event.getPlayerName (),
+      eventBus.publish (new PlayerJoinGameDeniedEvent (event.getPlayerName (), event,
               PlayerJoinGameDeniedEvent.Reason.NAME_MISMATCH));
       return;
     }

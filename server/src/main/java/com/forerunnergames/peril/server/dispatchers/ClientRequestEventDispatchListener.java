@@ -2,7 +2,7 @@ package com.forerunnergames.peril.server.dispatchers;
 
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerAnswerEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerOriginatedRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.AiJoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
@@ -24,7 +24,7 @@ public interface ClientRequestEventDispatchListener
 
   void handleEvent (final ChatMessageRequestEvent event, final RemoteClient client);
 
-  void handleEvent (final PlayerRequestEvent event, final RemoteClient client);
+  void handleEvent (final PlayerOriginatedRequestEvent event, final RemoteClient client);
 
   void handleEvent (final PlayerAnswerEvent <?> event, final RemoteClient client);
 }

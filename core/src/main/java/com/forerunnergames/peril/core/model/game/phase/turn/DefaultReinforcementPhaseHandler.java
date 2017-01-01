@@ -136,8 +136,8 @@ public final class DefaultReinforcementPhaseHandler extends AbstractGamePhaseHan
 
     if (cardModel.countCardsInHand (playerId) >= rules.getMinCardsInHandToRequireTradeIn (TurnPhase.REINFORCE))
     {
-      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (),
-              PlayerReinforceCountryDeniedEvent.Reason.TRADE_IN_REQUIRED, event));
+      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (), event,
+              PlayerReinforceCountryDeniedEvent.Reason.TRADE_IN_REQUIRED));
       return false;
     }
 
@@ -184,8 +184,8 @@ public final class DefaultReinforcementPhaseHandler extends AbstractGamePhaseHan
 
     if (firstFailure.isPresent ())
     {
-      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (),
-              firstFailure.get ().getFailureReason (), event));
+      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (), event,
+              firstFailure.get ().getFailureReason ()));
       return false;
     }
 

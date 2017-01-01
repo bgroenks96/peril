@@ -20,8 +20,8 @@ package com.forerunnergames.peril.core.model.card;
 
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent.Reason;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsDeniedEvent.Reason;
 import com.forerunnergames.peril.core.model.card.CardSet.Match;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.tools.common.Arguments;
@@ -150,7 +150,7 @@ public final class DefaultCardModel implements CardModel
   }
 
   @Override
-  public Result <PlayerTradeInCardsResponseDeniedEvent.Reason> requestTradeInCards (final Id playerId,
+  public Result <PlayerTradeInCardsDeniedEvent.Reason> requestTradeInCards (final Id playerId,
                                                                                     final Match tradeInCards,
                                                                                     final TurnPhase turnPhase)
   {
