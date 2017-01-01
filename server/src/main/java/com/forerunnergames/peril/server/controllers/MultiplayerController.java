@@ -32,7 +32,6 @@ import com.forerunnergames.peril.common.net.events.client.interfaces.JoinGameSer
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerAnswerEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerOriginatedRequestEvent;
-import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.AiJoinGameServerRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.HumanJoinGameServerRequestEvent;
@@ -472,8 +471,6 @@ public final class MultiplayerController extends ControllerAdapter
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
 
-    assert !(event instanceof PlayerAnswerEvent);
-
     log.trace ("Event received [{}]", event);
 
     final Optional <PlayerPacket> playerQuery;
@@ -503,8 +500,6 @@ public final class MultiplayerController extends ControllerAdapter
   {
     Arguments.checkIsNotNull (event, "event");
     Arguments.checkIsNotNull (client, "client");
-
-    assert !(event instanceof PlayerRequestEvent);
 
     log.trace ("Event received [{}]", event);
 

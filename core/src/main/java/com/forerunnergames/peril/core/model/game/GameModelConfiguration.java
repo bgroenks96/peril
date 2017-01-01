@@ -24,6 +24,8 @@ import com.forerunnergames.tools.common.Event;
 
 import com.google.common.collect.ImmutableSet;
 
+import de.matthiasmann.AsyncExecution;
+
 import net.engio.mbassy.bus.MBassador;
 
 public final class GameModelConfiguration
@@ -36,6 +38,7 @@ public final class GameModelConfiguration
   private final GameRules rules;
   private final EventRegistry eventRegistry;
   private final PlayerTurnDataCache <CacheKey> turnDataCache;
+  private final AsyncExecution asyncExecutor;
   private final MBassador <Event> eventBus;
 
   public GameModelConfiguration (final PlayerModel playerModel,
@@ -46,6 +49,7 @@ public final class GameModelConfiguration
                                  final GameRules rules,
                                  final EventRegistry eventRegistry,
                                  final PlayerTurnDataCache <CacheKey> turnDataCache,
+                                 final AsyncExecution asyncExecutor,
                                  final MBassador <Event> eventBus)
   {
     Arguments.checkIsNotNull (playerModel, "playerModel");
@@ -56,6 +60,7 @@ public final class GameModelConfiguration
     Arguments.checkIsNotNull (rules, "rules");
     Arguments.checkIsNotNull (eventRegistry, "eventRegistry");
     Arguments.checkIsNotNull (turnDataCache, "turnDataCache");
+    Arguments.checkIsNotNull (asyncExecutor, "asyncExecutor");
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.playerModel = playerModel;
@@ -66,6 +71,7 @@ public final class GameModelConfiguration
     this.rules = rules;
     this.eventRegistry = eventRegistry;
     this.turnDataCache = turnDataCache;
+    this.asyncExecutor = asyncExecutor;
     this.eventBus = eventBus;
   }
 
@@ -114,6 +120,11 @@ public final class GameModelConfiguration
     return turnDataCache;
   }
 
+  public AsyncExecution getAsyncExecutor ()
+  {
+    return asyncExecutor;
+  }
+
   public MBassador <Event> getEventBus ()
   {
     return eventBus;
@@ -129,12 +140,13 @@ public final class GameModelConfiguration
     private BattleModel battleModel;
     private EventRegistry eventRegistry;
     private PlayerTurnDataCache <CacheKey> turnDataCache;
+    private AsyncExecution asyncExecutor;
     private MBassador <Event> eventBus = EventBusFactory.create ();
 
     public GameModelConfiguration build ()
     {
       return new GameModelConfiguration (playerModel, playMapModel, cardModel, playerTurnModel, battleModel, gameRules,
-              eventRegistry, turnDataCache, eventBus);
+              eventRegistry, turnDataCache, asyncExecutor, eventBus);
     }
 
     public Builder playMapModel (final PlayMapModel playMapModel)
@@ -193,6 +205,14 @@ public final class GameModelConfiguration
       return this;
     }
 
+    public Builder asyncExecutor (final AsyncExecution asyncExecutor)
+    {
+      Arguments.checkIsNotNull (turnDataCache, "turnDataCache");
+
+      this.asyncExecutor = asyncExecutor;
+      return this;
+    }
+
     public Builder eventBus (final MBassador <Event> eventBus)
     {
       Arguments.checkIsNotNull (eventBus, "eventBus");
@@ -205,7 +225,8 @@ public final class GameModelConfiguration
     {
       Arguments.checkIsNotNull (gameRules, "gameRules");
 
-      eventRegistry = new DefaultEventRegistry (eventBus);
+      asyncExecutor = new AsyncExecution ();
+      eventRegistry = new DefaultEventRegistry (eventBus, asyncExecutor);
       this.gameRules = gameRules;
       final CountryFactory defaultCountryFactory = CountryFactory
               .generateDefaultCountries (gameRules.getTotalCountryCount ());

@@ -1,6 +1,8 @@
 package com.forerunnergames.peril.core.events;
 
 import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerAnswerEvent;
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
@@ -9,7 +11,6 @@ import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientEvent;
-import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 
 import com.google.common.base.Optional;
@@ -22,6 +23,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
+
+import de.matthiasmann.AsyncExecution;
 
 import java.util.Deque;
 import java.util.Map;
@@ -47,12 +50,14 @@ public class DefaultEventRegistry implements EventRegistry
   private final Set <PlayerInputEvent> unmappedInputEvents = Sets.newHashSet ();
   private final BiMap <PlayerAnswerEvent <?>, PlayerInputEvent> answerToInputEvents;
   private final MBassador <Event> eventBus;
+  private final AsyncExecution asyncExecutor;
 
-  public DefaultEventRegistry (final MBassador <Event> eventBus)
+  public DefaultEventRegistry (final MBassador <Event> eventBus, final AsyncExecution asyncExecutor)
   {
     Arguments.checkIsNotNull (eventBus, "eventBus");
 
     this.eventBus = eventBus;
+    this.asyncExecutor = asyncExecutor;
 
     answerToInputEvents = HashBiMap.create ();
 
@@ -123,19 +128,6 @@ public class DefaultEventRegistry implements EventRegistry
 
     final PlayerInputRequestEvent inputRequestEvent = (PlayerInputRequestEvent) answerToInputEvents.get (event);
     return Optional.fromNullable (inputRequestType.cast (inputRequestEvent));
-  }
-
-  public <T extends PlayerInputEvent> boolean republishFor (final PlayerAnswerEvent <T> answerEvent)
-  {
-    final PlayerInputEvent inputEvent = answerToInputEvents.get (answerEvent);
-    if (inputEvent == null)
-    {
-      log.warn ("No event found to republish for [{}]", answerEvent);
-      return false;
-    }
-
-    eventBus.publish (inputEvent);
-    return true;
   }
 
   @Override
@@ -209,13 +201,22 @@ public class DefaultEventRegistry implements EventRegistry
   }
 
   @Handler
-  void onEvent (final DeniedEvent <?, ?> event)
+  void onEvent (final PlayerDeniedEvent <?, ?> event)
   {
     Arguments.checkIsNotNull (event, "event");
+
+    final PlayerRequestEvent deniedRequest = event.getDeniedRequest ();
+
+    // Do not republish if denied request event is not an answer
+    if (!(deniedRequest instanceof PlayerAnswerEvent)) return;
+
+    republishFor ((PlayerAnswerEvent <?>) deniedRequest);
   }
 
   // ------- Inbound Event Handlers ------- //
 
+  // This handler needs to execute first in order to ensure that the event mapping is present for other handler code in
+  // Core that might need it.
   @Handler (priority = Integer.MAX_VALUE)
   <T extends PlayerInputEvent> void onEvent (final PlayerAnswerEvent <T> event)
   {
@@ -224,7 +225,7 @@ public class DefaultEventRegistry implements EventRegistry
     log.trace ("Event received [{}]", event);
 
     final ImmutableSet <T> inputEventMatches = allUnmappedInputEventsOfType (event.getQuestionType ());
-    if (!inputEventMatches.isEmpty ())
+    if (inputEventMatches.isEmpty ())
     {
       log.warn ("Received answer event with no corresponding outbound event! [{}]", event);
       return;
@@ -262,6 +263,26 @@ public class DefaultEventRegistry implements EventRegistry
   }
 
   // ------- Private Utility Methods ------- //
+
+  private <T extends PlayerInputEvent> boolean republishFor (final PlayerAnswerEvent <T> answerEvent)
+  {
+    final PlayerInputEvent inputEvent = answerToInputEvents.get (answerEvent);
+    if (inputEvent == null)
+    {
+      log.warn ("No event found to republish for [{}]", answerEvent);
+      return false;
+    }
+
+    asyncExecutor.invokeLater (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        eventBus.publish (inputEvent);
+      }
+    });
+    return true;
+  }
 
   private <T extends PlayerInputEvent> ImmutableSet <T> allUnmappedInputEventsOfType (final Class <T> inputEventType)
   {

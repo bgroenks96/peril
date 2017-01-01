@@ -52,6 +52,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
+import de.matthiasmann.AsyncExecution;
+
 import javax.annotation.Nullable;
 
 import net.engio.mbassy.bus.MBassador;
@@ -76,6 +78,7 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   protected final GameRules rules;
   protected final EventRegistry eventRegistry;
   protected final PlayerTurnDataCache <CacheKey> turnDataCache;
+  protected final AsyncExecution asyncExecutor;
   protected final MBassador <Event> eventBus;
 
   private GamePhase currentPhase = GamePhase.UNKNOWN;
@@ -95,8 +98,9 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     cardModel = gameModelConfig.getCardModel ();
     playerTurnModel = gameModelConfig.getPlayerTurnModel ();
     rules = gameModelConfig.getRules ();
-    turnDataCache = gameModelConfig.getTurnDataCache ();
     eventRegistry = gameModelConfig.getEventRegistry ();
+    turnDataCache = gameModelConfig.getTurnDataCache ();
+    asyncExecutor = gameModelConfig.getAsyncExecutor ();
     eventBus = gameModelConfig.getEventBus ();
 
     // unpack play map model configuration types
@@ -355,7 +359,14 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
 
   protected void publish (final Event event)
   {
-    eventBus.publish (event);
+    asyncExecutor.invokeLater (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        eventBus.publish (event);
+      }
+    });
   }
 
   @Nullable

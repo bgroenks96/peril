@@ -342,8 +342,6 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasNeverFired (PlayerClaimCountryResponseSuccessEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerCountryAssignmentCompleteEvent.class));
     assertTrue (eventHandler.wasNeverFired (PlayerArmiesChangedEvent.class));
-    // make sure that request event was republished
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerClaimCountryRequestEvent.class));
   }
 
   @Test
@@ -377,8 +375,6 @@ public class InitialPhaseHandlerTest extends AbstractGamePhaseHandlerTest
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerClaimCountryResponseSuccessEvent.class));
     // should not have received any more PlayerArmiesChangedEvents
     assertTrue (eventHandler.wasFiredExactlyOnce (PlayerArmiesChangedEvent.class));
-    // make sure that request event was republished
-    assertTrue (eventHandler.wasFiredExactlyOnce (PlayerClaimCountryRequestEvent.class));
   }
 
   @Test

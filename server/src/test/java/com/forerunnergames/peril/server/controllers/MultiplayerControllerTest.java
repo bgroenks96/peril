@@ -110,6 +110,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
+import de.matthiasmann.AsyncExecution;
+
 import java.net.InetSocketAddress;
 import java.util.Objects;
 import java.util.Set;
@@ -173,7 +175,7 @@ public class MultiplayerControllerTest
   public void setup ()
   {
     eventBus = EventBusFactory.create (ImmutableSet.of (EventBusHandler.createEventBusFailureHandler ()));
-    eventRegistry = new DefaultEventRegistry (eventBus);
+    eventRegistry = new DefaultEventRegistry (eventBus, new AsyncExecution ());
     eventHandler.subscribe (eventBus);
   }
 

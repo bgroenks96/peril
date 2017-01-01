@@ -43,6 +43,8 @@ import com.forerunnergames.tools.net.InternalAddressResolver;
 import com.forerunnergames.tools.net.server.configuration.DefaultServerConfiguration;
 import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 
+import de.matthiasmann.AsyncExecution;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.engio.mbassy.bus.MBassador;
@@ -57,8 +59,9 @@ public class DedicatedGameSession implements TestSession
   private final InternalAddressResolver internalAddressResolver = new DefaultInternalAddressResolver ();
   private final NetworkPortPool portPool = NetworkPortPool.getInstance ();
   private final AtomicBoolean isShutDown = new AtomicBoolean ();
+  private final AsyncExecution mainThreadExecutor = new AsyncExecution ();
   private final MBassador <Event> eventBus = EventBusFactory.create (withDefaultHandler ());
-  private final EventRegistry eventRegistry = new DefaultEventRegistry (eventBus);
+  private final EventRegistry eventRegistry = new DefaultEventRegistry (eventBus, mainThreadExecutor);
   private final GameRules gameRules;
   private final String serverAddress;
   private final String internalServerAddress;
@@ -151,14 +154,14 @@ public class DedicatedGameSession implements TestSession
 
   private void initializeServer ()
   {
-    final GameModelConfiguration gameModelConfig = GameModelConfiguration.builder (gameRules).eventBus (eventBus)
-            .build ();
+    final GameModelConfiguration gameModelConfig = GameModelConfiguration.builder (gameRules)
+            .eventRegistry (eventRegistry).asyncExecutor (mainThreadExecutor).eventBus (eventBus).build ();
     gameModel = GameModel.create (gameModelConfig);
     final GameStateMachineConfig config = CoreFactory.createDefaultConfigurationFrom (gameModel);
     stateMachine = CoreFactory.createGameStateMachine (config);
-    serverApplication = TestServerApplicationFactory.createTestServer (eventBus, eventRegistry,
-                                                                       GameServerType.DEDICATED, gameRules,
-                                                                       stateMachine, serverAddress, serverPort);
+    serverApplication = TestServerApplicationFactory
+            .createTestServer (eventBus, eventRegistry, GameServerType.DEDICATED, gameRules, mainThreadExecutor,
+                               stateMachine, serverAddress, serverPort);
     log.trace ("Starting server application [{}] on port {}", serverAddress, serverPort);
     serverApplication.start ();
   }

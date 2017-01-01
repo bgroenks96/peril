@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
@@ -58,6 +59,8 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
 
+import de.matthiasmann.AsyncExecution;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
@@ -66,6 +69,8 @@ import net.engio.mbassy.bus.MBassador;
 import org.junit.Before;
 
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -74,6 +79,7 @@ public abstract class AbstractGamePhaseHandlerTest
   protected final int defaultTestCountryCount = 30;
   protected final ImmutableList <String> defaultTestCountries = generateTestCountryNames (defaultTestCountryCount);
   protected MBassador <Event> eventBus;
+  protected AsyncExecution mockAsyncExecution;
   protected EventRegistry mockEventRegistry;
   protected EventBusHandler eventHandler;
   protected int playerLimit;
@@ -139,6 +145,7 @@ public abstract class AbstractGamePhaseHandlerTest
   public void setup ()
   {
     eventBus = EventBusFactory.create (ImmutableSet.of (EventBusHandler.createEventBusFailureHandler ()));
+    mockAsyncExecution = mock (AsyncExecution.class);
     mockEventRegistry = mock (EventRegistry.class, Mockito.RETURNS_SMART_NULLS);
     eventHandler = new EventBusHandler ();
     eventHandler.subscribe (eventBus);
@@ -147,6 +154,17 @@ public abstract class AbstractGamePhaseHandlerTest
     playMapModel = createPlayMapModelWithDisjointMapGraph (generateTestCountryNames (defaultTestCountryCount));
     initializeGameModelWith (playMapModel);
     assert gameModel != null;
+
+    // run async invocations on our current thread via mock
+    Mockito.doAnswer (new Answer <Void> ()
+    {
+      @Override
+      public Void answer (final InvocationOnMock invocation) throws Throwable
+      {
+        ((Runnable) invocation.getArgument (0)).run ();
+        return null;
+      }
+    }).when (mockAsyncExecution).invokeLater (any (Runnable.class));
 
     eventFactory = new DefaultGamePhaseEventFactory (playerModel, playMapModel, cardModel, gameRules);
 
@@ -300,9 +318,9 @@ public abstract class AbstractGamePhaseHandlerTest
     initialArmies = gameRules.getInitialArmies ();
     playerLimit = playerModel.getPlayerLimit ();
     maxPlayers = gameRules.getMaxTotalPlayers ();
-    gameModelConfig = GameModelConfiguration.builder (gameRules).eventBus (eventBus).eventRegistry (mockEventRegistry)
-            .playMapModel (playMapModel).battleModel (battleModel).playerModel (playerModel)
-            .playerTurnModel (playerTurnModel).cardModel (cardModel).build ();
+    gameModelConfig = GameModelConfiguration.builder (gameRules).asyncExecutor (mockAsyncExecution).eventBus (eventBus)
+            .eventRegistry (mockEventRegistry).playMapModel (playMapModel).battleModel (battleModel)
+            .playerModel (playerModel).playerTurnModel (playerTurnModel).cardModel (cardModel).build ();
     gameModel = GameModel.create (gameModelConfig);
   }
 
