@@ -18,14 +18,14 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent.Reason;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerTradeInCardsResponseDeniedEvent extends AbstractPlayerDeniedEvent <Reason>
-        implements PlayerResponseDeniedEvent <Reason>
+public final class PlayerTradeInCardsDeniedEvent
+        extends AbstractPlayerDeniedEvent <PlayerTradeInCardsRequestEvent, Reason>
 {
   public enum Reason
   {
@@ -35,13 +35,15 @@ public final class PlayerTradeInCardsResponseDeniedEvent extends AbstractPlayerD
     INVALID_CARD_SET
   }
 
-  public PlayerTradeInCardsResponseDeniedEvent (final PlayerPacket player, final Reason reason)
+  public PlayerTradeInCardsDeniedEvent (final PlayerPacket player,
+                                        final PlayerTradeInCardsRequestEvent deniedRequest,
+                                        final Reason reason)
   {
-    super (player, reason);
+    super (player, deniedRequest, reason);
   }
 
   @RequiredForNetworkSerialization
-  private PlayerTradeInCardsResponseDeniedEvent ()
+  private PlayerTradeInCardsDeniedEvent ()
   {
   }
 }

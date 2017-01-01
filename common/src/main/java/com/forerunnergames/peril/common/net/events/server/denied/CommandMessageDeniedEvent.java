@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
+import com.forerunnergames.peril.common.net.events.client.request.CommandMessageRequestEvent;
 import com.forerunnergames.peril.common.net.events.defaults.AbstractMessageEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.CommandMessageEvent;
 import com.forerunnergames.peril.common.net.messages.CommandMessage;
@@ -27,17 +28,28 @@ import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 
 public final class CommandMessageDeniedEvent extends AbstractMessageEvent <CommandMessage>
-        implements CommandMessageEvent, DeniedEvent <String>
+        implements CommandMessageEvent, DeniedEvent <CommandMessageRequestEvent, String>
 {
+  private final CommandMessageRequestEvent deniedRequest;
   private final String reason;
 
-  public CommandMessageDeniedEvent (final CommandMessage message, final String reason)
+  public CommandMessageDeniedEvent (final CommandMessage message,
+                                    final CommandMessageRequestEvent deniedRequest,
+                                    final String reason)
   {
     super (message);
 
+    Arguments.checkIsNotNull (deniedRequest, "deniedRequest");
     Arguments.checkIsNotNull (reason, "reason");
 
+    this.deniedRequest = deniedRequest;
     this.reason = reason;
+  }
+
+  @Override
+  public CommandMessageRequestEvent getDeniedRequest ()
+  {
+    return deniedRequest;
   }
 
   @Override
@@ -49,12 +61,13 @@ public final class CommandMessageDeniedEvent extends AbstractMessageEvent <Comma
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | Reason: {}", super.toString (), reason);
+    return Strings.format ("{} | DeniedRequest: [{}] | Reason: {}", super.toString (), deniedRequest, reason);
   }
 
   @RequiredForNetworkSerialization
   private CommandMessageDeniedEvent ()
   {
+    deniedRequest = null;
     reason = null;
   }
 }

@@ -30,14 +30,14 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.MessageBox;
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerEndTurnDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerCancelFortifyDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerEndTurnDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforceCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerCardTradeInAvailableEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforceCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginAttackPhaseEvent;
@@ -59,24 +59,24 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndRo
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerSelectAttackVectorWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerSelectFortifyVectorWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerReinforceCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerAttackCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerClaimCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerDefendCountryWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerAttackCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerFortifyCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerOccupyCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerReinforceCountryWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerSelectAttackVectorWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerSelectFortifyVectorWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerEndTurnSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerCancelFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerEndTurnSuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCountryResponseSuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountrySuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountrySuccessEvent;
-import com.forerunnergames.peril.common.net.events.server.success.PlayerRetreatSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
+import com.forerunnergames.peril.common.net.events.server.success.PlayerRetreatSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectAttackVectorSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerTradeInCardsResponseSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.SpectatorJoinGameSuccessEvent;
@@ -291,7 +291,7 @@ public final class StatusMessageGenerator
     log.debug ("Event received [{}].", event);
 
     you (event.getPerson (), "General, something went wrong! We were unable to reinforce {}.",
-         event.getOriginalRequest ().getCountryName ());
+         event.getDeniedRequest ().getCountryName ());
 
     you (event.getPerson (), "General, choose a country to reinforce.", event.getPersonName ());
   }

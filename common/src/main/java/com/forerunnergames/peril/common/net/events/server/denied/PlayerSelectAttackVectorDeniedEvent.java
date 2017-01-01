@@ -1,11 +1,13 @@
 package com.forerunnergames.peril.common.net.events.server.denied;
 
+import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectAttackVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAttackVectorDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerSelectAttackVectorDeniedEvent extends AbstractPlayerDeniedEvent <Reason>
+public final class PlayerSelectAttackVectorDeniedEvent
+        extends AbstractPlayerDeniedEvent <PlayerSelectAttackVectorRequestEvent, Reason>
 {
   public enum Reason
   {
@@ -17,9 +19,11 @@ public final class PlayerSelectAttackVectorDeniedEvent extends AbstractPlayerDen
     INSUFFICIENT_ARMY_COUNT
   }
 
-  public PlayerSelectAttackVectorDeniedEvent (final PlayerPacket player, final Reason reason)
+  public PlayerSelectAttackVectorDeniedEvent (final PlayerPacket player,
+                                              final PlayerSelectAttackVectorRequestEvent deniedRequest,
+                                              final Reason reason)
   {
-    super (player, reason);
+    super (player, deniedRequest, reason);
   }
 
   @RequiredForNetworkSerialization

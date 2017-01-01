@@ -8,6 +8,8 @@ import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerIn
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.net.events.remote.origin.client.ClientEvent;
+import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 
 import com.google.common.base.Optional;
@@ -35,8 +37,11 @@ public class DefaultEventRegistry implements EventRegistry
 {
   private static final Logger log = LoggerFactory.getLogger (DefaultEventRegistry.class);
   private static final int OUTBOUND_CACHE_MAX_SIZE = 10000;
-  private static final float OUTBOUND_CACHE_LOAD_FACTOR = 0.8f;
-  private final Deque <ServerEvent> outboundEventCache = Queues.newArrayDeque ();
+  private static final int INBOUND_CACHE_MAX_SIZE = 10000;
+  private static final float OUTBOUND_CACHE_LOAD_FACTOR = 0.5f;
+  private static final float INBOUND_CACHE_LOAD_FACTOR = 0.5f;
+  private final Deque <Event> outboundEventCache = Queues.newArrayDeque ();
+  private final Deque <Event> inboundEventCache = Queues.newArrayDeque ();
   private final Map <Event, PlayerPacket> eventsToPlayers = Maps.newConcurrentMap ();
   private final Multimap <PlayerPacket, Event> playersToEvents = HashMultimap.create ();
   private final Set <PlayerInputEvent> unmappedInputEvents = Sets.newHashSet ();
@@ -120,7 +125,6 @@ public class DefaultEventRegistry implements EventRegistry
     return Optional.fromNullable (inputRequestType.cast (inputRequestEvent));
   }
 
-  @Override
   public <T extends PlayerInputEvent> boolean republishFor (final PlayerAnswerEvent <T> answerEvent)
   {
     final PlayerInputEvent inputEvent = answerToInputEvents.get (answerEvent);
@@ -139,22 +143,15 @@ public class DefaultEventRegistry implements EventRegistry
   {
     Arguments.checkIsNotNull (type, "type");
 
-    final Deque <ServerEvent> tempDeque = Queues.newArrayDeque ();
-    Optional <T> maybe = Optional.absent ();
-    while (!maybe.isPresent () && !outboundEventCache.isEmpty ())
-    {
-      final ServerEvent next = outboundEventCache.poll ();
-      tempDeque.push (next);
-      if (next.getClass ().equals (type)) maybe = Optional.of (type.cast (next));
-    }
+    return lastEventOfType (outboundEventCache, type);
+  }
 
-    // push events back into cache in the same order they were removed
-    for (final ServerEvent next : tempDeque)
-    {
-      outboundEventCache.push (next);
-    }
+  @Override
+  public <T extends ClientEvent> Optional <T> lastInboundEventOfType (final Class <T> type)
+  {
+    Arguments.checkIsNotNull (type, "type");
 
-    return maybe;
+    return lastEventOfType (inboundEventCache, type);
   }
 
   @Override
@@ -190,16 +187,9 @@ public class DefaultEventRegistry implements EventRegistry
 
     if (outboundEventCache.size () < OUTBOUND_CACHE_MAX_SIZE) return;
 
-    final int currentCacheSize = outboundEventCache.size ();
-    final int targetCacheSize = (int) (OUTBOUND_CACHE_MAX_SIZE * OUTBOUND_CACHE_LOAD_FACTOR);
-    while (outboundEventCache.size () > targetCacheSize)
-    {
-      final ServerEvent discarded = outboundEventCache.poll ();
-      log.trace ("Discarding old event from server event cache [{}]", discarded);
-    }
-
+    final int discardCount = prune (outboundEventCache, OUTBOUND_CACHE_MAX_SIZE, OUTBOUND_CACHE_LOAD_FACTOR);
     log.debug ("Pruned outbound event cache [New Size: {}]; Discarded {} old events.", outboundEventCache.size (),
-               currentCacheSize - targetCacheSize);
+               discardCount);
   }
 
   @Handler
@@ -216,6 +206,12 @@ public class DefaultEventRegistry implements EventRegistry
     Arguments.checkIsNotNull (event, "event");
 
     registerTo (event.getPerson (), event);
+  }
+
+  @Handler
+  void onEvent (final DeniedEvent <?, ?> event)
+  {
+    Arguments.checkIsNotNull (event, "event");
   }
 
   // ------- Inbound Event Handlers ------- //
@@ -252,6 +248,19 @@ public class DefaultEventRegistry implements EventRegistry
     }
   }
 
+  void onEvent (final ClientEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    inboundEventCache.offer (event);
+
+    if (inboundEventCache.size () < INBOUND_CACHE_MAX_SIZE) return;
+
+    final int discardCount = prune (inboundEventCache, INBOUND_CACHE_MAX_SIZE, INBOUND_CACHE_LOAD_FACTOR);
+    log.debug ("Pruned inbound event cache [New Size: {}]; Discarded {} old events.", outboundEventCache.size (),
+               discardCount);
+  }
+
   // ------- Private Utility Methods ------- //
 
   private <T extends PlayerInputEvent> ImmutableSet <T> allUnmappedInputEventsOfType (final Class <T> inputEventType)
@@ -280,5 +289,41 @@ public class DefaultEventRegistry implements EventRegistry
 
     unmappedInputEvents.clear ();
     answerToInputEvents.clear ();
+  }
+
+  private static <T extends Event> Optional <T> lastEventOfType (final Deque <Event> eventCache, final Class <T> type)
+  {
+    final Deque <Event> tempDeque = Queues.newArrayDeque ();
+    Optional <T> maybe = Optional.absent ();
+    while (!maybe.isPresent () && !eventCache.isEmpty ())
+    {
+      final Event next = eventCache.poll ();
+      tempDeque.push (next);
+      if (next.getClass ().equals (type)) maybe = Optional.of (type.cast (next));
+    }
+
+    // push events back into cache in the same order they were removed
+    for (final Event next : tempDeque)
+    {
+      eventCache.push (next);
+    }
+
+    return maybe;
+  }
+
+  /*
+   * Discards old events in the given event Deque collection using the given max size and load factor.
+   */
+  private static int prune (final Deque <Event> eventCache, final int maxSize, final float loadFactor)
+  {
+    final int currentCacheSize = eventCache.size ();
+    final int targetCacheSize = (int) (maxSize * loadFactor);
+    while (eventCache.size () > targetCacheSize)
+    {
+      final Event discarded = eventCache.poll ();
+      log.trace ("Discarding old event from server event cache [{}]", discarded);
+    }
+
+    return currentCacheSize - eventCache.size ();
   }
 }

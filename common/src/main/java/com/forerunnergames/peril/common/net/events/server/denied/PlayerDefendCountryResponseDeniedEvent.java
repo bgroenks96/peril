@@ -18,14 +18,14 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerDeniedEvent;
+import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent.Reason;
-import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerDefendCountryResponseDeniedEvent extends AbstractPlayerDeniedEvent <Reason>
-        implements PlayerResponseDeniedEvent <Reason>
+public final class PlayerDefendCountryResponseDeniedEvent
+        extends AbstractPlayerResponseDeniedEvent <PlayerDefendCountryResponseRequestEvent, Reason>
 {
   public enum Reason
   {
@@ -33,9 +33,11 @@ public final class PlayerDefendCountryResponseDeniedEvent extends AbstractPlayer
     ATTACKER_RETREATED
   }
 
-  public PlayerDefendCountryResponseDeniedEvent (final PlayerPacket player, final Reason reason)
+  public PlayerDefendCountryResponseDeniedEvent (final PlayerPacket player,
+                                                 final PlayerDefendCountryResponseRequestEvent deniedEvent,
+                                                 final Reason reason)
   {
-    super (player, reason);
+    super (player, deniedEvent, reason);
   }
 
   @RequiredForNetworkSerialization

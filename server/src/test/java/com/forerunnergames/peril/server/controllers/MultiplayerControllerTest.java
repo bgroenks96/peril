@@ -99,7 +99,6 @@ import com.forerunnergames.tools.net.events.local.ClientCommunicationEvent;
 import com.forerunnergames.tools.net.events.local.ClientConnectionEvent;
 import com.forerunnergames.tools.net.events.local.ClientDisconnectionEvent;
 import com.forerunnergames.tools.net.events.remote.origin.client.ClientEvent;
-import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 import com.forerunnergames.tools.net.server.configuration.DefaultServerConfiguration;
 import com.forerunnergames.tools.net.server.configuration.ServerConfiguration;
 import com.forerunnergames.tools.net.server.remote.RemoteClient;
@@ -534,13 +533,13 @@ public class MultiplayerControllerTest
     final RemoteClient client = joinHumanClientToGameServer ();
 
     final String playerName = "TestPlayer1";
-    communicateEventFromClient (new HumanPlayerJoinGameRequestEvent (playerName), client);
+    final PlayerJoinGameRequestEvent request = new HumanPlayerJoinGameRequestEvent (playerName);
+    communicateEventFromClient (request, client);
 
     final PlayerPacket player = createMockHumanPlayer (playerName);
     // make up a reason... doesn't have to be true :)
     final PlayerJoinGameDeniedEvent.Reason reason = PlayerJoinGameDeniedEvent.Reason.DUPLICATE_NAME;
-    final DeniedEvent <PlayerJoinGameDeniedEvent.Reason> deniedEvent = new PlayerJoinGameDeniedEvent (playerName,
-            reason);
+    final Event deniedEvent = new PlayerJoinGameDeniedEvent (playerName, request, reason);
     communicateEventFromCore (deniedEvent);
     verify (mockHumanClientCommunicator).sendTo (eq (client), eq (deniedEvent));
     assertFalse (mpc.isPlayerInGame (player));
@@ -553,13 +552,13 @@ public class MultiplayerControllerTest
     final String playerName = GameSettings.getAiPlayerNameWithMandatoryClanTag ("TestPlayer1");
     final RemoteClient client = joinAiClientToGameServer (playerName);
 
-    communicateEventFromClient (new AiPlayerJoinGameRequestEvent (playerName), client);
+    final PlayerJoinGameRequestEvent request = new AiPlayerJoinGameRequestEvent (playerName);
+    communicateEventFromClient (request, client);
 
     final PlayerPacket player = createMockAiPlayer (playerName);
     // make up a reason... doesn't have to be true :)
     final PlayerJoinGameDeniedEvent.Reason reason = PlayerJoinGameDeniedEvent.Reason.DUPLICATE_NAME;
-    final DeniedEvent <PlayerJoinGameDeniedEvent.Reason> deniedEvent = new PlayerJoinGameDeniedEvent (playerName,
-            reason);
+    final Event deniedEvent = new PlayerJoinGameDeniedEvent (playerName, request, reason);
     communicateEventFromCore (deniedEvent);
     verify (mockAiClientCommunicator).sendTo (eq (client), eq (deniedEvent));
     assertFalse (mpc.isPlayerInGame (player));

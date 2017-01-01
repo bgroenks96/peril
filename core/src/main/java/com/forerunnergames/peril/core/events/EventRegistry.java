@@ -4,6 +4,7 @@ import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerAnswe
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Event;
+import com.forerunnergames.tools.net.events.remote.origin.client.ClientEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ServerEvent;
 
 import com.google.common.base.Optional;
@@ -47,14 +48,14 @@ public interface EventRegistry
                                                            final Class <T> inputRequestType);
 
   /**
-   * Republishes the original {@link PlayerInputEvent} answered by <code>answerEvent</code>.
+   * Retrieves the last outbound event (sent by Core) with the given type.
    */
-  <T extends PlayerInputEvent> boolean republishFor (final PlayerAnswerEvent <T> answerEvent);
+  <T extends ServerEvent> Optional <T> lastOutboundEventOfType (Class <T> type);
 
   /**
    * Retrieves the last outbound event (sent by Core) with the given type.
    */
-  <T extends ServerEvent> Optional <T> lastOutboundEventOfType (Class <T> type);
+  <T extends ClientEvent> Optional <T> lastInboundEventOfType (Class <T> type);
 
   /**
    * Clears the event registry for mapping outbound/inbound events and players.

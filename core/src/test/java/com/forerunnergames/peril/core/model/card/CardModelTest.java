@@ -27,7 +27,7 @@ import com.forerunnergames.peril.common.game.CardType;
 import com.forerunnergames.peril.common.game.TurnPhase;
 import com.forerunnergames.peril.common.game.rules.ClassicGameRules;
 import com.forerunnergames.peril.common.game.rules.GameRules;
-import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsResponseDeniedEvent;
+import com.forerunnergames.peril.common.net.events.server.denied.PlayerTradeInCardsDeniedEvent;
 import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
@@ -136,7 +136,7 @@ public abstract class CardModelTest
       cardModel.giveCard (testPlayerId, TurnPhase.REINFORCE);
     }
 
-    final Result <PlayerTradeInCardsResponseDeniedEvent.Reason> result = cardModel
+    final Result <PlayerTradeInCardsDeniedEvent.Reason> result = cardModel
             .requestTradeInCards (testPlayerId, match, TurnPhase.REINFORCE);
     // use if/fail so failure reason can be printed;
     // assertTrue causes Result to throw IllegalStateException when successful

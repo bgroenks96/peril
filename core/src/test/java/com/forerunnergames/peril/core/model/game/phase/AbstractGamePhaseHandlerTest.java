@@ -50,6 +50,7 @@ import com.forerunnergames.tools.common.graph.DefaultGraph;
 import com.forerunnergames.tools.common.graph.Graph;
 import com.forerunnergames.tools.common.id.Id;
 import com.forerunnergames.tools.net.events.remote.RemoteEvent;
+import com.forerunnergames.tools.net.events.remote.origin.client.ClientRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 
 import com.google.common.collect.ImmutableList;
@@ -110,7 +111,7 @@ public abstract class AbstractGamePhaseHandlerTest
     return event.getPlayerName ();
   }
 
-  protected static <T> T reasonFrom (final DeniedEvent <T> event)
+  protected static <T extends ClientRequestEvent, R> R reasonFrom (final DeniedEvent <T, R> event)
   {
     return event.getReason ();
   }
@@ -207,7 +208,7 @@ public abstract class AbstractGamePhaseHandlerTest
   {
     if (eventHandler.lastEventWasType (DeniedEvent.class))
     {
-      final DeniedEvent <?> event = eventHandler.lastEvent (DeniedEvent.class);
+      final DeniedEvent <?, ?> event = eventHandler.lastEvent (DeniedEvent.class);
       fail (event.getReason ().toString ());
     }
   }

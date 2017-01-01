@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.common.net.events.server.denied;
 
+import com.forerunnergames.peril.common.net.events.client.request.ChatMessageRequestEvent;
 import com.forerunnergames.peril.common.net.events.defaults.AbstractMessageEvent;
 import com.forerunnergames.peril.common.net.events.interfaces.ChatMessageEvent;
 import com.forerunnergames.peril.common.net.messages.ChatMessage;
@@ -30,18 +31,23 @@ import com.forerunnergames.tools.net.events.remote.origin.server.DeniedEvent;
 import javax.annotation.Nullable;
 
 public final class ChatMessageDeniedEvent extends AbstractMessageEvent <ChatMessage>
-        implements ChatMessageEvent, DeniedEvent <String>
+        implements ChatMessageEvent, DeniedEvent <ChatMessageRequestEvent, String>
 {
+  private final ChatMessageRequestEvent deniedRequest;
   private final String reason;
   private ChatMessage message;
 
-  public ChatMessageDeniedEvent (final ChatMessage message, final String reason)
+  public ChatMessageDeniedEvent (final ChatMessage message,
+                                 final ChatMessageRequestEvent deniedRequest,
+                                 final String reason)
   {
     super (message);
 
+    Arguments.checkIsNotNull (deniedRequest, "deniedRequest");
     Arguments.checkIsNotNull (reason, "reason");
 
     this.message = message;
+    this.deniedRequest = deniedRequest;
     this.reason = reason;
   }
 
@@ -59,6 +65,12 @@ public final class ChatMessageDeniedEvent extends AbstractMessageEvent <ChatMess
   }
 
   @Override
+  public ChatMessageRequestEvent getDeniedRequest ()
+  {
+    return deniedRequest;
+  }
+
+  @Override
   public String getReason ()
   {
     return reason;
@@ -67,12 +79,13 @@ public final class ChatMessageDeniedEvent extends AbstractMessageEvent <ChatMess
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | Reason: {}", getClass ().getSimpleName (), reason);
+    return Strings.format ("{} | DeniedRequest: [{}] | Reason: {}", super.toString (), deniedRequest, reason);
   }
 
   @RequiredForNetworkSerialization
   private ChatMessageDeniedEvent ()
   {
+    deniedRequest = null;
     reason = null;
   }
 }

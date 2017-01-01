@@ -262,17 +262,15 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
 
     if (!playerModel.canRemoveArmyFromHandOf (currentPlayerId))
     {
-      publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
+      publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName, event,
               PlayerClaimCountryResponseDeniedEvent.Reason.DELTA_ARMY_COUNT_OVERFLOW));
-      eventRegistry.republishFor (event);
       return false;
     }
 
     if (!countryGraphModel.existsCountryWith (claimedCountryName))
     {
-      publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName,
+      publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName, event,
               PlayerClaimCountryResponseDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
-      eventRegistry.republishFor (event);
       return false;
     }
 
@@ -282,8 +280,8 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
     res1 = countryOwnerModel.requestToAssignCountryOwner (countryId, currentPlayerId);
     if (res1.failed ())
     {
-      publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName, res1.getFailureReason ()));
-      eventRegistry.republishFor (event);
+      publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName, event,
+              res1.getFailureReason ()));
       return false;
     }
 
@@ -291,8 +289,8 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
     res2 = countryArmyModel.requestToAddArmiesToCountry (countryId, 1);
     if (res2.failed ())
     {
-      publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName, res2.getFailureReason ()));
-      eventRegistry.republishFor (event);
+      publish (new PlayerClaimCountryResponseDeniedEvent (currentPlayer, claimedCountryName, event,
+              res2.getFailureReason ()));
       return false;
     }
 
@@ -351,31 +349,31 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
 
     if (requestedReinforcements > playerModel.getArmiesInHand (playerId))
     {
-      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (),
-              PlayerReinforceCountryDeniedEvent.Reason.INSUFFICIENT_ARMIES_IN_HAND, event));
+      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (), event,
+              PlayerReinforceCountryDeniedEvent.Reason.INSUFFICIENT_ARMIES_IN_HAND));
       return false;
     }
 
     if (requestedReinforcements < rules.getMinReinforcementsPlacedPerCountry ())
     {
-      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (),
-              PlayerReinforceCountryDeniedEvent.Reason.INSUFFICIENT_REINFORCEMENTS_PLACED, event));
+      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (), event,
+              PlayerReinforceCountryDeniedEvent.Reason.INSUFFICIENT_REINFORCEMENTS_PLACED));
       return false;
     }
 
     final String countryName = event.getCountryName ();
     if (!countryGraphModel.existsCountryWith (countryName))
     {
-      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (),
-              PlayerReinforceCountryDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST, event));
+      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (), event,
+              PlayerReinforceCountryDeniedEvent.Reason.COUNTRY_DOES_NOT_EXIST));
       return false;
     }
 
     final Id countryId = countryGraphModel.countryWith (countryName);
     if (!countryOwnerModel.isCountryOwnedBy (countryId, playerId))
     {
-      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (),
-              PlayerReinforceCountryDeniedEvent.Reason.NOT_OWNER_OF_COUNTRY, event));
+      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (), event,
+              PlayerReinforceCountryDeniedEvent.Reason.NOT_OWNER_OF_COUNTRY));
       return false;
     }
 
@@ -384,7 +382,7 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
 
     if (result.failed ())
     {
-      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (), result.getFailureReason (), event));
+      publish (new PlayerReinforceCountryDeniedEvent (getCurrentPlayerPacket (), event, result.getFailureReason ()));
       return false;
     }
 

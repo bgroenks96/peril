@@ -129,21 +129,21 @@ public final class DefaultFortifyPhaseHandler extends AbstractGamePhaseHandler i
 
     if (eventRegistry.isNotSenderOf (event, currentPlayer))
     {
-      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
+      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer, event,
               PlayerSelectFortifyVectorDeniedEvent.Reason.PLAYER_NOT_IN_TURN));
       return false;
     }
 
     if (!countryGraphModel.existsCountryWith (event.getSourceCountry ()))
     {
-      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
+      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer, event,
               PlayerSelectFortifyVectorDeniedEvent.Reason.SOURCE_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
 
     if (!countryGraphModel.existsCountryWith (event.getTargetCountry ()))
     {
-      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
+      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer, event,
               PlayerSelectFortifyVectorDeniedEvent.Reason.TARGET_COUNTRY_DOES_NOT_EXIST));
       return false;
     }
@@ -153,21 +153,21 @@ public final class DefaultFortifyPhaseHandler extends AbstractGamePhaseHandler i
 
     if (!countryOwnerModel.isCountryOwnedBy (sourceCountryId, currentPlayerId))
     {
-      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
+      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer, event,
               PlayerSelectFortifyVectorDeniedEvent.Reason.NOT_OWNER_OF_SOURCE_COUNTRY));
       return false;
     }
 
     if (!countryOwnerModel.isCountryOwnedBy (targetCountryId, currentPlayerId))
     {
-      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
+      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer, event,
               PlayerSelectFortifyVectorDeniedEvent.Reason.NOT_OWNER_OF_TARGET_COUNTRY));
       return false;
     }
 
     if (!countryGraphModel.areAdjacent (sourceCountryId, targetCountryId))
     {
-      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
+      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer, event,
               PlayerSelectFortifyVectorDeniedEvent.Reason.COUNTRIES_NOT_ADJACENT));
       return false;
     }
@@ -177,14 +177,14 @@ public final class DefaultFortifyPhaseHandler extends AbstractGamePhaseHandler i
 
     if (sourceCountryArmyCount < rules.getMinArmiesOnSourceCountryForFortify ())
     {
-      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
+      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer, event,
               PlayerSelectFortifyVectorDeniedEvent.Reason.SOURCE_COUNTRY_ARMY_UNDERFLOW));
       return false;
     }
 
     if (targetCountryArmyCount > rules.getMaxArmiesOnTargetCountryForFortify ())
     {
-      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer,
+      publish (new PlayerSelectFortifyVectorDeniedEvent (currentPlayer, event,
               PlayerSelectFortifyVectorDeniedEvent.Reason.TARGET_COUNTRY_ARMY_OVERFLOW));
       return false;
     }
@@ -221,7 +221,7 @@ public final class DefaultFortifyPhaseHandler extends AbstractGamePhaseHandler i
 
     if (eventRegistry.isNotSenderOf (event, currentPlayer))
     {
-      publish (new PlayerFortifyCountryDeniedEvent (currentPlayer,
+      publish (new PlayerFortifyCountryDeniedEvent (currentPlayer, event,
               PlayerFortifyCountryDeniedEvent.Reason.PLAYER_NOT_IN_TURN));
       return false;
     }
@@ -236,14 +236,14 @@ public final class DefaultFortifyPhaseHandler extends AbstractGamePhaseHandler i
 
     if (deltaArmyCount < minDeltaArmyCount)
     {
-      publish (new PlayerFortifyCountryDeniedEvent (currentPlayer,
+      publish (new PlayerFortifyCountryDeniedEvent (currentPlayer, event,
               PlayerFortifyCountryDeniedEvent.Reason.FORTIFY_DELTA_ARMY_COUNT_UNDERFLOW));
       return false;
     }
 
     if (deltaArmyCount > maxDeltaArmyCount)
     {
-      publish (new PlayerFortifyCountryDeniedEvent (currentPlayer,
+      publish (new PlayerFortifyCountryDeniedEvent (currentPlayer, event,
               PlayerFortifyCountryDeniedEvent.Reason.FORTIFY_DELTA_ARMY_COUNT_OVERFLOW));
       return false;
     }
@@ -289,7 +289,7 @@ public final class DefaultFortifyPhaseHandler extends AbstractGamePhaseHandler i
     final Optional <PlayerPacket> sender = eventRegistry.senderOf (event);
     if (!sender.isPresent () || player.isNot (sender.get ()))
     {
-      publish (new PlayerCancelFortifyDeniedEvent (player, sourceCountryPacket, targetCountryPacket,
+      publish (new PlayerCancelFortifyDeniedEvent (player, sourceCountryPacket, targetCountryPacket, event,
               PlayerCancelFortifyDeniedEvent.Reason.NOT_IN_TURN));
       return false;
     }

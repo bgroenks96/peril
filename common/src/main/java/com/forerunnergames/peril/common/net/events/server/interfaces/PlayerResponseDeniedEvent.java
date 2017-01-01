@@ -18,8 +18,10 @@
 
 package com.forerunnergames.peril.common.net.events.server.interfaces;
 
+import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRequestEvent;
 import com.forerunnergames.tools.net.events.remote.origin.server.ResponseDeniedEvent;
 
-public interface PlayerResponseDeniedEvent <R> extends ResponseDeniedEvent <R>, PlayerDeniedEvent <R>
+public interface PlayerResponseDeniedEvent <T extends PlayerRequestEvent, R>
+        extends ResponseDeniedEvent <T, R>, PlayerDeniedEvent <T, R>
 {
 }

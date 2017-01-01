@@ -23,40 +23,22 @@ import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlaye
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerChangeCountryDeniedEvent.Reason;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.tools.common.Arguments;
-import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class PlayerReinforceCountryDeniedEvent extends AbstractPlayerChangeCountryDeniedEvent
-        implements PlayerResponseDeniedEvent <Reason>
+public final class PlayerReinforceCountryDeniedEvent
+        extends AbstractPlayerChangeCountryDeniedEvent <PlayerReinforceCountryRequestEvent>
+        implements PlayerResponseDeniedEvent <PlayerReinforceCountryRequestEvent, Reason>
 {
-  private final PlayerReinforceCountryRequestEvent originalRequest;
-
   public PlayerReinforceCountryDeniedEvent (final PlayerPacket player,
-                                            final Reason reason,
-                                            final PlayerReinforceCountryRequestEvent originalRequest)
+                                            final PlayerReinforceCountryRequestEvent deniedRequest,
+                                            final Reason reason)
+
   {
-    super (player, reason);
-
-    Arguments.checkIsNotNull (originalRequest, "originalRequest");
-
-    this.originalRequest = originalRequest;
-  }
-
-  public PlayerReinforceCountryRequestEvent getOriginalRequest ()
-  {
-    return originalRequest;
-  }
-
-  @Override
-  public String toString ()
-  {
-    return Strings.format ("{} | OriginalRequest: [{}]", super.toString (), originalRequest);
+    super (player, deniedRequest, reason);
   }
 
   @RequiredForNetworkSerialization
   private PlayerReinforceCountryDeniedEvent ()
   {
-    originalRequest = null;
   }
 }

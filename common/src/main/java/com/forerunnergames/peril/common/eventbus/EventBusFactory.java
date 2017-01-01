@@ -26,6 +26,8 @@ import com.google.common.collect.ImmutableSet;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.bus.common.PublicationEvent;
+import net.engio.mbassy.bus.config.BusConfiguration;
+import net.engio.mbassy.bus.config.Feature;
 import net.engio.mbassy.bus.error.IPublicationErrorHandler;
 import net.engio.mbassy.bus.error.PublicationError;
 import net.engio.mbassy.listener.Handler;
@@ -38,35 +40,48 @@ import org.slf4j.LoggerFactory;
 public final class EventBusFactory
 {
   private static final Logger log = LoggerFactory.getLogger (EventBusFactory.class);
+  private static final int DEFAULT_PUBLISHER_THREAD_COUNT = 1;
 
   public static MBassador <Event> create ()
   {
     // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type cast.
-    return create (ImmutableSet.<IPublicationErrorHandler> of (), ImmutableSet.<UnhandledEventHandler> of ());
+    return create (ImmutableSet. <IPublicationErrorHandler>of (), ImmutableSet. <UnhandledEventHandler>of ());
   }
 
   public static MBassador <Event> create (final Iterable <IPublicationErrorHandler> handlers)
   {
     // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type cast.
-    return create (handlers, ImmutableSet.<UnhandledEventHandler> of ());
+    return create (handlers, ImmutableSet. <UnhandledEventHandler>of ());
   }
 
   public static MBassador <Event> create (final UnhandledEventHandler... unhandledEventHandlers)
   {
     // TODO Java 8: Generalized target-type inference: Remove unnecessary explicit generic type cast.
-    return create (ImmutableSet.<IPublicationErrorHandler> of (), ImmutableSet.copyOf (unhandledEventHandlers));
+    return create (ImmutableSet. <IPublicationErrorHandler>of (), ImmutableSet.copyOf (unhandledEventHandlers));
   }
 
   public static MBassador <Event> create (final Iterable <IPublicationErrorHandler> publicationErrorHandlers,
                                           final Iterable <UnhandledEventHandler> unhandledEventHandlers)
+  {
+    return create (publicationErrorHandlers, unhandledEventHandlers, DEFAULT_PUBLISHER_THREAD_COUNT);
+  }
+
+  public static MBassador <Event> create (final Iterable <IPublicationErrorHandler> publicationErrorHandlers,
+                                          final Iterable <UnhandledEventHandler> unhandledEventHandlers,
+                                          final int publisherThreadCount)
   {
     Arguments.checkIsNotNull (publicationErrorHandlers, "publicationErrorHandlers");
     Arguments.checkHasNoNullElements (publicationErrorHandlers, "publicationErrorHandlers");
     Arguments.checkIsNotNull (unhandledEventHandlers, "unhandledEventHandlers");
     Arguments.checkHasNoNullElements (unhandledEventHandlers, "unhandledEventHandlers");
 
-    final MBassador <Event> eventBus = new MBassador<> (
-            new PublicationErrorDispatcher (ImmutableSet.copyOf (publicationErrorHandlers)));
+    final BusConfiguration busConfig = new BusConfiguration ().addFeature (Feature.SyncPubSub.Default ())
+            .addFeature (Feature.AsynchronousHandlerInvocation.Default ())
+            .addFeature (Feature.AsynchronousMessageDispatch.Default ()
+                    .setNumberOfMessageDispatchers (publisherThreadCount))
+            .addPublicationErrorHandler (new PublicationErrorDispatcher (
+                    ImmutableSet.copyOf (publicationErrorHandlers)));
+    final MBassador <Event> eventBus = new MBassador <> (busConfig);
 
     eventBus.subscribe (new UnhandledEventDispatcher (ImmutableSet.copyOf (unhandledEventHandlers)));
 
