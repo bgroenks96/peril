@@ -22,7 +22,7 @@ import com.badlogic.gdx.audio.Music;
 
 import com.forerunnergames.tools.common.Arguments;
 
-public final class NullMusic implements Music
+final class NullMusic implements Music
 {
   @Override
   public void play ()

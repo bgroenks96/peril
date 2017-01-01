@@ -24,6 +24,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
+import com.forerunnergames.peril.client.ui.music.MusicWrapper;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice.Dice;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice.DiceArrows;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.CountryArmyText;
@@ -65,7 +66,7 @@ public interface BattleDialogWidgetFactory extends WidgetFactory
 
   BitmapFont createCountryArmyTextEffectsFont ();
 
-  Music createBattleAmbienceSoundEffect ();
+  MusicWrapper createBattleAmbienceSoundEffect ();
 
   Sound createBattleSingleExplosionSoundEffect ();
 }

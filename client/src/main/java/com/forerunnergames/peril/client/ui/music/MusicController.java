@@ -27,6 +27,8 @@ import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.common.controllers.ControllerAdapter;
 
+import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +37,7 @@ public final class MusicController extends ControllerAdapter implements MusicCha
   private static final Logger log = LoggerFactory.getLogger (MusicController.class);
   private final MusicFactory musicFactory;
   private final MusicVolume masterVolume;
-  private Music currentMusic = new NullMusic ();
+  private MusicWrapper currentMusic = MusicWrapper.NULL;
 
   public MusicController (final MusicFactory musicFactory, final MusicVolume masterVolume)
   {
@@ -64,16 +66,20 @@ public final class MusicController extends ControllerAdapter implements MusicCha
 
     if (!MusicSettings.IS_ENABLED) return;
 
-    final Music newMusic = musicFactory.create (screen);
+    final MusicWrapper newMusic = musicFactory.create (screen);
 
-    if (newMusic.equals (currentMusic)) return;
+    if (Objects.equals (newMusic, currentMusic)) return;
     if (currentMusic.isPlaying ()) stopMusicWithFadeOut (currentMusic);
 
     log.debug ("Changing music from [{}] to [{}] for screen [{}].", currentMusic, newMusic, screen);
 
     currentMusic = newMusic;
 
-    if (currentMusic.isPlaying ()) return;
+    if (currentMusic.isPlaying ())
+    {
+      log.debug ("Already playing change-to music [{}].", currentMusic);
+      return;
+    }
 
     currentMusic.setLooping (true);
     startMusicWithFadeIn (currentMusic);
@@ -81,6 +87,8 @@ public final class MusicController extends ControllerAdapter implements MusicCha
 
   private void stopMusicWithFadeOut (final Music music)
   {
+    log.trace ("Fading out music [{}]...", music);
+
     Timer.schedule (new Timer.Task ()
     {
       @Override
@@ -95,25 +103,24 @@ public final class MusicController extends ControllerAdapter implements MusicCha
 
         final float currentVolume = music.getVolume ();
         final float delta = masterVolume.getVolume () / MusicSettings.FADE_VOLUME_REPEAT_COUNT;
-        final float newVolume = currentVolume - delta;
+        final float newVolume = MusicSettings.clampVolume (currentVolume - delta);
 
-        log.trace ("Fading out music [{}] from volume [{}] to volume [{}].", music, currentVolume, newVolume);
+        music.setVolume (newVolume);
 
-        if (newVolume <= MusicSettings.MIN_VOLUME)
+        if (MusicSettings.volumeIsLessThanOrEqualToMin (newVolume))
         {
           music.stop ();
           cancel ();
           log.trace ("Done fading out & stopping music [{}].", music);
-          return;
         }
-
-        music.setVolume (newVolume);
       }
     }, 0.0f, MusicSettings.FADE_VOLUME_INTERVAL_SECONDS, MusicSettings.FADE_VOLUME_REPEAT_COUNT);
   }
 
   private void startMusicWithFadeIn (final Music music)
   {
+    log.trace ("Fading in music [{}]...", music);
+
     music.setVolume (MusicSettings.MIN_VOLUME);
     music.play ();
 
@@ -131,18 +138,15 @@ public final class MusicController extends ControllerAdapter implements MusicCha
 
         final float currentVolume = music.getVolume ();
         final float delta = masterVolume.getVolume () / MusicSettings.FADE_VOLUME_REPEAT_COUNT;
-        final float newVolume = currentVolume + delta;
+        final float newVolume = MusicSettings.clampVolume (currentVolume + delta);
 
-        log.trace ("Fading in music [{}] from volume [{}] to volume [{}].", music, currentVolume, newVolume);
+        music.setVolume (newVolume);
 
-        if (newVolume > masterVolume.getVolume ())
+        if (MusicSettings.volumeIsGreaterThanOrEqualTo (newVolume, masterVolume.getVolume ()))
         {
           cancel ();
           log.trace ("Done fading in music [{}].", music);
-          return;
         }
-
-        music.setVolume (newVolume);
       }
     }, 0.0f, MusicSettings.FADE_VOLUME_INTERVAL_SECONDS, MusicSettings.FADE_VOLUME_REPEAT_COUNT);
   }

@@ -19,7 +19,6 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -33,7 +32,8 @@ import com.badlogic.gdx.utils.Align;
 import com.forerunnergames.peril.client.assets.AssetManager;
 import com.forerunnergames.peril.client.settings.AssetSettings;
 import com.forerunnergames.peril.client.settings.StyleSettings;
-import com.forerunnergames.peril.client.ui.music.NullMusic;
+import com.forerunnergames.peril.client.ui.music.DefaultMusicWrapper;
+import com.forerunnergames.peril.client.ui.music.MusicWrapper;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.CountryArmyTextEffects.HorizontalMoveDirection;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice.AttackerDice;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dice.AttackerDie;
@@ -227,14 +227,16 @@ public abstract class AbstractBattleDialogWidgetFactory extends AbstractWidgetFa
   }
 
   @Override
-  public Music createBattleAmbienceSoundEffect ()
+  public MusicWrapper createBattleAmbienceSoundEffect ()
   {
     if (!isAssetLoaded (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BATTLE_AMBIENCE_SOUND_EFFECT_ASSET_DESCRIPTOR))
     {
-      return new NullMusic ();
+      return MusicWrapper.NULL;
     }
 
-    return getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BATTLE_AMBIENCE_SOUND_EFFECT_ASSET_DESCRIPTOR);
+    return new DefaultMusicWrapper (
+            getAsset (AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BATTLE_AMBIENCE_SOUND_EFFECT_ASSET_DESCRIPTOR),
+            AssetSettings.CLASSIC_MODE_PLAY_SCREEN_BATTLE_AMBIENCE_SOUND_EFFECT_ASSET_DESCRIPTOR.fileName);
   }
 
   @Override

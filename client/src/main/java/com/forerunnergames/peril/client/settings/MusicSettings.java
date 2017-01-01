@@ -33,6 +33,34 @@ public final class MusicSettings
   public static boolean IS_ENABLED = true;
   public static float INITIAL_VOLUME = MAX_VOLUME;
 
+  public static boolean volumeIsLessThanOrEqualToMin (final float volume)
+  {
+    return volumeIsLessThanOrEqualTo (volume, MIN_VOLUME);
+  }
+
+  public static boolean volumeIsGreaterThanOrEqualToMax (final float volume)
+  {
+    return volumeIsGreaterThanOrEqualTo (volume, MAX_VOLUME);
+  }
+
+  public static boolean volumeIsLessThanOrEqualTo (final float volume, final float volumeLimit)
+  {
+    return volume <= volumeLimit || Math.abs (volume - volumeLimit) < VOLUME_EQUALITY_EPSILON;
+  }
+
+  public static boolean volumeIsGreaterThanOrEqualTo (final float volume, final float volumeLimit)
+  {
+    return volume >= volumeLimit || Math.abs (volume - volumeLimit) < VOLUME_EQUALITY_EPSILON;
+  }
+
+  public static float clampVolume (final float volume)
+  {
+    if (volume < MIN_VOLUME) return MIN_VOLUME;
+    if (volume > MAX_VOLUME) return MAX_VOLUME;
+
+    return volume;
+  }
+
   private MusicSettings ()
   {
     Classes.instantiationNotAllowed ();
