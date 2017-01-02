@@ -27,10 +27,12 @@ import com.forerunnergames.peril.core.model.card.Card;
 import com.forerunnergames.peril.core.model.card.CardModel;
 import com.forerunnergames.peril.core.model.card.CardModelTest;
 import com.forerunnergames.peril.core.model.card.DefaultCardModel;
+import com.forerunnergames.peril.core.model.game.CacheKey;
 import com.forerunnergames.peril.core.model.game.DefaultGamePhaseEventFactory;
 import com.forerunnergames.peril.core.model.game.GameModel;
 import com.forerunnergames.peril.core.model.game.GameModelConfiguration;
 import com.forerunnergames.peril.core.model.game.GamePhaseEventFactory;
+import com.forerunnergames.peril.core.model.game.PlayerTurnDataCache;
 import com.forerunnergames.peril.core.model.people.player.DefaultPlayerModel;
 import com.forerunnergames.peril.core.model.people.player.PlayerModel;
 import com.forerunnergames.peril.core.model.playmap.DefaultPlayMapModelFactory;
@@ -87,6 +89,7 @@ public abstract class AbstractGamePhaseHandlerTest
   protected int maxPlayers;
   protected GameModelConfiguration gameModelConfig;
   protected GameModel gameModel;
+  protected PlayerTurnDataCache <CacheKey> turnDataCache;
   protected PlayerModel playerModel;
   protected PlayerTurnModel playerTurnModel;
   protected PlayMapModel playMapModel;
@@ -318,9 +321,11 @@ public abstract class AbstractGamePhaseHandlerTest
     initialArmies = gameRules.getInitialArmies ();
     playerLimit = playerModel.getPlayerLimit ();
     maxPlayers = gameRules.getMaxTotalPlayers ();
+    turnDataCache = new PlayerTurnDataCache <> ();
     gameModelConfig = GameModelConfiguration.builder (gameRules).asyncExecutor (mockAsyncExecution).eventBus (eventBus)
             .eventRegistry (mockEventRegistry).playMapModel (playMapModel).battleModel (battleModel)
-            .playerModel (playerModel).playerTurnModel (playerTurnModel).cardModel (cardModel).build ();
+            .playerModel (playerModel).turnDataCache (turnDataCache).playerTurnModel (playerTurnModel)
+            .cardModel (cardModel).build ();
     gameModel = GameModel.create (gameModelConfig);
   }
 
