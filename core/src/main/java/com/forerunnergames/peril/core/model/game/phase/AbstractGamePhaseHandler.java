@@ -289,7 +289,7 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   /**
    * Checks whether or not a player has won or lost the game in the current game state
    */
-  protected void checkPlayerGameStatus (final Id playerId)
+  protected GameStatus checkPlayerGameStatus (final Id playerId)
   {
     final int playerCountryCount = countryOwnerModel.countCountriesOwnedBy (playerId);
     GameStatus status = GameStatus.CONTINUE_PLAYING;
@@ -301,9 +301,11 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     // sure we don't make the player win twice if multiple win conditions are satisfied simultaneously.
     // If the player already won from all other players losing and being removed, there is no need to
     // check if the winning country count was satisfied.
-    if (status == GameStatus.GAME_OVER) return;
+    if (status == GameStatus.GAME_OVER) return status;
 
-    if (playerCountryCount >= rules.getWinningCountryCount ()) playerWinsGame (playerId);
+    if (playerCountryCount >= rules.getWinningCountryCount ()) status = playerWinsGame (playerId);
+
+    return status;
   }
 
   protected GameStatus playerWinsGame (final Id playerId)

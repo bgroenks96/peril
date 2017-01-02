@@ -49,6 +49,7 @@ import com.forerunnergames.peril.core.model.battle.FinalBattleActor;
 import com.forerunnergames.peril.core.model.battle.PendingBattleActor;
 import com.forerunnergames.peril.core.model.game.CacheKey;
 import com.forerunnergames.peril.core.model.game.GameModelConfiguration;
+import com.forerunnergames.peril.core.model.game.GameStatus;
 import com.forerunnergames.peril.core.model.game.phase.AbstractGamePhaseHandler;
 import com.forerunnergames.peril.core.model.state.annotations.StateEntryAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateExitAction;
@@ -559,7 +560,9 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
     clearCacheValues (CacheKey.OCCUPY_SOURCE_COUNTRY, CacheKey.OCCUPY_TARGET_COUNTRY, CacheKey.OCCUPY_PREV_OWNER,
                       CacheKey.OCCUPY_NEW_OWNER, CacheKey.OCCUPY_MIN_ARMY_COUNT, CacheKey.OCCUPY_MAX_ARMY_COUNT);
 
-    return true;
+    // Will NOT trigger normal turn transition if player has won the game. Instead, PlayerWinGameEvent and EndGameEvent
+    // will be fired, triggering a transition into the end state.
+    return checkPlayerGameStatus (getCurrentPlayerId ()) == GameStatus.CONTINUE_PLAYING;
   }
 
   private PendingBattleActorPacket createPendingAttackerPacket (final AttackVector attackVector)
