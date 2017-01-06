@@ -15,18 +15,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.game;
+package com.forerunnergames.peril.common.net.events.server.interfaces;
 
-public enum GamePhase
+public interface PlayerGamePhaseNotificationEvent extends PlayerEvent, GamePhaseNotificationEvent
 {
-  INITIAL,
-  INITIAL_COUNTRY_ASSIGNMENT,
-  INITIAL_REINFORCEMENT,
-  TURN,
-  REINFORCEMENT,
-  ATTACK,
-  FORTIFY,
-  END,
-  SUSPENDED,
-  UNKNOWN
 }

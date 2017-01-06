@@ -18,21 +18,26 @@
 
 package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
+import com.forerunnergames.peril.common.game.GamePhase;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractGamePhaseNotificationEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.EndGamePhaseNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
 import com.google.common.collect.ImmutableMap;
 
-public final class EndInitialReinforcementPhaseEvent implements BroadcastNotificationEvent
+public final class EndInitialReinforcementPhaseEvent extends AbstractGamePhaseNotificationEvent
+        implements EndGamePhaseNotificationEvent
 {
   private final ImmutableMap <CountryPacket, PlayerPacket> playMapView;
 
   public EndInitialReinforcementPhaseEvent (final ImmutableMap <CountryPacket, PlayerPacket> playMapView)
   {
+    super (GamePhase.INITIAL_REINFORCEMENT);
+
     Arguments.checkIsNotNull (playMapView, "playMapView");
 
     this.playMapView = playMapView;
@@ -46,7 +51,7 @@ public final class EndInitialReinforcementPhaseEvent implements BroadcastNotific
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: PlayMapView: [{}]", getClass ().getSimpleName (), playMapView);
+    return Strings.format ("{} | PlayMapView: [{}]", super.toString (), playMapView);
   }
 
   @RequiredForNetworkSerialization

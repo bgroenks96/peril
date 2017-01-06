@@ -29,6 +29,7 @@ import com.forerunnergames.peril.client.events.JoinGameEvent;
 import com.forerunnergames.peril.client.events.PlayGameEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
 import com.forerunnergames.peril.client.events.ReJoinGameEvent;
+import com.forerunnergames.peril.client.events.RejoinGameErrorEvent;
 import com.forerunnergames.peril.client.events.UnloadPlayMapRequestEvent;
 import com.forerunnergames.peril.client.events.UnloadPlayScreenAssetsRequestEvent;
 import com.forerunnergames.peril.client.input.MouseInput;
@@ -46,6 +47,7 @@ import com.forerunnergames.peril.common.JoinGameServerHandler;
 import com.forerunnergames.peril.common.game.GameMode;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoinGameRequestEvent;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerQuitGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.JoinGameServerDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
@@ -152,7 +154,7 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
   @Override
   protected void onQuitDialogSubmit ()
   {
-    publishAsync (new QuitGameEvent ());
+    quitGame ();
     resetProgress (goToPlayToMenuLoadingScreenListener);
   }
 
@@ -177,7 +179,7 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
   @Override
   protected void onErrorDialogShow ()
   {
-    publishAsync (new QuitGameEvent ());
+    quitGame ();
   }
 
   @Override
@@ -240,6 +242,17 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
                                     new RejoinGameServerListener (event.getPlayerSecretId ()));
       }
     });
+  }
+
+  @Handler
+  void onEvent (final RejoinGameErrorEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+    log.warn ("Could not rejoin game. Reason: [{}]", event.getErrorMessage ());
+
+    handleError ("{}", event.getErrorMessage ());
   }
 
   // After having joined the game, server events start arriving intended for the play screen,
@@ -318,6 +331,19 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
             + "\n\nProblem:\n\n{}\n\nDetails:\n\n{}", CrashSettings.ABSOLUTE_EXTERNAL_CRASH_FILES_DIRECTORY,
                  playMapMetadata.getType ().name ().toLowerCase (), playMapMetadata.getName (),
                  Throwables.getRootCause (e).getMessage (), Strings.toString (e));
+  }
+
+  private void quitGame ()
+  {
+    // Cover the (improbable) corner case whereby the game is quit AFTER
+    // successfully joining as a player, but BEFORE showing / subscribing the play screen.
+    // This is a courtesy goodbye notice to the server; ignore any response.
+    // Must be published before QuitGameEvent or it will never reach the server.
+    // Asynchronous publication prevents UI thread from being blocked.
+    if (selfPlayer != null) publishAsync (new PlayerQuitGameRequestEvent ());
+
+    // Disconnect from server.
+    publishAsync (new QuitGameEvent ());
   }
 
   private class DefaultCreateGameServerListener implements CreateGameServerListener
@@ -588,6 +614,9 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
 
       log.trace ("onJoinGameServerSuccess: PlayerName: [{}], Event: [{}]", playerName, event);
 
+      // Sanity check: Can't rejoin a game by creating a new one.
+      assert !createdGameFirst;
+
       publishAsync (new HumanPlayerJoinGameRequestEvent (playerName, playerSecretId));
 
       Gdx.app.postRunnable (new Runnable ()
@@ -595,7 +624,7 @@ public final class MenuToPlayLoadingScreen extends AbstractLoadingScreen
         @Override
         public void run ()
         {
-          increaseProgressBy (ONE_SIXTH);
+          increaseProgressBy (ONE_SIXTH); // Assumes createdGameFirst is false.
         }
       });
     }

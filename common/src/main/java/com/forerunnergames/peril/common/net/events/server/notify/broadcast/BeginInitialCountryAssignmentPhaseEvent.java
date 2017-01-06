@@ -18,18 +18,23 @@
 
 package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractGamePhaseNotificationEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.BeginGamePhaseNotificationEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-public final class BeginPlayerCountryAssignmentEvent implements BroadcastNotificationEvent
+public final class BeginInitialCountryAssignmentPhaseEvent extends AbstractGamePhaseNotificationEvent
+        implements BeginGamePhaseNotificationEvent
 {
   private final InitialCountryAssignment assignmentMode;
 
-  public BeginPlayerCountryAssignmentEvent (final InitialCountryAssignment assignmentMode)
+  public BeginInitialCountryAssignmentPhaseEvent (final InitialCountryAssignment assignmentMode)
   {
+    super (GamePhase.INITIAL_COUNTRY_ASSIGNMENT);
+
     this.assignmentMode = assignmentMode;
   }
 
@@ -48,11 +53,11 @@ public final class BeginPlayerCountryAssignmentEvent implements BroadcastNotific
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: AssignmentMode: {}", getClass ().getSimpleName (), assignmentMode);
+    return Strings.format ("{} | AssignmentMode: [{}]", super.toString (), assignmentMode);
   }
 
   @RequiredForNetworkSerialization
-  private BeginPlayerCountryAssignmentEvent ()
+  private BeginInitialCountryAssignmentPhaseEvent ()
   {
     assignmentMode = null;
   }

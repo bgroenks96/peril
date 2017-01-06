@@ -28,7 +28,7 @@ import com.forerunnergames.peril.client.events.ConnectToServerSuccessEvent;
 import com.forerunnergames.peril.client.events.CreateGameServerDeniedEvent;
 import com.forerunnergames.peril.client.events.CreateGameServerRequestEvent;
 import com.forerunnergames.peril.client.events.CreateGameServerSuccessEvent;
-import com.forerunnergames.peril.client.events.DisconnectFromServerEvent;
+import com.forerunnergames.peril.client.events.DisconnectFromServerDebugEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
 import com.forerunnergames.peril.client.events.RejoinGameErrorEvent;
 import com.forerunnergames.peril.client.io.CachedGameSessionManager;
@@ -164,7 +164,7 @@ public final class MultiplayerController extends ControllerAdapter
 
   // TODO Production: Remove.
   @Handler
-  public void onEvent (final DisconnectFromServerEvent event)
+  public void onEvent (final DisconnectFromServerDebugEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

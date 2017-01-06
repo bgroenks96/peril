@@ -17,7 +17,7 @@ import com.forerunnergames.peril.common.net.events.client.interfaces.PlayerRespo
 import com.forerunnergames.peril.common.net.events.client.request.HumanPlayerJoinGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputRequestEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialCountryAssignmentPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.events.EventRegistry;
@@ -184,8 +184,8 @@ public abstract class AbstractGamePhaseHandlerTest
     for (final Id country : countryGraphModel.getCountryIds ())
     {
       assertTrue (countryOwnerModel.isCountryOwned (country));
-      final PlayerCountryAssignmentCompleteEvent event = eventHandler
-              .lastEventOfType (PlayerCountryAssignmentCompleteEvent.class);
+      final EndInitialCountryAssignmentPhaseEvent event = eventHandler
+              .lastEventOfType (EndInitialCountryAssignmentPhaseEvent.class);
       final CountryPacket countryPacket = countryGraphModel.countryPacketWith (country);
       final Id player = countryOwnerModel.ownerOf (country);
       assertEquals (playerModel.playerPacketWith (player), event.getOwner (countryPacket));

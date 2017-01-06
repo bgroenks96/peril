@@ -18,8 +18,11 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
+
+import com.google.common.collect.ImmutableSet;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,6 +41,19 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
   }
 
   @Override
+  public ImmutableSet <GamePhase> getPhases ()
+  {
+    final ImmutableSet.Builder <GamePhase> phases = ImmutableSet.builder ();
+
+    for (final GamePhaseHandler handler : handlers)
+    {
+      phases.addAll (handler.getPhases ());
+    }
+
+    return phases.build ();
+  }
+
+  @Override
   public void activate ()
   {
     for (final GamePhaseHandler handler : handlers)
@@ -47,24 +63,25 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
   }
 
   @Override
-  public void activateForSelf (final PlayerPacket player)
+  public void activate (final GamePhase currentPhase)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (currentPhase, "phase");
 
     for (final GamePhaseHandler handler : handlers)
     {
-      handler.activateForSelf (player);
+      handler.activate (currentPhase);
     }
   }
 
   @Override
-  public void activateForEveryoneElse (final PlayerPacket player)
+  public void activate (final PlayerPacket currentPlayer, final GamePhase currentPhase)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (currentPlayer, "player");
+    Arguments.checkIsNotNull (currentPhase, "phase");
 
     for (final GamePhaseHandler handler : handlers)
     {
-      handler.activateForEveryoneElse (player);
+      handler.activate (currentPlayer, currentPhase);
     }
   }
 
@@ -96,35 +113,25 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
   }
 
   @Override
-  public void deactivateForSelf (final PlayerPacket player)
+  public void deactivate (final GamePhase currentPhase)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (currentPhase, "phase");
 
     for (final GamePhaseHandler handler : handlers)
     {
-      handler.deactivateForSelf (player);
+      handler.deactivate (currentPhase);
     }
   }
 
   @Override
-  public void deactivateForEveryoneElse (final PlayerPacket player)
+  public void deactivate (final PlayerPacket currentPlayer, final GamePhase currentPhase)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (currentPlayer, "player");
+    Arguments.checkIsNotNull (currentPhase, "phase");
 
     for (final GamePhaseHandler handler : handlers)
     {
-      handler.deactivateForEveryoneElse (player);
-    }
-  }
-
-  @Override
-  public void setPlayMap (final PlayMap playMap)
-  {
-    Arguments.checkIsNotNull (playMap, "playMap");
-
-    for (final GamePhaseHandler handler : handlers)
-    {
-      handler.setPlayMap (playMap);
+      handler.deactivate (currentPlayer, currentPhase);
     }
   }
 
@@ -156,6 +163,26 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
     for (final GamePhaseHandler handler : handlers)
     {
       handler.reset ();
+    }
+  }
+
+  @Override
+  public void shutDown ()
+  {
+    for (final GamePhaseHandler handler : handlers)
+    {
+      handler.shutDown ();
+    }
+  }
+
+  @Override
+  public void setPlayMap (final PlayMap playMap)
+  {
+    Arguments.checkIsNotNull (playMap, "playMap");
+
+    for (final GamePhaseHandler handler : handlers)
+    {
+      handler.setPlayMap (playMap);
     }
   }
 

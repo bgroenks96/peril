@@ -1,6 +1,5 @@
 package com.forerunnergames.peril.core.model.game.phase.turn;
 
-import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerCancelFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectFortifyVectorRequestEvent;
@@ -11,6 +10,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectFor
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerEndTurnAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerFortifyCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerSelectFortifyVectorEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.GamePhaseNotificationEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
@@ -79,9 +79,10 @@ public final class DefaultFortifyPhaseHandler extends AbstractGamePhaseHandler i
 
     log.info ("Begin fortify phase for player [{}].", currentPlayer);
 
-    changeGamePhaseTo (GamePhase.FORTIFY);
+    final GamePhaseNotificationEvent event = new BeginFortifyPhaseEvent (currentPlayer);
 
-    publish (new BeginFortifyPhaseEvent (currentPlayer));
+    changeGamePhaseTo (event.getGamePhase ());
+    publish (event);
   }
 
   @Override

@@ -19,6 +19,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phas
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.occupation.OccupationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerOccupyCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerOccupyCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
@@ -26,17 +27,15 @@ import com.forerunnergames.peril.common.net.events.server.success.PlayerOccupyCo
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
+import com.google.common.collect.ImmutableSet;
+
 import javax.annotation.Nullable;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public final class OccupationPhaseHandler extends AbstractGamePhaseHandler
 {
-  private static final Logger log = LoggerFactory.getLogger (OccupationPhaseHandler.class);
   private final OccupationDialog occupationDialog;
   @Nullable
   private PlayerOccupyCountryRequestEvent request = null;
@@ -56,6 +55,12 @@ public final class OccupationPhaseHandler extends AbstractGamePhaseHandler
     Arguments.checkIsNotNull (occupationDialog, "occupationDialog");
 
     this.occupationDialog = occupationDialog;
+  }
+
+  @Override
+  public ImmutableSet <GamePhase> getPhases ()
+  {
+    return ImmutableSet.of (GamePhase.ATTACK);
   }
 
   @Override

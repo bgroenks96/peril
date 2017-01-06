@@ -28,8 +28,8 @@ import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforce
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DistributeInitialArmiesCompleteEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialCountryAssignmentPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialReinforcementPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerReinforceCountrySuccessEvent;
@@ -168,17 +168,17 @@ public final class InitialGamePhaseController implements TestPhaseController
   {
     final TestClientPool clientPool = session.getTestClientPool ();
     final AtomicInteger verifyCount = new AtomicInteger ();
-    final ClientEventCallback <PlayerCountryAssignmentCompleteEvent> callback = new ClientEventCallback <PlayerCountryAssignmentCompleteEvent> ()
+    final ClientEventCallback <EndInitialCountryAssignmentPhaseEvent> callback = new ClientEventCallback <EndInitialCountryAssignmentPhaseEvent> ()
     {
       @Override
-      public void onEventReceived (final Optional <PlayerCountryAssignmentCompleteEvent> eventWrapper,
+      public void onEventReceived (final Optional <EndInitialCountryAssignmentPhaseEvent> eventWrapper,
                                    final TestClient client)
       {
         Arguments.checkIsNotNull (eventWrapper, "eventWrapper");
         Arguments.checkIsNotNull (client, "client");
 
         if (!eventWrapper.isPresent ()) return;
-        final PlayerCountryAssignmentCompleteEvent event = eventWrapper.get ();
+        final EndInitialCountryAssignmentPhaseEvent event = eventWrapper.get ();
         final ImmutableSet <PlayerPacket> players = event.getPlayers ();
         if (players.contains (client.getPlayer ())) verifyCount.incrementAndGet ();
         final ImmutableSet.Builder <CountryPacket> playerCountries = ImmutableSet.builder ();
@@ -190,7 +190,7 @@ public final class InitialGamePhaseController implements TestPhaseController
       }
     };
     final ImmutableSet <TestClient> failed = clientPool
-            .waitForAllClientsToReceive (PlayerCountryAssignmentCompleteEvent.class, callback);
+            .waitForAllClientsToReceive (EndInitialCountryAssignmentPhaseEvent.class, callback);
     return new WaitForCommunicationActionResult (failed, verifyCount.get ());
   }
 

@@ -18,23 +18,25 @@
 
 package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
+import com.forerunnergames.peril.common.game.GamePhase;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerGamePhaseNotificationEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEndGamePhaseNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
 import com.google.common.collect.ImmutableSet;
 
-public final class EndReinforcementPhaseEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
+public final class EndReinforcementPhaseEvent extends AbstractPlayerGamePhaseNotificationEvent
+        implements PlayerEndGamePhaseNotificationEvent
 {
   private final ImmutableSet <CountryPacket> playerOwnedCountries;
 
   public EndReinforcementPhaseEvent (final PlayerPacket player, final ImmutableSet <CountryPacket> playerOwnedCountries)
   {
-    super (player);
+    super (player, GamePhase.REINFORCEMENT);
 
     Arguments.checkIsNotNull (playerOwnedCountries, "playerOwnedCountries");
 

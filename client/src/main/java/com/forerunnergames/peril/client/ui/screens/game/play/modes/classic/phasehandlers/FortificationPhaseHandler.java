@@ -24,29 +24,28 @@ import com.forerunnergames.peril.client.events.SelectFortifySourceCountryRequest
 import com.forerunnergames.peril.client.events.SelectFortifyTargetCountryRequestEvent;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.armymovement.fortification.FortificationDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerCancelFortifyRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerFortifyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerSelectFortifyVectorRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerCancelFortifyDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerFortifyCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectFortifyVectorDeniedEvent;
-import com.forerunnergames.peril.common.net.events.server.inform.PlayerSelectFortifyVectorEvent;
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerFortifyCountryEvent;
+import com.forerunnergames.peril.common.net.events.server.inform.PlayerSelectFortifyVectorEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerCancelFortifySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerFortifyCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerSelectFortifyVectorSuccessEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
+import com.google.common.collect.ImmutableSet;
+
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public final class FortificationPhaseHandler extends AbstractGamePhaseHandler
 {
-  private static final Logger log = LoggerFactory.getLogger (FortificationPhaseHandler.class);
   private final CountryVectorSelectionHandler countryVectorSelectionHandler;
   private final FortificationDialog fortificationDialog;
 
@@ -60,6 +59,12 @@ public final class FortificationPhaseHandler extends AbstractGamePhaseHandler
 
     this.fortificationDialog = fortificationDialog;
     countryVectorSelectionHandler = new FortificationPhaseCountryVectorSelectionHandler (playMap, eventBus);
+  }
+
+  @Override
+  public ImmutableSet <GamePhase> getPhases ()
+  {
+    return ImmutableSet.of (GamePhase.FORTIFY);
   }
 
   @Override

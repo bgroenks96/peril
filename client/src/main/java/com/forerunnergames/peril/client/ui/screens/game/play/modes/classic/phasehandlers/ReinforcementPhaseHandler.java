@@ -20,6 +20,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phas
 import com.badlogic.gdx.Gdx;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerReinforceCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforceCountryEvent;
@@ -29,17 +30,15 @@ import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.Strings;
 
+import com.google.common.collect.ImmutableSet;
+
 import javax.annotation.Nullable;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
 {
-  private static final Logger log = LoggerFactory.getLogger (ReinforcementPhaseHandler.class);
   private final ReinforcementDialog reinforcementDialog;
   @Nullable
   private PlayerReinforceCountryEvent serverInformEvent;
@@ -61,6 +60,12 @@ public final class ReinforcementPhaseHandler extends AbstractGamePhaseHandler
     Arguments.checkIsNotNull (reinforcementDialog, "reinforcementDialog");
 
     this.reinforcementDialog = reinforcementDialog;
+  }
+
+  @Override
+  public ImmutableSet <GamePhase> getPhases ()
+  {
+    return ImmutableSet.of (GamePhase.INITIAL_REINFORCEMENT, GamePhase.REINFORCEMENT);
   }
 
   @Override

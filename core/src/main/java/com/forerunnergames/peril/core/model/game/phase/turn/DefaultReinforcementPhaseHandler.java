@@ -54,7 +54,7 @@ public final class DefaultReinforcementPhaseHandler extends AbstractGamePhaseHan
     {
       publish (new SkipReinforcementPhaseEvent (getCurrentPlayerPacket (),
               SkipReinforcementPhaseEvent.Reason.COUNTRY_ARMY_OVERFLOW));
-      log.info ("No valid countries for reinforcment. Skipping phase...", getCurrentPlayerPacket ());
+      log.info ("No valid countries for reinforcement for player: [{}]. Skipping phase...", getCurrentPlayerPacket ());
       return;
     }
 

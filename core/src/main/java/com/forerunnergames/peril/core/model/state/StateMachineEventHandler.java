@@ -39,7 +39,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndGa
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialCountryAssignmentPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ResumeGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
@@ -245,13 +245,13 @@ public final class StateMachineEventHandler
   }
 
   @Handler
-  public void onEvent (final PlayerCountryAssignmentCompleteEvent event)
+  public void onEvent (final EndInitialCountryAssignmentPhaseEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.trace ("Received event {}", event);
 
-    context.onPlayerCountryAssignmentCompleteEvent (event);
+    context.onEndInitialCountryAssignmentPhaseEvent (event);
   }
 
   @Handler

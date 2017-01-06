@@ -1176,7 +1176,7 @@ public final class MultiplayerController extends ControllerAdapter
     publish (successEvent);
 
     // send current game state to player
-    coreCommunicator.requestSendGameStateTo (updatedPlayer);
+    coreCommunicator.requestSendGameStateTo (updatedPlayer, gameServerConfig);
 
     if (!eventCache.hasPendingEvents (updatedPlayer)) return;
 

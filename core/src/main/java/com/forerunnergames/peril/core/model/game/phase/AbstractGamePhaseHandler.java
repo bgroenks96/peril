@@ -287,7 +287,7 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   }
 
   /**
-   * Checks whether or not a player has won or lost the game in the current game state
+   * Checks whether or not a player has won or lost the game in the current game state.
    */
   protected GameStatus checkPlayerGameStatus (final Id playerId)
   {

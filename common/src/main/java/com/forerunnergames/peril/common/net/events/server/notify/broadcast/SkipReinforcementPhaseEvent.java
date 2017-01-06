@@ -1,24 +1,26 @@
 package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
+import com.forerunnergames.peril.common.game.GamePhase;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerGamePhaseNotificationEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerSkipGamePhaseNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-public class SkipReinforcementPhaseEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
+public class SkipReinforcementPhaseEvent extends AbstractPlayerGamePhaseNotificationEvent
+        implements PlayerSkipGamePhaseNotificationEvent
 {
+  private final Reason reason;
+
   public enum Reason
   {
     COUNTRY_ARMY_OVERFLOW
   }
 
-  private final Reason reason;
-
   public SkipReinforcementPhaseEvent (final PlayerPacket player, final Reason reason)
   {
-    super (player);
+    super (player, GamePhase.REINFORCEMENT);
 
     Arguments.checkIsNotNull (reason, "reason");
 

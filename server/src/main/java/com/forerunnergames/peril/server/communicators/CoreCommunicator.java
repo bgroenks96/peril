@@ -18,12 +18,13 @@
 
 package com.forerunnergames.peril.server.communicators;
 
+import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 
 public interface CoreCommunicator
 {
-  void requestSendGameStateTo (PlayerPacket player);
+  void requestSendGameStateTo (final PlayerPacket player, final GameServerConfiguration config);
 
-  void notifyInputEventTimedOut (PlayerInputEvent inputEvent);
+  void notifyInputEventTimedOut (final PlayerInputEvent inputEvent);
 }

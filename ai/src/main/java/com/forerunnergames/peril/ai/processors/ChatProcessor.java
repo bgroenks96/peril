@@ -40,7 +40,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Begin
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialReinforcementPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerCountryAssignmentEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialCountryAssignmentPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginRoundEvent;
@@ -157,7 +157,7 @@ public final class ChatProcessor extends AbstractAiProcessor
   }
 
   @Handler
-  void onEvent (final BeginPlayerCountryAssignmentEvent event)
+  void onEvent (final BeginInitialCountryAssignmentPhaseEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

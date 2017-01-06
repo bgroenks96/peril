@@ -29,7 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-import com.forerunnergames.peril.client.events.DisconnectFromServerEvent;
+import com.forerunnergames.peril.client.events.DisconnectFromServerDebugEvent;
 import com.forerunnergames.peril.client.events.PlayGameEvent;
 import com.forerunnergames.peril.client.events.QuitGameEvent;
 import com.forerunnergames.peril.client.events.RejoinGameErrorEvent;
@@ -72,7 +72,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phase
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.DefendingBattlePhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.FortificationPhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.GamePhaseHandler;
-import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ManualCountryAssignmentPhaseHandler;
+import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.InitialCountryAssignmentPhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.OccupationPhaseHandler;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ReinforcementDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers.ReinforcementPhaseHandler;
@@ -89,32 +89,32 @@ import com.forerunnergames.peril.client.ui.widgets.messagebox.chatbox.ChatBoxRow
 import com.forerunnergames.peril.client.ui.widgets.messagebox.statusbox.StatusBoxRow;
 import com.forerunnergames.peril.common.game.BattleOutcome;
 import com.forerunnergames.peril.common.game.GameMode;
-import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.net.events.client.request.PlayerQuitGameRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndTurnRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerTradeInCardsRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerCardTradeInAvailableEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.BeginGamePhaseNotificationEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryArmiesChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.CountryOwnerChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.EndGamePhaseNotificationEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerBeginGamePhaseNotificationEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerCardsChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEndGamePhaseNotificationEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerTurnOrderChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ActivePlayerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginAttackPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginGameEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialReinforcementPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerCountryAssignmentEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginRoundEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndGameEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerDisconnectEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
@@ -158,6 +158,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
   private static final boolean DEBUG = false;
   private final ClassicModePlayScreenWidgetFactory widgetFactory;
   private final DebugEventGenerator debugEventGenerator;
+  private final ScreenShaker screenShaker;
   private final Image playMapTableForegroundImage;
   private final MessageBox <StatusBoxRow> statusBox;
   private final MessageBox <ChatBoxRow> chatBox;
@@ -170,7 +171,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
   private final Vector2 tempPosition = new Vector2 ();
   private final NotificationDialog notificationDialog;
   private final GamePhaseHandler reinforcementPhaseHandler;
-  private final GamePhaseHandler manualCountryAssignmentPhaseHandler;
+  private final GamePhaseHandler initialCountryAssignmentPhaseHandler;
   private final GamePhaseHandler occupationPhaseHandler;
   private final GamePhaseHandler fortificationPhaseHandler;
   private final StatusMessageGenerator statusMessageGenerator;
@@ -203,6 +204,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
     this.widgetFactory = widgetFactory;
     this.debugEventGenerator = debugEventGenerator;
 
+    screenShaker = new ScreenShaker (getViewport (), getScreenSize ());
     playMapTableForegroundImage = widgetFactory.createPlayMapTableForegroundImage ();
     statusBox = widgetFactory.createStatusBox ();
     chatBox = widgetFactory.createChatBox (eventBus);
@@ -216,7 +218,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
         // TODO Implement detailed report button.
 
         // TODO Production: Remove.
-        publish (new DisconnectFromServerEvent ());
+        publish (new DisconnectFromServerDebugEvent ());
 
         log.debug ("Clicked detailed report button");
       }
@@ -349,10 +351,10 @@ public final class ClassicModePlayScreen extends AbstractScreen
             notificationDialog, quitDialog, errorDialog);
 
     reinforcementPhaseHandler = new ReinforcementPhaseHandler (playMap, reinforcementDialog, eventBus);
-    manualCountryAssignmentPhaseHandler = new ManualCountryAssignmentPhaseHandler (playMap, eventBus);
+    initialCountryAssignmentPhaseHandler = new InitialCountryAssignmentPhaseHandler (playMap, eventBus);
     occupationPhaseHandler = new OccupationPhaseHandler (playMap, occupationDialog, eventBus);
     fortificationPhaseHandler = new FortificationPhaseHandler (playMap, fortificationDialog, eventBus);
-    gamePhaseHandlers.add (reinforcementPhaseHandler, manualCountryAssignmentPhaseHandler, occupationPhaseHandler, fortificationPhaseHandler);
+    gamePhaseHandlers.add (reinforcementPhaseHandler, initialCountryAssignmentPhaseHandler, occupationPhaseHandler, fortificationPhaseHandler);
 
     // @formatter:on
   }
@@ -394,13 +396,14 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     updatePlayMap (PlayMap.NULL);
 
-    gamePhaseHandlers.deactivate ();
+    gamePhaseHandlers.shutDown ();
     gamePhaseHandlers.remove (attackingBattlePhaseHandler, defendingBattlePhaseHandler);
 
     attackingBattlePhaseHandler = BattlePhaseHandler.NULL;
     defendingBattlePhaseHandler = BattlePhaseHandler.NULL;
 
     allDialogs.hide (null);
+    allDialogs.remove (AttackDialog.class, DefendDialog.class);
 
     isGameInProgress.set (false);
     isSpectating.set (false);
@@ -484,12 +487,15 @@ public final class ClassicModePlayScreen extends AbstractScreen
     return false;
   }
 
+  // Note: Only occurs for self-player, not third-parties.
   @Handler
   public void onEvent (final ServerDisconnectionEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event [{}] received.", event);
+
+    gamePhaseHandlers.shutDown ();
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -511,27 +517,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     isSpectating.set (false);
 
-    final ScreenShaker screenShaker = new ScreenShaker (getViewport (), getScreenSize ());
-
-    // @formatter:off
-
-    final AttackDialog attackDialog = widgetFactory.createAttackDialog (getStage (), event.getGameRules (),
-            screenShaker, allDialogListeners.get (DefaultAttackDialogListener.class));
-
-    final DefendDialog defendDialog = widgetFactory.createDefendDialog (getStage (), event.getGameRules (),
-            screenShaker, allDialogListeners.get (DefaultDefendDialogListener.class));
-
-    allDialogs.add (attackDialog, defendDialog);
-
-    attackingBattlePhaseHandler = new AttackingBattlePhaseHandler (playMap, attackDialog,
-            allDialogs.get (AttackerBattleResultDialog.class), getEventBus ());
-
-    defendingBattlePhaseHandler = new DefendingBattlePhaseHandler (playMap, defendDialog,
-            allDialogs.get (DefenderBattleResultDialog.class), getEventBus ());
-
-    // @formatter:on
-
-    gamePhaseHandlers.add (attackingBattlePhaseHandler, defendingBattlePhaseHandler);
+    updateGameRules (event.getGameRules ());
 
     if (DEBUG)
     {
@@ -813,69 +799,9 @@ public final class ClassicModePlayScreen extends AbstractScreen
       @Override
       public void run ()
       {
-        intelBox.setGamePhaseName ("Turn Order");
         personBox.setPlayers (event.getPlayersSortedByTurnOrder ());
       }
     });
-  }
-
-  @Handler
-  void onEvent (final BeginPlayerCountryAssignmentEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    if (event.assignmentModeIs (InitialCountryAssignment.MANUAL)) manualCountryAssignmentPhaseHandler.activate ();
-
-    Gdx.app.postRunnable (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        intelBox.setGamePhaseName (Strings.format ("{} Country Assignment",
-                                                   Strings.toProperCase (String.valueOf (event.getAssignmentMode ()))));
-      }
-    });
-  }
-
-  @Handler
-  void onEvent (final PlayerCountryAssignmentCompleteEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    if (event.assignmentModeIs (InitialCountryAssignment.MANUAL)) manualCountryAssignmentPhaseHandler.deactivate ();
-  }
-
-  @Handler
-  void onEvent (final BeginInitialReinforcementPhaseEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    reinforcementPhaseHandler.activate ();
-
-    Gdx.app.postRunnable (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        intelBox.setGamePhaseName ("Initial Reinforcement");
-      }
-    });
-  }
-
-  @Handler
-  void onEvent (final EndInitialReinforcementPhaseEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    reinforcementPhaseHandler.deactivate ();
   }
 
   @Handler
@@ -896,20 +822,17 @@ public final class ClassicModePlayScreen extends AbstractScreen
   }
 
   @Handler
-  void onEvent (final BeginReinforcementPhaseEvent event)
+  void onEvent (final BeginPlayerTurnEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
-
-    reinforcementPhaseHandler.activateForSelf (event.getPerson ());
 
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        intelBox.setGamePhaseName ("Reinforcement");
         notificationDialog.setTitleForSelf (event.getPerson (), "Ahem, General");
         notificationDialog.showForSelf (event.getPerson (), "It is your turn, sir. What are your orders?");
       }
@@ -1007,7 +930,6 @@ public final class ClassicModePlayScreen extends AbstractScreen
     log.debug ("Event received [{}].", event);
 
     tradeInEvent = null; // TODO Production: Remove.
-    reinforcementPhaseHandler.deactivateForSelf (event.getPerson ());
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -1026,16 +948,11 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     log.debug ("Event received [{}].", event);
 
-    defendingBattlePhaseHandler.activateForEveryoneElse (event.getPerson ());
-    attackingBattlePhaseHandler.activateForSelf (event.getPerson ());
-    occupationPhaseHandler.activateForSelf (event.getPerson ());
-
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        intelBox.setGamePhaseName ("Attack");
         controlRoomBox.enableButtonForSelf (ControlRoomBox.Button.FORTIFY, event.getPerson ());
         controlRoomBox.enableButtonForSelf (ControlRoomBox.Button.END_TURN, event.getPerson ());
       }
@@ -1110,7 +1027,6 @@ public final class ClassicModePlayScreen extends AbstractScreen
       @Override
       public void run ()
       {
-        intelBox.setGamePhaseName ("Game Over");
         controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.TRADE_IN, event.getPerson ());
         controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.FORTIFY, event.getPerson ());
         controlRoomBox.disableButtonForSelf (ControlRoomBox.Button.END_TURN, event.getPerson ());
@@ -1128,10 +1044,6 @@ public final class ClassicModePlayScreen extends AbstractScreen
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
-
-    defendingBattlePhaseHandler.deactivateForEveryoneElse (event.getPerson ());
-    attackingBattlePhaseHandler.deactivateForSelf (event.getPerson ());
-    occupationPhaseHandler.deactivateForSelf (event.getPerson ());
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -1172,32 +1084,11 @@ public final class ClassicModePlayScreen extends AbstractScreen
   }
 
   @Handler
-  void onEvent (final BeginFortifyPhaseEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-
-    fortificationPhaseHandler.activateForSelf (event.getPerson ());
-
-    Gdx.app.postRunnable (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        intelBox.setGamePhaseName ("Post-Combat Maneuver");
-      }
-    });
-  }
-
-  @Handler
   void onEvent (final EndFortifyPhaseEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
-
-    fortificationPhaseHandler.deactivateForSelf (event.getPerson ());
 
     Gdx.app.postRunnable (new Runnable ()
     {
@@ -1267,6 +1158,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
     });
   }
 
+  // Note: Only occurs for third-parties, not self player.
   @Handler
   void onEvent (final PlayerDisconnectEvent event)
   {
@@ -1274,10 +1166,10 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     log.debug ("Event received [{}].", event);
 
-    notificationDialog.setTitle ("Ahem, General");
+    notificationDialog.setTitle ("Player Disconnected");
     notificationDialog.show (Strings.format (
                                              "{} has been disconnected from the server. We will try to reconnect "
-                                                     + "them now. Thank you for your gracious patience, General.",
+                                                     + "them now. Thank you for your patience.",
                                              event.getPlayerName ()));
   }
 
@@ -1288,7 +1180,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     log.debug ("Event received [{}].", event);
 
-    notificationDialog.setTitle ("Ahem, General");
+    notificationDialog.setTitle ("Game Paused");
 
     final String message;
 
@@ -1296,12 +1188,12 @@ public final class ClassicModePlayScreen extends AbstractScreen
     {
       case PLAYER_UNAVAILABLE:
       {
-        message = "The game has been paused because a player has become unavailable.";
+        message = "A player has become disconnected from the server, and we are waiting for them to be reconnected.";
         break;
       }
       case REQUESTED_BY_HOST:
       {
-        message = "The game has been paused by the host.";
+        message = "The host has paused the game.";
         break;
       }
       default:
@@ -1321,8 +1213,61 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     log.debug ("Event received [{}].", event);
 
-    notificationDialog.setTitle ("Ahem, General");
-    notificationDialog.show ("The game has been unpaused and can continue normally.");
+    notificationDialog.setTitle ("Game Unpaused");
+    notificationDialog.show ("The game has been unpaused and you can resume normal gameplay.");
+  }
+
+  @Handler
+  void onEvent (final PlayerBeginGamePhaseNotificationEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    gamePhaseHandlers.activate (event.getPerson (), event.getGamePhase ());
+  }
+
+  @Handler
+  void onEvent (final PlayerEndGamePhaseNotificationEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    gamePhaseHandlers.deactivate (event.getPerson (), event.getGamePhase ());
+  }
+
+  @Handler
+  void onEvent (final BeginGamePhaseNotificationEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        intelBox.setGamePhase (event.getGamePhase ());
+      }
+    });
+
+    if (event instanceof PlayerBeginGamePhaseNotificationEvent) return;
+
+    gamePhaseHandlers.activate (event.getGamePhase ());
+  }
+
+  @Handler
+  void onEvent (final EndGamePhaseNotificationEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    if (event instanceof PlayerEndGamePhaseNotificationEvent) return;
+
+    log.debug ("Event received [{}].", event);
+
+    gamePhaseHandlers.deactivate (event.getGamePhase ());
   }
 
   @Handler
@@ -1331,20 +1276,25 @@ public final class ClassicModePlayScreen extends AbstractScreen
     Arguments.checkIsNotNull (event, "event");
 
     log.debug ("Event received [{}].", event);
-    log.info ("Restoring game state after rejoining game...");
+    log.info ("Restoring game state...");
 
-    // TODO Restore game phase handlers based on current game phase and current player...
-    // TODO ...when Brian Groenke adds GamePhase enum to PlayerRestoreGameStateEvent.
+    updateGameRules (event.getGameRules ());
+
+    gamePhaseHandlers.shutDown ();
+    gamePhaseHandlers.setSelfPlayer (event.getSelfPlayer ());
+    gamePhaseHandlers.activate (event.getCurrentPlayer (), event.getCurrentGamePhase ());
 
     Gdx.app.postRunnable (new Runnable ()
     {
       @Override
       public void run ()
       {
-        // TODO Uncomment when Brian Groenke adds GamePhase enum to PlayerRestoreGameStateEvent.
-        // intelBox.setGamePhase (event.getGamePhase ());
-        intelBox.setGameRound (event.getCurrentRound ());
+        intelBox.setGameServerConfiguration (event.getGameServerConfiguration ());
+        intelBox.setGamePhase (event.getCurrentGamePhase ());
+        intelBox.setGameRound (event.getCurrentGameRound ());
         intelBox.setOwnedCountriesForSelf (event.getSelfOwnedCountryCount (), event.getPerson ());
+
+        // TODO Update state of control room box buttons.
 
         playMap.reset ();
 
@@ -1353,13 +1303,12 @@ public final class ClassicModePlayScreen extends AbstractScreen
           playMap.setCountryState (playMapEntry.getKey ().getName (),
                                    CountryPrimaryImageState.fromPlayerColor (playMapEntry.getValue ().getColor ()));
           playMap.setArmies (playMapEntry.getKey ().getArmyCount (), playMapEntry.getKey ().getName ());
-
         }
 
-        log.info ("Finished restoring game state after rejoining game.");
+        log.info ("Finished restoring game state.");
 
         notificationDialog.setTitle ("Reconnected");
-        notificationDialog.show ("You have been reconnected to the server.");
+        notificationDialog.show ("You have been reconnected to the server, and can resume normal gameplay.");
       }
     });
   }
@@ -1379,7 +1328,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
   private static String getDenialMessage (final SpectatorJoinGameDeniedEvent event)
   {
-    String reason;
+    final String reason;
 
     switch (event.getReason ())
     {
@@ -1422,6 +1371,31 @@ public final class ClassicModePlayScreen extends AbstractScreen
                            reason);
   }
 
+  private void updateGameRules (final GameRules rules)
+  {
+    allDialogs.remove (AttackDialog.class, DefendDialog.class);
+
+    final AttackDialog attackDialog = widgetFactory
+            .createAttackDialog (getStage (), rules, screenShaker,
+                                 allDialogListeners.get (DefaultAttackDialogListener.class));
+
+    final DefendDialog defendDialog = widgetFactory
+            .createDefendDialog (getStage (), rules, screenShaker,
+                                 allDialogListeners.get (DefaultDefendDialogListener.class));
+
+    allDialogs.add (attackDialog, defendDialog);
+
+    gamePhaseHandlers.remove (attackingBattlePhaseHandler, defendingBattlePhaseHandler);
+
+    attackingBattlePhaseHandler = new AttackingBattlePhaseHandler (playMap, attackDialog,
+            allDialogs.get (AttackerBattleResultDialog.class), getEventBus ());
+
+    defendingBattlePhaseHandler = new DefendingBattlePhaseHandler (playMap, defendDialog,
+            allDialogs.get (DefenderBattleResultDialog.class), getEventBus ());
+
+    gamePhaseHandlers.add (attackingBattlePhaseHandler, defendingBattlePhaseHandler);
+  }
+
   private String getQuitButtonText (final boolean isGameInProgress, final boolean isSpectating)
   {
     return isGameInProgress && !isSpectating ? "Surrender & Quit" : "Quit";
@@ -1449,7 +1423,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
   private void quitGame ()
   {
-    // playMap must be used here because it will be reset to
+    // PlayMapMetadata must be copied here because playMap will be reset to
     // PlayMap#NULL in #hide during the call to #toScreen.
     final PlayMapMetadata playMapMetadata = playMap.getPlayMapMetadata ();
 
@@ -1457,6 +1431,8 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     // The play-to-menu loading screen is now active & can therefore receive events.
 
+    publishAsync (new PlayerQuitGameRequestEvent ()); // Courtesy goodbye notice to the server; ignore any response.
+    publishAsync (new QuitGameEvent ()); // Disconnect from server.
     publishAsync (new UnloadPlayScreenAssetsRequestEvent (GameMode.CLASSIC));
     publishAsync (new UnloadPlayMapRequestEvent (playMapMetadata));
   }
@@ -1647,7 +1623,6 @@ public final class ClassicModePlayScreen extends AbstractScreen
     public void onSubmit ()
     {
       quitGame ();
-      publishAsync (new QuitGameEvent ());
     }
   }
 

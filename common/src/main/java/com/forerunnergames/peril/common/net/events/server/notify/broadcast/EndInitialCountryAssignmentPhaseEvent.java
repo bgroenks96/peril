@@ -18,25 +18,30 @@
 
 package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.game.InitialCountryAssignment;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractGamePhaseNotificationEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.EndGamePhaseNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
-public final class PlayerCountryAssignmentCompleteEvent implements BroadcastNotificationEvent
+public final class EndInitialCountryAssignmentPhaseEvent extends AbstractGamePhaseNotificationEvent
+        implements EndGamePhaseNotificationEvent
 {
   private final InitialCountryAssignment assignmentMode;
   private final ImmutableMap <CountryPacket, PlayerPacket> countryToPlayerPackets;
 
-  public PlayerCountryAssignmentCompleteEvent (final InitialCountryAssignment assignmentMode,
-                                               final ImmutableMap <CountryPacket, PlayerPacket> countryToPlayerPackets)
+  public EndInitialCountryAssignmentPhaseEvent (final InitialCountryAssignment assignmentMode,
+                                                final ImmutableMap <CountryPacket, PlayerPacket> countryToPlayerPackets)
   {
+    super (GamePhase.INITIAL_COUNTRY_ASSIGNMENT);
+
     Arguments.checkIsNotNull (assignmentMode, "assignmentMode");
     Arguments.checkIsNotNull (countryToPlayerPackets, "countryToPlayerPackets");
     Arguments.checkHasNoNullKeysOrValues (countryToPlayerPackets, "countryToPlayerPackets");
@@ -77,12 +82,12 @@ public final class PlayerCountryAssignmentCompleteEvent implements BroadcastNoti
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: AssignmentMode: {} | CountryToPlayerPackets: [{}]", getClass ().getSimpleName (),
+    return Strings.format ("{} | AssignmentMode: [{}] | CountryToPlayerPackets: [{}]", super.toString (),
                            assignmentMode, Strings.toString (countryToPlayerPackets));
   }
 
   @RequiredForNetworkSerialization
-  private PlayerCountryAssignmentCompleteEvent ()
+  private EndInitialCountryAssignmentPhaseEvent ()
   {
     assignmentMode = null;
     countryToPlayerPackets = null;

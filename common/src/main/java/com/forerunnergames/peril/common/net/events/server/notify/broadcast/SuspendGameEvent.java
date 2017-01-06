@@ -17,11 +17,14 @@
 
 package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
+import com.forerunnergames.peril.common.game.GamePhase;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractGamePhaseNotificationEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.BeginGamePhaseNotificationEvent;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-public final class SuspendGameEvent implements BroadcastNotificationEvent
+public final class SuspendGameEvent extends AbstractGamePhaseNotificationEvent
+        implements BeginGamePhaseNotificationEvent
 {
   private final Reason reason;
   private final long timeoutMillis;
@@ -39,6 +42,8 @@ public final class SuspendGameEvent implements BroadcastNotificationEvent
 
   public SuspendGameEvent (final Reason reason, final long timeoutMillis)
   {
+    super (GamePhase.SUSPENDED);
+
     this.reason = reason;
     this.timeoutMillis = timeoutMillis;
   }
@@ -61,7 +66,7 @@ public final class SuspendGameEvent implements BroadcastNotificationEvent
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Reason: [{}] | TimeoutMillis: [{}]", getClass ().getSimpleName (), reason,
+    return Strings.format ("{} | Reason: [{}] | TimeoutMillis: [{}]", super.toString (), reason,
                            hasTimeout () ? timeoutMillis : "None");
   }
 

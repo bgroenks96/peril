@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Forerunner Games, LLC.
+ * Copyright © 2017 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,24 +15,40 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
+package com.forerunnergames.peril.common.net.events.server.defaults;
 
 import com.forerunnergames.peril.common.game.GamePhase;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractGamePhaseNotificationEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.EndGamePhaseNotificationEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.GamePhaseNotificationEvent;
+import com.forerunnergames.tools.common.Arguments;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class ResumeGameEvent extends AbstractGamePhaseNotificationEvent implements EndGamePhaseNotificationEvent
+public abstract class AbstractGamePhaseNotificationEvent implements GamePhaseNotificationEvent
 {
-  @RequiredForNetworkSerialization
-  public ResumeGameEvent ()
+  private final GamePhase gamePhase;
+
+  protected AbstractGamePhaseNotificationEvent (final GamePhase gamePhase)
   {
-    super (GamePhase.SUSPENDED);
+    Arguments.checkIsNotNull (gamePhase, "gamePhase");
+
+    this.gamePhase = gamePhase;
+  }
+
+  @RequiredForNetworkSerialization
+  protected AbstractGamePhaseNotificationEvent ()
+  {
+    gamePhase = null;
+  }
+
+  @Override
+  public final GamePhase getGamePhase ()
+  {
+    return gamePhase;
   }
 
   @Override
   public String toString ()
   {
-    return getClass ().getSimpleName ();
+    return Strings.format ("{} | GamePhase: [{}]", getClass ().getSimpleName (), gamePhase);
   }
 }

@@ -268,15 +268,15 @@ public final class GameModel extends AbstractGamePhaseHandler
     final Id targetPlayerId = playerModel.idOf (targetPlayerName);
 
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
-    final GamePhase currentPhsae = getCurrentGamePhase ();
+    final GamePhase currentPhase = getCurrentGamePhase ();
     final int currentRoundNumber = playerTurnModel.getRound ();
     final ImmutableMap <CountryPacket, PlayerPacket> countriesToPlayers = buildPlayMapViewFrom (playerModel,
                                                                                                 playMapModel);
     final CardSetPacket cardsInHand = CardPackets.fromCards (cardModel.getCardsInHand (targetPlayerId));
     final ImmutableSet <CardSetPacket> availableTradeIns = CardPackets
             .fromCardMatchSet (cardModel.computeMatchesFor (targetPlayerId));
-    publish (new PlayerRestoreGameStateEvent (event.getTargetPlayer (), currentPlayer, currentPhsae, currentRoundNumber,
-            cardsInHand, availableTradeIns, countriesToPlayers));
+    publish (new PlayerRestoreGameStateEvent (event.getTargetPlayer (), currentPlayer, currentPhase, currentRoundNumber,
+            cardsInHand, availableTradeIns, countriesToPlayers, event.getGameServerConfiguration ()));
     publish (new SendGameStateResponseEvent (ResponseCode.OK, event.getEventId ()));
   }
 

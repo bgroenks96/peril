@@ -20,10 +20,12 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phas
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.BattleDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.BattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.net.events.client.interfaces.BattleRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerDefendCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerDefendCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerRetreatSuccessEvent;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -44,6 +46,12 @@ public final class DefendingBattlePhaseHandler extends AbstractBattlePhaseHandle
   protected BattleRequestEvent createBattleRequestEvent (final int dieCount)
   {
     return new PlayerDefendCountryResponseRequestEvent (dieCount);
+  }
+
+  @Override
+  protected boolean shouldActivateAndDeactivate (final PlayerPacket currentPlayer, final GamePhase currentPhase)
+  {
+    return !isSelf (currentPlayer) && getPhases ().contains (currentPhase);
   }
 
   @Handler
