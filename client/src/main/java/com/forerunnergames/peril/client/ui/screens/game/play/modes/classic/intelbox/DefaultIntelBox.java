@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Align;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.ClassicModePlayScreenWidgetFactory;
 import com.forerunnergames.peril.client.ui.widgets.personicons.PersonIcon;
 import com.forerunnergames.peril.client.ui.widgets.personicons.players.PlayerIcon;
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.packets.person.PersonPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
@@ -273,11 +274,11 @@ public final class DefaultIntelBox implements IntelBox
   }
 
   @Override
-  public void setGamePhaseName (final String phaseName)
+  public void setGamePhase (final GamePhase phase)
   {
-    Arguments.checkIsNotNull (phaseName, "phaseName");
+    Arguments.checkIsNotNull (phase, "phase");
 
-    gamePhaseTextLabel.setText (phaseName);
+    gamePhaseTextLabel.setText (asText (phase));
   }
 
   @Override
@@ -382,6 +383,58 @@ public final class DefaultIntelBox implements IntelBox
     detailedReportButtonLabel.setStyle (widgetFactory.createIntelBoxButtonTextLabelStyle ());
     detailedReportButton.setStyle (widgetFactory.createIntelBoxDetailedReportButtonStyle ());
     personIcon.refreshAssets ();
+  }
+
+  private String asText (final GamePhase phase)
+  {
+    switch (phase)
+    {
+      case INITIAL:
+      {
+        return "Starting...";
+      }
+      case INITIAL_COUNTRY_ASSIGNMENT:
+      {
+        return "Initial Country Assignment";
+      }
+      case INITIAL_REINFORCEMENT:
+      {
+        return "Initial Reinforcement";
+      }
+      case TURN:
+      {
+        // Should never be set, but just in case...
+        return "Turn";
+      }
+      case REINFORCEMENT:
+      {
+        return "Reinforcement";
+      }
+      case ATTACK:
+      {
+        return "Battle";
+      }
+      case FORTIFY:
+      {
+        return "Post-Combat Maneuver";
+      }
+      case END:
+      {
+        return "Game Over";
+      }
+      case SUSPENDED:
+      {
+        return "Game Paused";
+      }
+      case UNKNOWN:
+      {
+        return "?";
+      }
+      default:
+      {
+        return "?";
+      }
+    }
   }
 
   private boolean isSelf (@Nullable final PersonPacket person)

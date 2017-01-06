@@ -18,7 +18,10 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Handles game logic for various game phases.
@@ -28,28 +31,36 @@ public interface GamePhaseHandler
   GamePhaseHandler NULL = new NullGamePhaseHandler ();
 
   /**
-   * Enable the handler. Call before performing game phase logic via {@link #execute()}, such as when the necessary game
-   * phase becomes active, which will allow the handler to begin listening for events, for example. GamePhaseHandler's
-   * can be re-used after activation by calling {@link #reset()}. Or {@link #reset()} can be called from within this
-   * method.
+   * Gets the game phases this handler is valid / responsible for.
+   */
+  ImmutableSet <GamePhase> getPhases ();
+
+  /**
+   * Unconditionally enable the handler. Call before performing game phase logic via {@link #execute()}, such as when
+   * the necessary game phase becomes active, which will allow the handler to begin listening for events, for example.
+   * GamePhaseHandler's can be re-used after activation by calling {@link #reset()}. Or {@link #reset()} can be called
+   * from within this method.
+   *
+   * @see #activate(GamePhase)
+   * @see #activate(PlayerPacket, GamePhase)
    */
   void activate ();
 
   /**
-   * Enable the handler only if the specified {@link PlayerPacket} matches the player previously set by
-   * {@link #setSelfPlayer(PlayerPacket)}.
+   * Conditionally enable the handler, depending on whether it is appropriate to do so with respect to the specified
+   * current game phase.
    *
-   * @see #activate() ()
+   * @see #activate() for more information.
    */
-  void activateForSelf (final PlayerPacket player);
+  void activate (final GamePhase currentPhase);
 
   /**
-   * Enable the handler only if the specified {@link PlayerPacket} does *not* match the player previously set by
-   * {@link #setSelfPlayer(PlayerPacket)}.
+   * Conditionally enable the handler, depending on whether it is appropriate to do so with respect to the specified
+   * current player & specified current game phase.
    *
-   * @see #activate()
+   * @see #activate() for more information.
    */
-  void activateForEveryoneElse (final PlayerPacket player);
+  void activate (final PlayerPacket currentPlayer, final GamePhase currentPhase);
 
   /**
    * Perform the game phase logic here, after calling {@link #activate}.
@@ -63,30 +74,31 @@ public interface GamePhaseHandler
   void cancel ();
 
   /**
-   * Disable the handler. Call when finished performing game phase logic via {@link #execute()}, such as when the
-   * necessary game phase is no longer active, which will prevent the handler from listening for events when it
+   * Unconditionally disable the handler. Call when finished performing game phase logic via {@link #execute()}, such as
+   * when the necessary game phase is no longer active, which will prevent the handler from listening for events when it
    * shouldn't, for example. GamePhaseHandler's can be re-used after deactivation by calling {@link #reset()}, then one
    * of the {@link #activate()} methods again.
+   *
+   * @see #deactivate(GamePhase)
+   * @see #deactivate(PlayerPacket, GamePhase)
    */
   void deactivate ();
 
   /**
-   * Disable the handler only if the specified {@link PlayerPacket} matches the player previously set by
-   * {@link #setSelfPlayer(PlayerPacket)}.
+   * Conditionally disable the handler, depending on whether it is appropriate to do so with respect to the specified
+   * current game phase.
    *
-   * @see #deactivate()
+   * @see #deactivate() for more information.
    */
-  void deactivateForSelf (final PlayerPacket player);
+  void deactivate (final GamePhase currentPhase);
 
   /**
-   * Disable the handler only if the specified {@link PlayerPacket} does *not* match the player previously set by
-   * {@link #setSelfPlayer(PlayerPacket)}.
+   * Conditionally disable the handler, depending on whether it is appropriate to do so with respect to the specified
+   * current player & specified current game phase.
    *
-   * @see #deactivate()
+   * @see #deactivate() for more information.
    */
-  void deactivateForEveryoneElse (final PlayerPacket player);
-
-  void setPlayMap (final PlayMap playMap);
+  void deactivate (final PlayerPacket currentPlayer, final GamePhase currentPhase);
 
   /**
    * Set the player identity of this handler. Allows for conditional activation / deactivation based on a
@@ -110,4 +122,14 @@ public interface GamePhaseHandler
    * status.
    */
   void reset ();
+
+  /**
+   * Calls {@link #deactivate()} then {@link #reset()}. Can be re-used by calling {@link #activate()} again.
+   */
+  void shutDown ();
+
+  /**
+   * Sets the specified {@link PlayMap} to be the current play map.
+   */
+  void setPlayMap (final PlayMap playMap);
 }

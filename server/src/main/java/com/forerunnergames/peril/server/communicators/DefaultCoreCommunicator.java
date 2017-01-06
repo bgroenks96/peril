@@ -18,6 +18,7 @@
 
 package com.forerunnergames.peril.server.communicators;
 
+import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.events.internal.interfaces.InternalRequestEvent;
@@ -52,9 +53,12 @@ public class DefaultCoreCommunicator implements CoreCommunicator
   }
 
   @Override
-  public void requestSendGameStateTo (final PlayerPacket player)
+  public void requestSendGameStateTo (final PlayerPacket player, final GameServerConfiguration config)
   {
-    final SendGameStateRequestEvent requestEvent = new SendGameStateRequestEvent (player);
+    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (config, "config");
+
+    final SendGameStateRequestEvent requestEvent = new SendGameStateRequestEvent (player, config);
     eventBus.publish (requestEvent);
 
     final Optional <InternalResponseEvent> responseEvent = getResponseFor (requestEvent);

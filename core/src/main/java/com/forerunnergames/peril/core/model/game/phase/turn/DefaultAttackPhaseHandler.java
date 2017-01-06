@@ -18,6 +18,7 @@ import com.forerunnergames.peril.common.net.events.server.denied.PlayerSelectAtt
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerAttackCountryEvent;
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerEndTurnAvailableEvent;
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerSelectAttackVectorEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.GamePhaseNotificationEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerAttackCountryWaitEvent;
@@ -85,8 +86,10 @@ public final class DefaultAttackPhaseHandler extends AbstractGamePhaseHandler im
   {
     final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
     log.info ("Begin attack phase for player [{}].", currentPlayer);
-    changeGamePhaseTo (GamePhase.ATTACK);
-    publish (new BeginAttackPhaseEvent (currentPlayer));
+    final GamePhaseNotificationEvent event = new BeginAttackPhaseEvent (currentPlayer);
+
+    changeGamePhaseTo (event.getGamePhase ());
+    publish (event);
   }
 
   @StateExitAction

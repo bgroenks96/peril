@@ -23,6 +23,7 @@ import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialo
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.dialogs.battle.result.BattleResultDialog;
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
 import com.forerunnergames.peril.common.game.BattleOutcome;
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.net.events.client.interfaces.BattleRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerEndAttackPhaseRequestEvent;
 import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerRetreatRequestEvent;
@@ -32,18 +33,16 @@ import com.forerunnergames.peril.common.net.packets.battle.BattleResultPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
+import com.google.common.collect.ImmutableSet;
+
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 abstract class AbstractBattlePhaseHandler extends AbstractGamePhaseHandler implements BattlePhaseHandler
 {
-  protected final Logger log = LoggerFactory.getLogger (getClass ());
   private final BattleDialog battleDialog;
   private final BattleResultDialog resultDialog;
   @Nullable
@@ -61,19 +60,6 @@ abstract class AbstractBattlePhaseHandler extends AbstractGamePhaseHandler imple
 
     this.battleDialog = battleDialog;
     this.resultDialog = resultDialog;
-  }
-
-  @Override
-  public final void execute ()
-  {
-    Gdx.app.postRunnable (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        publish (createBattleRequestEvent (battleDialog.getActiveDieCount ()));
-      }
-    });
   }
 
   @Override
@@ -119,6 +105,25 @@ abstract class AbstractBattlePhaseHandler extends AbstractGamePhaseHandler imple
   {
     publish (new PlayerEndAttackPhaseRequestEvent ());
     reset ();
+  }
+
+  @Override
+  public ImmutableSet <GamePhase> getPhases ()
+  {
+    return ImmutableSet.of (GamePhase.ATTACK);
+  }
+
+  @Override
+  public final void execute ()
+  {
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        publish (createBattleRequestEvent (battleDialog.getActiveDieCount ()));
+      }
+    });
   }
 
   @Override

@@ -18,11 +18,15 @@
 
 package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerArmiesChangedEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerBeginGamePhaseNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
 public final class BeginReinforcementPhaseEvent extends AbstractPlayerArmiesChangedEvent
+        implements PlayerBeginGamePhaseNotificationEvent
 {
   private final int countryReinforcementBonus;
   private final int continentReinforcementBonus;
@@ -37,6 +41,12 @@ public final class BeginReinforcementPhaseEvent extends AbstractPlayerArmiesChan
     this.continentReinforcementBonus = continentReinforcementBonus;
   }
 
+  @Override
+  public GamePhase getGamePhase ()
+  {
+    return GamePhase.REINFORCEMENT;
+  }
+
   public int getCountryReinforcementBonus ()
   {
     return countryReinforcementBonus;
@@ -45,6 +55,12 @@ public final class BeginReinforcementPhaseEvent extends AbstractPlayerArmiesChan
   public int getContinentReinforcementBonus ()
   {
     return continentReinforcementBonus;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return Strings.format ("{} | GamePhase: [{}]", super.toString (), getGamePhase ());
   }
 
   @RequiredForNetworkSerialization

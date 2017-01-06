@@ -11,13 +11,14 @@ import com.forerunnergames.peril.common.net.events.server.defaults.DefaultPlayer
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerReinforceCountryDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.inform.PlayerReinforceCountryEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.GamePhaseNotificationEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ActivePlayerChangedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialReinforcementPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerCountryAssignmentEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialCountryAssignmentPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DeterminePlayerTurnOrderCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.DistributeInitialArmiesCompleteEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialCountryAssignmentPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialReinforcementPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerClaimCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerReinforceCountryWaitEvent;
@@ -110,7 +111,12 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
   public void waitForCountryAssignmentToBegin ()
   {
     final InitialCountryAssignment assignmentMode = rules.getInitialCountryAssignment ();
-    publish (new BeginPlayerCountryAssignmentEvent (assignmentMode));
+    final GamePhaseNotificationEvent event = new BeginInitialCountryAssignmentPhaseEvent (assignmentMode);
+
+    changeGamePhaseTo (event.getGamePhase ());
+    publish (event);
+
+    // publish state event
     switch (assignmentMode)
     {
       case RANDOM:
@@ -122,7 +128,6 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
       case MANUAL:
       {
         log.info ("Initial country assignment = MANUAL");
-        changeGamePhaseTo (GamePhase.MANUAL_COUNTRY_ASSIGNMENT);
         publish (new BeginManualCountryAssignmentEvent ());
         break;
       }
@@ -197,12 +202,11 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
       publish (new DefaultPlayerArmiesChangedEvent (updatedPlayerPacket, -1 * assignSuccessCount));
     }
 
-    // create map of country -> player packets for
-    // PlayerCountryAssignmentCompleteEvent
+    // create map of country -> player packets for EndInitialCountryAssignmentPhaseEvent
     final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
     playMapViewPackets = buildPlayMapViewFrom (playerModel, playMapModel);
 
-    publish (new PlayerCountryAssignmentCompleteEvent (rules.getInitialCountryAssignment (), playMapViewPackets));
+    publish (new EndInitialCountryAssignmentPhaseEvent (rules.getInitialCountryAssignment (), playMapViewPackets));
   }
 
   @Override
@@ -213,9 +217,10 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
 
     playerTurnModel.resetCurrentTurn ();
 
-    changeGamePhaseTo (GamePhase.INITIAL_REINFORCEMENT);
+    final GamePhaseNotificationEvent event = new BeginInitialReinforcementPhaseEvent ();
 
-    publish (new BeginInitialReinforcementPhaseEvent (getCurrentPlayerPacket ()));
+    changeGamePhaseTo (event.getGamePhase ());
+    publish (event);
   }
 
   @Override
@@ -226,11 +231,10 @@ public final class DefaultInitialPhaseHandler extends AbstractGamePhaseHandler i
 
     if (countryOwnerModel.allCountriesAreOwned ())
     {
-      // create map of country -> player packets for
-      // PlayerCountryAssignmentCompleteEvent
+      // create map of country -> player packets for EndInitialCountryAssignmentPhaseEvent
       final ImmutableMap <CountryPacket, PlayerPacket> playMapViewPackets;
       playMapViewPackets = buildPlayMapViewFrom (playerModel, playMapModel);
-      publish (new PlayerCountryAssignmentCompleteEvent (rules.getInitialCountryAssignment (), playMapViewPackets));
+      publish (new EndInitialCountryAssignmentPhaseEvent (rules.getInitialCountryAssignment (), playMapViewPackets));
       return;
     }
 

@@ -18,26 +18,36 @@
 package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phasehandlers;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.common.Arguments;
 
+import com.google.common.collect.ImmutableSet;
+
 class NullGamePhaseHandler implements GamePhaseHandler
 {
+  @Override
+  public ImmutableSet <GamePhase> getPhases ()
+  {
+    return ImmutableSet.of ();
+  }
+
   @Override
   public final void activate ()
   {
   }
 
   @Override
-  public final void activateForSelf (final PlayerPacket player)
+  public void activate (final GamePhase currentPhase)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (currentPhase, "currentPhase");
   }
 
   @Override
-  public final void activateForEveryoneElse (final PlayerPacket player)
+  public void activate (final PlayerPacket currentPlayer, final GamePhase currentPhase)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (currentPlayer, "currentPlayer");
+    Arguments.checkIsNotNull (currentPhase, "currentPhase");
   }
 
   @Override
@@ -56,21 +66,16 @@ class NullGamePhaseHandler implements GamePhaseHandler
   }
 
   @Override
-  public final void deactivateForSelf (final PlayerPacket player)
+  public void deactivate (final GamePhase currentPhase)
   {
-    Arguments.checkIsNotNull (player, "player");
+    Arguments.checkIsNotNull (currentPhase, "currentPhase");
   }
 
   @Override
-  public final void deactivateForEveryoneElse (final PlayerPacket player)
+  public void deactivate (final PlayerPacket currentPlayer, final GamePhase currentPhase)
   {
-    Arguments.checkIsNotNull (player, "player");
-  }
-
-  @Override
-  public final void setPlayMap (final PlayMap playMap)
-  {
-    Arguments.checkIsNotNull (playMap, "playMap");
+    Arguments.checkIsNotNull (currentPlayer, "currentPlayer");
+    Arguments.checkIsNotNull (currentPhase, "currentPhase");
   }
 
   @Override
@@ -88,5 +93,16 @@ class NullGamePhaseHandler implements GamePhaseHandler
   @Override
   public final void reset ()
   {
+  }
+
+  @Override
+  public void shutDown ()
+  {
+  }
+
+  @Override
+  public final void setPlayMap (final PlayMap playMap)
+  {
+    Arguments.checkIsNotNull (playMap, "playMap");
   }
 }

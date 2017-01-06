@@ -17,13 +17,14 @@
 
 package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
-import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
+import com.forerunnergames.peril.common.game.GamePhase;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractGamePhaseNotificationEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.BeginGamePhaseNotificationEvent;
 
-public final class EndGameEvent implements BroadcastNotificationEvent
+public final class EndGameEvent extends AbstractGamePhaseNotificationEvent implements BeginGamePhaseNotificationEvent
 {
-  @RequiredForNetworkSerialization
   public EndGameEvent ()
   {
+    super (GamePhase.END);
   }
 }

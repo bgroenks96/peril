@@ -44,7 +44,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Begin
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialReinforcementPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerCountryAssignmentEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialCountryAssignmentPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginRoundEvent;
@@ -56,6 +56,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndIn
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndRoundEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerDisconnectEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
@@ -67,6 +68,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerReinforceCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerSelectAttackVectorWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerSelectFortifyVectorWaitEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerRestoreGameStateEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerCancelFortifySuccessEvent;
@@ -88,6 +90,7 @@ import com.forerunnergames.peril.common.net.packets.person.SpectatorPacket;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.LetterCase;
 import com.forerunnergames.tools.common.Strings;
+import com.forerunnergames.tools.net.events.local.ServerDisconnectionEvent;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -193,7 +196,7 @@ public final class StatusMessageGenerator
   }
 
   @Handler
-  void onEvent (final BeginPlayerCountryAssignmentEvent event)
+  void onEvent (final BeginInitialCountryAssignmentPhaseEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -786,6 +789,46 @@ public final class StatusMessageGenerator
 
     everyone ("{} received {}.", nameify (event.getPerson (), LetterCase.PROPER),
               Strings.pluralize (event.getPlayerDeltaArmyCount (), "army", "armies"));
+  }
+
+  // Note: Only occurs for self-player, not third-parties.
+  @Handler
+  void onEvent (final ServerDisconnectionEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event [{}] received.", event);
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        status ("You have been disconnected from the server. Attempting to reconnect you...");
+      }
+    });
+  }
+
+  // Note: Only occurs for third-parties, not self player.
+  @Handler
+  void onEvent (final PlayerDisconnectEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    everyoneElse (event.getPlayer (), "{} has been disconnected from the server. We will try to reconnect "
+            + "them now. Thank you for your gracious patience, General.", event.getPlayerName ());
+  }
+
+  @Handler
+  void onEvent (final PlayerRestoreGameStateEvent event)
+  {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.debug ("Event received [{}].", event);
+
+    status ("You have been reconnected to the server, and can resume normal gameplay.");
   }
 
   private void status (final String statusMessageText)

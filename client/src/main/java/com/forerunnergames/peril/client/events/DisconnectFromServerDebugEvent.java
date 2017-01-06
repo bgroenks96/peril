@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 Forerunner Games, LLC.
+ * Copyright © 2016 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,18 +15,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.game;
+package com.forerunnergames.peril.client.events;
 
-public enum GamePhase
+import com.forerunnergames.tools.net.events.local.LocalEvent;
+
+// TODO Production: Remove.
+public final class DisconnectFromServerDebugEvent implements LocalEvent
 {
-  INITIAL,
-  INITIAL_COUNTRY_ASSIGNMENT,
-  INITIAL_REINFORCEMENT,
-  TURN,
-  REINFORCEMENT,
-  ATTACK,
-  FORTIFY,
-  END,
-  SUSPENDED,
-  UNKNOWN
 }

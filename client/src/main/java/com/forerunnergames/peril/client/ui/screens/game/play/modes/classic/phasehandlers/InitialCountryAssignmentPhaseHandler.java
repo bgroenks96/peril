@@ -3,6 +3,7 @@ package com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.phas
 import com.badlogic.gdx.Gdx;
 
 import com.forerunnergames.peril.client.ui.screens.game.play.modes.classic.playmap.actors.PlayMap;
+import com.forerunnergames.peril.common.game.GamePhase;
 import com.forerunnergames.peril.common.game.PlayerColor;
 import com.forerunnergames.peril.common.net.events.client.request.response.PlayerClaimCountryResponseRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerClaimCountryResponseDeniedEvent;
@@ -13,21 +14,19 @@ import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Result;
 import com.forerunnergames.tools.common.Strings;
 
+import com.google.common.collect.ImmutableSet;
+
 import javax.annotation.Nullable;
 
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public final class ManualCountryAssignmentPhaseHandler extends AbstractGamePhaseHandler
+public final class InitialCountryAssignmentPhaseHandler extends AbstractGamePhaseHandler
 {
-  private static final Logger log = LoggerFactory.getLogger (ManualCountryAssignmentPhaseHandler.class);
   @Nullable
   private PlayerClaimCountryRequestEvent request = null;
 
-  public ManualCountryAssignmentPhaseHandler (final PlayMap playMap, final MBassador <Event> eventBus)
+  public InitialCountryAssignmentPhaseHandler (final PlayMap playMap, final MBassador <Event> eventBus)
   {
     super (playMap, eventBus);
   }
@@ -48,6 +47,12 @@ public final class ManualCountryAssignmentPhaseHandler extends AbstractGamePhase
   {
     super.reset ();
     request = null;
+  }
+
+  @Override
+  public ImmutableSet <GamePhase> getPhases ()
+  {
+    return ImmutableSet.of (GamePhase.INITIAL_COUNTRY_ASSIGNMENT);
   }
 
   @Override

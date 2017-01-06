@@ -18,16 +18,18 @@
 
 package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerEvent;
+import com.forerunnergames.peril.common.game.GamePhase;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerGamePhaseNotificationEvent;
+import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEndGamePhaseNotificationEvent;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
-import com.forerunnergames.tools.net.events.remote.origin.server.BroadcastNotificationEvent;
 
-public final class EndFortifyPhaseEvent extends AbstractPlayerEvent implements BroadcastNotificationEvent
+public final class EndFortifyPhaseEvent extends AbstractPlayerGamePhaseNotificationEvent
+        implements PlayerEndGamePhaseNotificationEvent
 {
   public EndFortifyPhaseEvent (final PlayerPacket player)
   {
-    super (player);
+    super (player, GamePhase.FORTIFY);
   }
 
   @RequiredForNetworkSerialization

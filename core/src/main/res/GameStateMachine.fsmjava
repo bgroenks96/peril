@@ -70,9 +70,9 @@
                 type="com.forerunnergames.peril.common.net.events.server.success.PlayerClaimCountryResponseSuccessEvent"
                 name="event"/>
       </event>
-      <event id="onPlayerCountryAssignmentCompleteEvent">
+      <event id="onEndInitialCountryAssignmentPhaseEvent">
         <parameter
-                type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerCountryAssignmentCompleteEvent"
+                type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndInitialCountryAssignmentPhaseEvent"
                 name="event"/>
       </event>
       <event id="onEndInitialReinforcementPhaseEvent">
@@ -271,7 +271,7 @@
                 </state>
                 <state name="RandomlyAssignPlayerCountries">
                   <onEntry action="initialPhase.randomlyAssignPlayerCountries()"/>
-                  <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="InitialReinforcementPhase"/>
+                  <transition event="onEndInitialCountryAssignmentPhaseEvent" nextState="InitialReinforcementPhase"/>
                 </state>
                 <state name="ManuallyAssignPlayerCountries">
                   <state name="WaitForPlayersToClaimInitialCountries">
@@ -280,7 +280,7 @@
                     <transition event="onPlayerClaimCountryResponseRequestEvent"
                                 condition="initialPhase.verifyPlayerClaimCountryResponseRequest(event)"
                                 nextState="WaitForPlayersToClaimInitialCountries"/>
-                    <transition event="onPlayerCountryAssignmentCompleteEvent" nextState="InitialReinforcementPhase"/>
+                    <transition event="onEndInitialCountryAssignmentPhaseEvent" nextState="InitialReinforcementPhase"/>
                     <transition event="onSkipPlayerTurnEvent"
                                 condition="gameModel.skipPlayerTurn(event)"
                                 nextState="WaitForPlayersToReinforceInitialCountries"/>
