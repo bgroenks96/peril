@@ -171,11 +171,11 @@
                 type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent"/>
       </event>
       <event id="onSuspendGameEvent">
-        <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.SuspendGameEvent"
+        <parameter type="com.forerunnergames.peril.core.model.state.events.SuspendGameEvent"
                    name="event"/>
       </event>
       <event id="onResumeGameEvent">
-        <parameter type="com.forerunnergames.peril.common.net.events.server.notify.broadcast.ResumeGameEvent"
+        <parameter type="com.forerunnergames.peril.core.model.state.events.ResumeGameEvent"
                    name="event"/>
       </event>
       <event id="onEndGameEvent">
@@ -250,7 +250,7 @@
             <onExit action="gameModel.end()"/>
             <!-- Ending the game can occur at any time during the game -->
             <transition event="onEndGameEvent" nextState="EndGame"/>
-            <transition event="onSuspendGameEvent" nextState="Suspended"/>
+            <transition event="onSuspendGameEvent" action="gameModel.suspendGame(event)" nextState="Suspended"/>
             <!-- Initial Game Phase -->
             <state name="InitialPhase">
               <onEntry action="initialPhase.begin()"/>
@@ -442,13 +442,11 @@
               </state>
             </state> <!-- End TurnPhase state -->
             <!-- Resume history state -->
-            <state name="ResumeGame" kind="history">
-              <onEntry action="gameModel.resumeGame()"/>
-            </state> <!-- End ResumeGame state -->
+            <state name="ResumeGame" kind="history"/>
           </state> <!-- End PlayingGame state -->
           <state name="Suspended">
-            <onEntry action="gameModel.suspendGame()"/>
             <transition event="onResumeGameEvent"
+                        action="gameModel.resumeGame(event)"
                         nextState="ResumeGame"/>
           </state> <!-- End Suspended state -->
           <state name="EndGame">

@@ -228,6 +228,21 @@ public final class ClientPlayerMapping
     return playerMaybe.isPresent () && player.equals (playerMaybe.get ());
   }
 
+  public boolean areAllPlayersBounds ()
+  {
+    for (final PlayerPacket player : players)
+    {
+      if (clientsToPlayers.containsValue (player))
+      {
+        continue;
+      }
+
+      return false;
+    }
+
+    return true;
+  }
+
   public Optional <PlayerPacket> playerWith (final String name)
   {
     Arguments.checkIsNotNull (name, "name");

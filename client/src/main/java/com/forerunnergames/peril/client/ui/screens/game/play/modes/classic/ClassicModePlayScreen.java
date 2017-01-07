@@ -115,12 +115,12 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndFo
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.GameResumedEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.GameSuspendedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerDisconnectEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ResumeGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SuspendGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerRestoreGameStateEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
@@ -1174,7 +1174,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
   }
 
   @Handler
-  void onEvent (final SuspendGameEvent event)
+  void onEvent (final GameSuspendedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
@@ -1207,7 +1207,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
   }
 
   @Handler
-  void onEvent (final ResumeGameEvent event)
+  void onEvent (final GameResumedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 

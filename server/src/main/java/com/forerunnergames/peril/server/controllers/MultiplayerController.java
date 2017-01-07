@@ -44,10 +44,9 @@ import com.forerunnergames.peril.common.net.events.server.denied.SpectatorJoinGa
 import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.GameSuspendedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerDisconnectEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ResumeGameEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SuspendGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerInputCanceledEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.JoinGameServerSuccessEvent;
@@ -65,6 +64,8 @@ import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.peril.core.events.EventRegistry;
 import com.forerunnergames.peril.core.model.state.events.CreateGameEvent;
 import com.forerunnergames.peril.core.model.state.events.DestroyGameEvent;
+import com.forerunnergames.peril.core.model.state.events.ResumeGameEvent;
+import com.forerunnergames.peril.core.model.state.events.SuspendGameEvent;
 import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
 import com.forerunnergames.peril.server.communicators.SpectatorCommunicator;
@@ -774,7 +775,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     // publish suspend game event for new input events that come in while no client
     // is present for the player
-    publish (new SuspendGameEvent (SuspendGameEvent.Reason.PLAYER_UNAVAILABLE));
+    publish (new SuspendGameEvent (GameSuspendedEvent.Reason.PLAYER_UNAVAILABLE));
   }
 
   void onEvent (final PlayerInputCanceledEvent event)
@@ -1120,7 +1121,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     if (!eventCache.hasPendingEvents (disconnectedPlayer)) return;
 
-    publish (new SuspendGameEvent (SuspendGameEvent.Reason.PLAYER_UNAVAILABLE));
+    publish (new SuspendGameEvent (GameSuspendedEvent.Reason.PLAYER_UNAVAILABLE));
   }
 
   private void handlePlayerRejoinAttempt (final RemoteClient client, final PlayerJoinGameRequestEvent event)
@@ -1175,13 +1176,18 @@ public final class MultiplayerController extends ControllerAdapter
             clientsToPlayers.players (), gameServerConfig.getPersonLimits ());
     publish (successEvent);
 
+    // only resume game if all players are now bound to clients
+    if (!clientsToPlayers.areAllPlayersBounds ())
+    {
+      eventBus.publish (new ResumeGameEvent ());
+    }
+
     // send current game state to player
     coreCommunicator.requestSendGameStateTo (updatedPlayer, gameServerConfig);
 
     if (!eventCache.hasPendingEvents (updatedPlayer)) return;
 
-    // resume game and republish pending input events
-    publish (new ResumeGameEvent ());
+    // republish pending input events
     resendPendingInputEventsFor (updatedPlayer);
   }
 
