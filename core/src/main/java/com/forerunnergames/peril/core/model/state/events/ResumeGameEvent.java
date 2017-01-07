@@ -15,19 +15,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
+package com.forerunnergames.peril.core.model.state.events;
 
-import com.forerunnergames.peril.common.game.GamePhase;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractGamePhaseNotificationEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.EndGamePhaseNotificationEvent;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class ResumeGameEvent extends AbstractGamePhaseNotificationEvent implements EndGamePhaseNotificationEvent
+public final class ResumeGameEvent implements StateEvent
 {
   @RequiredForNetworkSerialization
   public ResumeGameEvent ()
   {
-    super (GamePhase.SUSPENDED);
   }
 
   @Override

@@ -17,8 +17,6 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPl
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndRoundEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.ResumeGameEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SuspendGameEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
@@ -40,6 +38,8 @@ import com.forerunnergames.peril.core.model.playmap.country.CountryOwnerModel;
 import com.forerunnergames.peril.core.model.state.annotations.StateEntryAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateExitAction;
 import com.forerunnergames.peril.core.model.state.events.GamePhaseChangedEvent;
+import com.forerunnergames.peril.core.model.state.events.ResumeGameEvent;
+import com.forerunnergames.peril.core.model.state.events.SuspendGameEvent;
 import com.forerunnergames.peril.core.model.turn.PlayerTurnModel;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;

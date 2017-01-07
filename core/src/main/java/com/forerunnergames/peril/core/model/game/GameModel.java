@@ -25,6 +25,8 @@ import com.forerunnergames.peril.common.net.events.client.request.inform.PlayerE
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerEndTurnDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.denied.PlayerJoinGameDeniedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginGameEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.GameResumedEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.GameSuspendedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.WaitingForPlayersToJoinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerRestoreGameStateEvent;
@@ -44,6 +46,8 @@ import com.forerunnergames.peril.core.model.state.annotations.StateEntryAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateExitAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateTransitionAction;
 import com.forerunnergames.peril.core.model.state.annotations.StateTransitionCondition;
+import com.forerunnergames.peril.core.model.state.events.ResumeGameEvent;
+import com.forerunnergames.peril.core.model.state.events.SuspendGameEvent;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.id.Id;
 
@@ -103,21 +107,23 @@ public final class GameModel extends AbstractGamePhaseHandler
     publish (new WaitingForPlayersToJoinGameEvent ());
   }
 
-  @StateEntryAction
-  public void suspendGame ()
+  @StateTransitionAction
+  public void suspendGame (final SuspendGameEvent event)
   {
     log.info ("Suspending game...");
 
     resumeGamePhase = getCurrentGamePhase ();
     changeGamePhaseTo (GamePhase.SUSPENDED);
+    publish (new GameSuspendedEvent (event.getReason ()));
   }
 
   @StateTransitionAction
-  public void resumeGame ()
+  public void resumeGame (final ResumeGameEvent event)
   {
     log.info ("Resuming game...");
 
     changeGamePhaseTo (resumeGamePhase);
+    publish (new GameResumedEvent (resumeGamePhase));
   }
 
   @StateTransitionCondition

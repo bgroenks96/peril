@@ -15,25 +15,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
+package com.forerunnergames.peril.core.model.state.events;
 
-import com.forerunnergames.peril.common.game.GamePhase;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractGamePhaseNotificationEvent;
-import com.forerunnergames.peril.common.net.events.server.interfaces.BeginGamePhaseNotificationEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.GameSuspendedEvent.Reason;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class SuspendGameEvent extends AbstractGamePhaseNotificationEvent
-        implements BeginGamePhaseNotificationEvent
+public final class SuspendGameEvent implements StateEvent
 {
   private final Reason reason;
   private final long timeoutMillis;
-
-  public enum Reason
-  {
-    PLAYER_UNAVAILABLE,
-    REQUESTED_BY_HOST
-  }
 
   public SuspendGameEvent (final Reason reason)
   {
@@ -42,8 +33,6 @@ public final class SuspendGameEvent extends AbstractGamePhaseNotificationEvent
 
   public SuspendGameEvent (final Reason reason, final long timeoutMillis)
   {
-    super (GamePhase.SUSPENDED);
-
     this.reason = reason;
     this.timeoutMillis = timeoutMillis;
   }
@@ -66,7 +55,7 @@ public final class SuspendGameEvent extends AbstractGamePhaseNotificationEvent
   @Override
   public String toString ()
   {
-    return Strings.format ("{} | Reason: [{}] | TimeoutMillis: [{}]", super.toString (), reason,
+    return Strings.format ("{}: Reason: [{}] | TimeoutMillis: [{}]", getClass ().getSimpleName (), reason,
                            hasTimeout () ? timeoutMillis : "None");
   }
 
