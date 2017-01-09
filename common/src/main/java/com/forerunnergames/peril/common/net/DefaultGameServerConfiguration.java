@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2013 - 2017 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,25 +38,25 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   private final GameServerType gameServerType;
   private final GameConfiguration gameConfig;
   private final ServerConfiguration serverConfig;
-  private final long serverRequestTimeoutMillis;
+  private final long serverRequestTimeoutMs;
 
   public DefaultGameServerConfiguration (final String gameServerName,
                                          final GameServerType gameServerType,
                                          final GameConfiguration gameConfig,
                                          final ServerConfiguration serverConfig,
-                                         final long serverRequestTimeoutMillis)
+                                         final long serverRequestTimeoutMs)
   {
     Arguments.checkIsNotNull (gameServerName, "gameServerName");
     Arguments.checkIsNotNull (gameServerType, "gameServerType");
     Arguments.checkIsNotNull (gameConfig, "gameConfig");
     Arguments.checkIsNotNull (serverConfig, "serverConfig");
-    Arguments.checkIsNotNegative (serverRequestTimeoutMillis, "serverRequestTimeoutMillis");
+    Arguments.checkIsNotNegative (serverRequestTimeoutMs, "serverRequestTimeoutMs");
 
     this.gameServerName = gameServerName;
     this.gameServerType = gameServerType;
     this.gameConfig = gameConfig;
     this.serverConfig = serverConfig;
-    this.serverRequestTimeoutMillis = serverRequestTimeoutMillis;
+    this.serverRequestTimeoutMs = serverRequestTimeoutMs;
   }
 
   @Override
@@ -153,6 +152,14 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   }
 
   @Override
+  public long getServerRequestTimeout (final TimeUnit timeUnit)
+  {
+    Arguments.checkIsNotNull (timeUnit, "timeUnit");
+
+    return timeUnit.convert (serverRequestTimeoutMs, TimeUnit.MILLISECONDS);
+  }
+
+  @Override
   public String getAddress ()
   {
     return serverConfig.getAddress ();
@@ -165,16 +172,13 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   }
 
   @Override
-  public long getServerRequestTimeout (final TimeUnit timeUnit)
-  {
-    return timeUnit.convert (serverRequestTimeoutMillis, TimeUnit.MILLISECONDS);
-  }
-
-  @Override
   public String toString ()
   {
-    return Strings.format ("{}: GameServerName: {} | GameServerType: {} | GameConfig: {} | ServerConfig: {}",
-                           getClass ().getSimpleName (), gameServerName, gameServerType, gameConfig, serverConfig);
+    return Strings.format (
+                           "{}: GameServerName: [{}] | GameServerType: [{}] | GameConfig: [{}] | ServerConfig: [{}] "
+                                   + "| ServerRequestTimeoutMs: [{}]",
+                           getClass ().getSimpleName (), gameServerName, gameServerType, gameConfig, serverConfig,
+                           serverRequestTimeoutMs);
   }
 
   @RequiredForNetworkSerialization
@@ -184,6 +188,6 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
     gameServerType = null;
     gameConfig = null;
     serverConfig = null;
-    serverRequestTimeoutMillis = 0;
+    serverRequestTimeoutMs = 0;
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Forerunner Games, LLC.
+ * Copyright © 2013 - 2017 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,16 +26,6 @@ public final class PlayerDisconnectEvent extends AbstractPlayerEvent
   public PlayerDisconnectEvent (final PlayerPacket player)
   {
     super (player);
-  }
-
-  public String getPlayerName ()
-  {
-    return getPersonName ();
-  }
-
-  public PlayerPacket getPlayer ()
-  {
-    return getPerson ();
   }
 
   @RequiredForNetworkSerialization

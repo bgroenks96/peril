@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Forerunner Games, LLC.
+ * Copyright © 2013 - 2017 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -817,8 +817,8 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyoneElse (event.getPlayer (), "{} has been disconnected from the server. We will try to reconnect "
-            + "them now. Thank you for your gracious patience, General.", event.getPlayerName ());
+    everyoneElse (event.getPerson (), "{} has been disconnected from the server. We will try to reconnect "
+            + "them now. Thank you for your gracious patience, General.", event.getPersonName ());
   }
 
   @Handler

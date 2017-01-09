@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Forerunner Games, LLC.
+ * Copyright © 2013 - 2017 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
   @Override
   public void activate (final GamePhase currentPhase)
   {
-    Arguments.checkIsNotNull (currentPhase, "phase");
+    Arguments.checkIsNotNull (currentPhase, "currentPhase");
 
     for (final GamePhaseHandler handler : handlers)
     {
@@ -76,8 +76,8 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
   @Override
   public void activate (final PlayerPacket currentPlayer, final GamePhase currentPhase)
   {
-    Arguments.checkIsNotNull (currentPlayer, "player");
-    Arguments.checkIsNotNull (currentPhase, "phase");
+    Arguments.checkIsNotNull (currentPlayer, "currentPlayer");
+    Arguments.checkIsNotNull (currentPhase, "currentPhase");
 
     for (final GamePhaseHandler handler : handlers)
     {
@@ -115,7 +115,7 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
   @Override
   public void deactivate (final GamePhase currentPhase)
   {
-    Arguments.checkIsNotNull (currentPhase, "phase");
+    Arguments.checkIsNotNull (currentPhase, "currentPhase");
 
     for (final GamePhaseHandler handler : handlers)
     {
@@ -126,8 +126,8 @@ public final class CompositeGamePhaseHandler implements GamePhaseHandler
   @Override
   public void deactivate (final PlayerPacket currentPlayer, final GamePhase currentPhase)
   {
-    Arguments.checkIsNotNull (currentPlayer, "player");
-    Arguments.checkIsNotNull (currentPhase, "phase");
+    Arguments.checkIsNotNull (currentPlayer, "currentPlayer");
+    Arguments.checkIsNotNull (currentPhase, "currentPhase");
 
     for (final GamePhaseHandler handler : handlers)
     {

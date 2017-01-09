@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2013 - 2017 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,19 +29,19 @@ public final class DefaultGameConfiguration implements GameConfiguration
 {
   private final GameMode gameMode;
   private final PlayMapMetadata playMapMetadata;
-  private final GameRules rules;
+  private final GameRules gameRules;
 
   public DefaultGameConfiguration (final GameMode gameMode,
                                    final PlayMapMetadata playMapMetadata,
-                                   final GameRules rules)
+                                   final GameRules gameRules)
   {
     Arguments.checkIsNotNull (gameMode, "gameMode");
     Arguments.checkIsNotNull (playMapMetadata, "playMapMetadata");
-    Arguments.checkIsNotNull (rules, "rules");
+    Arguments.checkIsNotNull (gameRules, "gameRules");
 
     this.gameMode = gameMode;
     this.playMapMetadata = playMapMetadata;
-    this.rules = rules;
+    this.gameRules = gameRules;
   }
 
   @Override
@@ -54,7 +53,7 @@ public final class DefaultGameConfiguration implements GameConfiguration
   @Override
   public int getTotalPlayerLimit ()
   {
-    return rules.getTotalPlayerLimit ();
+    return gameRules.getTotalPlayerLimit ();
   }
 
   @Override
@@ -62,49 +61,49 @@ public final class DefaultGameConfiguration implements GameConfiguration
   {
     Arguments.checkIsNotNull (sentience, "sentience");
 
-    return rules.getPlayerLimitFor (sentience);
+    return gameRules.getPlayerLimitFor (sentience);
   }
 
   @Override
   public int getSpectatorLimit ()
   {
-    return rules.getSpectatorLimit ();
+    return gameRules.getSpectatorLimit ();
   }
 
   @Override
   public PersonLimits getPersonLimits ()
   {
-    return rules.getPersonLimits ();
+    return gameRules.getPersonLimits ();
   }
 
   @Override
   public int getWinPercentage ()
   {
-    return rules.getWinPercentage ();
+    return gameRules.getWinPercentage ();
   }
 
   @Override
   public GameRules getGameRules ()
   {
-    return rules;
+    return gameRules;
   }
 
   @Override
   public int getWinningCountryCount ()
   {
-    return rules.getWinningCountryCount ();
+    return gameRules.getWinningCountryCount ();
   }
 
   @Override
   public int getTotalCountryCount ()
   {
-    return rules.getTotalCountryCount ();
+    return gameRules.getTotalCountryCount ();
   }
 
   @Override
   public InitialCountryAssignment getInitialCountryAssignment ()
   {
-    return rules.getInitialCountryAssignment ();
+    return gameRules.getInitialCountryAssignment ();
   }
 
   @Override
@@ -130,9 +129,11 @@ public final class DefaultGameConfiguration implements GameConfiguration
   {
     return Strings.format (
                            "{}: GameMode: [{}] | PersonLimits: [{}] | WinPercentage: [{}] | "
-                                   + "InitialCountryAssignment: [{}] | PlayMapMetadata: [{}] | GameRules: {}",
+                                   + "WinningCountryCount: [{}] | TotalCountryCount: [{}] | "
+                                   + "InitialCountryAssignment: [{}] | PlayMapMetadata: [{}] | GameRules: [{}]",
                            getClass ().getSimpleName (), gameMode, getPersonLimits (), getWinPercentage (),
-                           getInitialCountryAssignment (), playMapMetadata, rules);
+                           getWinningCountryCount (), getTotalCountryCount (), getInitialCountryAssignment (),
+                           playMapMetadata, gameRules);
   }
 
   @RequiredForNetworkSerialization
@@ -140,6 +141,6 @@ public final class DefaultGameConfiguration implements GameConfiguration
   {
     gameMode = null;
     playMapMetadata = null;
-    rules = null;
+    gameRules = null;
   }
 }

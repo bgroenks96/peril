@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Forerunner Games, LLC.
+ * Copyright © 2013 - 2017 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,7 +99,7 @@ abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   @Override
   public final void activate (final GamePhase currentPhase)
   {
-    Arguments.checkIsNotNull (currentPhase, "phase");
+    Arguments.checkIsNotNull (currentPhase, "currentPhase");
 
     if (shouldActivateAndDeactivate (currentPhase)) activate ();
   }
@@ -107,8 +107,8 @@ abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   @Override
   public final void activate (final PlayerPacket currentPlayer, final GamePhase currentPhase)
   {
-    Arguments.checkIsNotNull (currentPlayer, "player");
-    Arguments.checkIsNotNull (currentPhase, "phase");
+    Arguments.checkIsNotNull (currentPlayer, "currentPlayer");
+    Arguments.checkIsNotNull (currentPhase, "currentPhase");
 
     if (shouldActivateAndDeactivate (currentPlayer, currentPhase)) activate ();
   }
@@ -131,7 +131,7 @@ abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   @Override
   public final void deactivate (final GamePhase currentPhase)
   {
-    Arguments.checkIsNotNull (currentPhase, "phase");
+    Arguments.checkIsNotNull (currentPhase, "currentPhase");
 
     if (shouldActivateAndDeactivate (currentPhase)) deactivate ();
   }
@@ -139,8 +139,8 @@ abstract class AbstractGamePhaseHandler implements GamePhaseHandler
   @Override
   public final void deactivate (final PlayerPacket currentPlayer, final GamePhase currentPhase)
   {
-    Arguments.checkIsNotNull (currentPlayer, "player");
-    Arguments.checkIsNotNull (currentPhase, "phase");
+    Arguments.checkIsNotNull (currentPlayer, "currentPlayer");
+    Arguments.checkIsNotNull (currentPhase, "currentPhase");
 
     if (shouldActivateAndDeactivate (currentPlayer, currentPhase)) deactivate ();
   }

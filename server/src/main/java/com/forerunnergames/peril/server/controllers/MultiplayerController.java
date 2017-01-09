@@ -1,6 +1,5 @@
 /*
- * Copyright © 2011 - 2013 Aaron Mahan.
- * Copyright © 2013 - 2016 Forerunner Games, LLC.
+ * Copyright © 2013 - 2017 Forerunner Games, LLC.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1177,10 +1176,7 @@ public final class MultiplayerController extends ControllerAdapter
     publish (successEvent);
 
     // only resume game if all players are now bound to clients
-    if (!clientsToPlayers.areAllPlayersBounds ())
-    {
-      eventBus.publish (new ResumeGameEvent ());
-    }
+    if (!clientsToPlayers.areAllPlayersBound ()) eventBus.publish (new ResumeGameEvent ());
 
     // send current game state to player
     coreCommunicator.requestSendGameStateTo (updatedPlayer, gameServerConfig);
