@@ -36,6 +36,6 @@ public abstract class AbstractInternalCommunicationEvent implements InternalComm
   @Override
   public String toString ()
   {
-    return Strings.format ("{}: Id: {}", getClass ().getSimpleName (), eventId.toString ());
+    return Strings.format ("{}: EventId: [{}]", getClass ().getSimpleName (), eventId.toString ());
   }
 }

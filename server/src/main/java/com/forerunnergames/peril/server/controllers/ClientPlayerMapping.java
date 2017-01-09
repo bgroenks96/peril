@@ -228,7 +228,7 @@ public final class ClientPlayerMapping
     return playerMaybe.isPresent () && player.equals (playerMaybe.get ());
   }
 
-  public boolean areAllPlayersBounds ()
+  public boolean areAllPlayersBound ()
   {
     for (final PlayerPacket player : players)
     {

@@ -1170,7 +1170,7 @@ public final class ClassicModePlayScreen extends AbstractScreen
     notificationDialog.show (Strings.format (
                                              "{} has been disconnected from the server. We will try to reconnect "
                                                      + "them now. Thank you for your patience.",
-                                             event.getPlayerName ()));
+                                             event.getPersonName ()));
   }
 
   @Handler

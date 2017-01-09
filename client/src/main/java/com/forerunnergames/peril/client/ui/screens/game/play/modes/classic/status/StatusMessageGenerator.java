@@ -817,8 +817,8 @@ public final class StatusMessageGenerator
 
     log.debug ("Event received [{}].", event);
 
-    everyoneElse (event.getPlayer (), "{} has been disconnected from the server. We will try to reconnect "
-            + "them now. Thank you for your gracious patience, General.", event.getPlayerName ());
+    everyoneElse (event.getPerson (), "{} has been disconnected from the server. We will try to reconnect "
+            + "them now. Thank you for your gracious patience, General.", event.getPersonName ());
   }
 
   @Handler

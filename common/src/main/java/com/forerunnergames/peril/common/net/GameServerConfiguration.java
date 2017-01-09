@@ -29,5 +29,5 @@ public interface GameServerConfiguration extends GameConfiguration, ServerConfig
 
   GameServerType getGameServerType ();
 
-  long getServerRequestTimeout (TimeUnit timeUnit);
+  long getServerRequestTimeout (final TimeUnit timeUnit);
 }

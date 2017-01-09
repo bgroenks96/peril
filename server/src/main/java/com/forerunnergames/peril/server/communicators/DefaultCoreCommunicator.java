@@ -70,6 +70,8 @@ public class DefaultCoreCommunicator implements CoreCommunicator
   @Override
   public void notifyInputEventTimedOut (final PlayerInputEvent event)
   {
+    Arguments.checkIsNotNull (event, "event");
+
     eventBus.publish (new NotifyPlayerInputTimeoutEvent (event));
   }
 

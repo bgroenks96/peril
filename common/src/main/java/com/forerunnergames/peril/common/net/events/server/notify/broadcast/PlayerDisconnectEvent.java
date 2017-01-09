@@ -28,16 +28,6 @@ public final class PlayerDisconnectEvent extends AbstractPlayerEvent
     super (player);
   }
 
-  public String getPlayerName ()
-  {
-    return getPersonName ();
-  }
-
-  public PlayerPacket getPlayer ()
-  {
-    return getPerson ();
-  }
-
   @RequiredForNetworkSerialization
   private PlayerDisconnectEvent ()
   {
