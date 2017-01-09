@@ -235,7 +235,13 @@ public final class GameModel extends AbstractGamePhaseHandler
     if (turnDataCache.isSet (CacheKey.END_PLAYER_TURN_VERIFIED)) return;
 
     final Optional <PlayerPacket> sender = eventRegistry.senderOf (event);
-    if (!sender.isPresent () || sender.get ().isNot (getCurrentPlayerPacket ()))
+    if (!sender.isPresent ())
+    {
+      log.warn ("Ignoring [{}]: Cannot find sending player for event: [{}]", event.getClass ().getSimpleName (), event);
+      return;
+    }
+
+    if (sender.get ().isNot (getCurrentPlayerPacket ()))
     {
       publish (new PlayerEndTurnDeniedEvent (sender.get (), event, PlayerEndTurnDeniedEvent.Reason.NOT_IN_TURN));
       return;
