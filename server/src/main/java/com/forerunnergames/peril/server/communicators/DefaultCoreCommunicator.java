@@ -37,7 +37,7 @@ import java.util.Set;
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.listener.Handler;
 
-public class DefaultCoreCommunicator implements CoreCommunicator
+public final class DefaultCoreCommunicator implements CoreCommunicator
 {
   private final Set <InternalResponseEvent> responses = Sets.newConcurrentHashSet ();
   private final MBassador <Event> eventBus;

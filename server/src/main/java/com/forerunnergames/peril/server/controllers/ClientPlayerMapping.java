@@ -19,7 +19,6 @@ package com.forerunnergames.peril.server.controllers;
 
 import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
-import com.forerunnergames.peril.server.communicators.CoreCommunicator;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.net.server.remote.RemoteClient;
 
@@ -35,9 +34,6 @@ import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 //@formatter:off
 /**
@@ -64,24 +60,19 @@ import org.slf4j.LoggerFactory;
 //@formatter:on
 public final class ClientPlayerMapping
 {
-  private static final Logger log = LoggerFactory.getLogger (ClientPlayerMapping.class);
   private static final PlayersBySentiencePredicate humanPredicate = new PlayersBySentiencePredicate (
           PersonSentience.HUMAN);
   private static final PlayersBySentiencePredicate aiPredicate = new PlayersBySentiencePredicate (PersonSentience.AI);
   private final BiMap <RemoteClient, PlayerPacket> clientsToPlayers;
   private final BiMap <UUID, PlayerPacket> serverIdsToPlayers;
   private final Set <PlayerPacket> players;
-  private final CoreCommunicator coreCommunicator;
 
-  public ClientPlayerMapping (final CoreCommunicator coreCommunicator, final int playerLimit)
+  public ClientPlayerMapping (final int playerLimit)
   {
-    Arguments.checkIsNotNull (coreCommunicator, "coreCommunicator");
     Arguments.checkIsNotNegative (playerLimit, "playerLimit");
 
-    this.coreCommunicator = coreCommunicator;
-
-    clientsToPlayers = Maps.synchronizedBiMap (HashBiMap. <RemoteClient, PlayerPacket>create (playerLimit));
-    serverIdsToPlayers = Maps.synchronizedBiMap (HashBiMap. <UUID, PlayerPacket>create (playerLimit));
+    clientsToPlayers = Maps.synchronizedBiMap (HashBiMap.<RemoteClient, PlayerPacket> create (playerLimit));
+    serverIdsToPlayers = Maps.synchronizedBiMap (HashBiMap.<UUID, PlayerPacket> create (playerLimit));
     players = Sets.newConcurrentHashSet ();
   }
 
@@ -96,16 +87,10 @@ public final class ClientPlayerMapping
     Arguments.checkIsNotNull (player, "player");
 
     // map player to a new unique server id, if necessary
-    if (!isMapped (player))
-    {
-      map (UUID.randomUUID (), player);
-    }
+    if (!isMapped (player)) map (UUID.randomUUID (), player);
 
-    // if player already exists in players, remove it so the
-    if (players.contains (player))
-    {
-      players.remove (player);
-    }
+    // if player already exists in players, remove it so the new packet with updated attributes can be added
+    if (players.contains (player)) players.remove (player);
 
     players.add (player);
 
@@ -118,10 +103,7 @@ public final class ClientPlayerMapping
     // remove previous value from player set, if existent;
     // otherwise, the new packet will NOT be added since they evaluate as equal
     final boolean exists = players.remove (player);
-    if (!exists)
-    {
-      return false;
-    }
+    if (!exists) return false;
 
     // re-add new value
     players.add (player);
@@ -231,12 +213,7 @@ public final class ClientPlayerMapping
   {
     for (final PlayerPacket player : players)
     {
-      if (clientsToPlayers.containsValue (player))
-      {
-        continue;
-      }
-
-      return false;
+      if (!clientsToPlayers.containsValue (player)) return false;
     }
 
     return true;
@@ -368,10 +345,9 @@ public final class ClientPlayerMapping
     players.clear ();
   }
 
-  @Override
-  public String toString ()
+  private static <T> ImmutableSet <T> filter (final Collection <T> objects, final Predicate <T> predicate)
   {
-    return clientsToPlayers.toString ();
+    return ImmutableSet.copyOf (Collections2.filter (objects, predicate));
   }
 
   private void map (final UUID serverId, final PlayerPacket player)
@@ -379,9 +355,10 @@ public final class ClientPlayerMapping
     serverIdsToPlayers.forcePut (serverId, player);
   }
 
-  private static <T> ImmutableSet <T> filter (final Collection <T> objects, final Predicate <T> predicate)
+  @Override
+  public String toString ()
   {
-    return ImmutableSet.copyOf (Collections2.filter (objects, predicate));
+    return clientsToPlayers.toString ();
   }
 
   private static class PlayersBySentiencePredicate implements Predicate <PlayerPacket>

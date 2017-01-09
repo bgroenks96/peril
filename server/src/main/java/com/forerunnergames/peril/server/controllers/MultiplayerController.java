@@ -163,7 +163,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     eventCache = new MultiplayerControllerEventCache (this,
             gameServerConfig.getServerRequestTimeout (TimeUnit.MILLISECONDS));
-    clientsToPlayers = new ClientPlayerMapping (coreCommunicator, gameServerConfig.getTotalPlayerLimit ());
+    clientsToPlayers = new ClientPlayerMapping (gameServerConfig.getTotalPlayerLimit ());
     clientsToSpectators = new ClientSpectatorMapping (gameServerConfig.getSpectatorLimit ());
   }
 

@@ -109,6 +109,9 @@ public final class GameModel extends AbstractGamePhaseHandler
   @StateTransitionAction
   public void suspendGame (final SuspendGameEvent event)
   {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
     log.info ("Suspending game...");
 
     resumeGamePhase = getCurrentGamePhase ();
@@ -119,6 +122,9 @@ public final class GameModel extends AbstractGamePhaseHandler
   @StateTransitionAction
   public void resumeGame (final ResumeGameEvent event)
   {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
     log.info ("Resuming game...");
 
     changeGamePhaseTo (resumeGamePhase);
@@ -130,10 +136,9 @@ public final class GameModel extends AbstractGamePhaseHandler
   {
     Arguments.checkIsNotNull (event, "event");
 
-    if (getCurrentPlayerPacket ().isNot (event.getPerson ()))
-    {
-      return false;
-    }
+    log.trace ("Event received [{}]", event);
+
+    if (getCurrentPlayerPacket ().isNot (event.getPerson ())) return false;
 
     log.info ("Skipping turn for player [{}].", event.getPersonName ());
 
@@ -232,6 +237,10 @@ public final class GameModel extends AbstractGamePhaseHandler
   @Handler (priority = Integer.MIN_VALUE)
   void onEvent (final PlayerEndTurnRequestEvent event)
   {
+    Arguments.checkIsNotNull (event, "event");
+
+    log.trace ("Event received [{}]", event);
+
     if (turnDataCache.isSet (CacheKey.END_PLAYER_TURN_VERIFIED)) return;
 
     final Optional <PlayerPacket> sender = eventRegistry.senderOf (event);

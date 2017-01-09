@@ -258,11 +258,7 @@ public class DefaultEventRegistry implements EventRegistry
     final PlayerPacket player = playerMaybe.get ();
     for (final T inputEvent : inputEventMatches)
     {
-      if (inputEvent.getPerson ().isNot (player))
-      {
-        continue;
-      }
-
+      if (inputEvent.getPerson ().isNot (player)) continue;
       map (event, inputEvent);
     }
   }
