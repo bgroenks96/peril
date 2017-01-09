@@ -252,16 +252,13 @@ public class DefaultEventRegistry implements EventRegistry
     if (!playerMaybe.isPresent ())
     {
       log.warn ("Received answer event with no player mapping! [{}]", event);
+      return;
     }
 
     final PlayerPacket player = playerMaybe.get ();
     for (final T inputEvent : inputEventMatches)
     {
-      if (inputEvent.getPerson ().isNot (player))
-      {
-        continue;
-      }
-
+      if (inputEvent.getPerson ().isNot (player)) continue;
       map (event, inputEvent);
     }
   }

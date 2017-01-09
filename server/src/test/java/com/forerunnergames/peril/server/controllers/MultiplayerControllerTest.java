@@ -105,6 +105,7 @@ import com.forerunnergames.tools.net.server.remote.RemoteClientCommunicator;
 import com.forerunnergames.tools.net.server.remote.RemoteClientConnector;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
@@ -594,7 +595,9 @@ public class MultiplayerControllerTest
 
     reset (mockHumanClientCommunicator);
 
-    final UUID secretIdPlayer1 = mpc.getPlayerServerId (clientPlayer1.player ()).get ();
+    final Optional <UUID> maybe = mpc.getPlayerServerId (clientPlayer1.player ());
+    assertTrue (maybe.isPresent ());
+    final UUID secretIdPlayer1 = maybe.get ();
 
     disconnect (clientPlayer1.client ());
 
@@ -670,7 +673,9 @@ public class MultiplayerControllerTest
 
     reset (mockHumanClientCommunicator);
 
-    final UUID secretIdPlayer1 = mpc.getPlayerServerId (clientPlayer1.player ()).get ();
+    final Optional <UUID> maybe = mpc.getPlayerServerId (clientPlayer1.player ());
+    assertTrue (maybe.isPresent ());
+    final UUID secretIdPlayer1 = maybe.get ();
 
     disconnect (clientPlayer1.client ());
 
