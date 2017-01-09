@@ -1176,7 +1176,7 @@ public final class MultiplayerController extends ControllerAdapter
     publish (successEvent);
 
     // only resume game if all players are now bound to clients
-    if (!clientsToPlayers.areAllPlayersBound ()) eventBus.publish (new ResumeGameEvent ());
+    if (clientsToPlayers.areAllPlayersBound ()) eventBus.publish (new ResumeGameEvent ());
 
     // send current game state to player
     coreCommunicator.requestSendGameStateTo (updatedPlayer, gameServerConfig);
