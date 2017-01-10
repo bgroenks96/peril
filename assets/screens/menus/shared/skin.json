@@ -1,15 +1,22 @@
 {
-  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "default-font":   { "file": "fonts/default-font.fnt"          } },
-  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "pirulen-28":     { "file": "fonts/pirulen/pirulen-28.fnt"    } },
-  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "pirulen-22":     { "file": "fonts/pirulen/pirulen-22.fnt"    } },
-  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "pirulen-18":     { "file": "fonts/pirulen/pirulen-18.fnt"    } },
-  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "pirulen-16":     { "file": "fonts/pirulen/pirulen-16.fnt"    } },
-  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "pirulen-14":     { "file": "fonts/pirulen/pirulen-14.fnt"    } },
-  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "pirulen-12":     { "file": "fonts/pirulen/pirulen-12.fnt"    } },
-  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "dejaVu-22":      { "file": "fonts/dejavu/dejaVu-22.fnt"      } },
-  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "dejaVu-20-bold": { "file": "fonts/dejavu/dejaVu-20-bold.fnt" } },
-  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "dejaVu-18":      { "file": "fonts/dejavu/dejaVu-18.fnt"      } },
-  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "dejaVu-16":      { "file": "fonts/dejavu/dejaVu-16.fnt"      } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "default-font":       { "file": "fonts/default-font.fnt"            } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "pirulen-28":         { "file": "fonts/pirulen/pirulen-28.fnt"      } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "pirulen-22":         { "file": "fonts/pirulen/pirulen-22.fnt"      } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "pirulen-18":         { "file": "fonts/pirulen/pirulen-18.fnt"      } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "pirulen-16":         { "file": "fonts/pirulen/pirulen-16.fnt"      } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "pirulen-14":         { "file": "fonts/pirulen/pirulen-14.fnt"      } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "pirulen-12":         { "file": "fonts/pirulen/pirulen-12.fnt"      } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "dejaVu-22":          { "file": "fonts/dejavu/dejaVu-22.fnt"        } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "dejaVu-20-bold":     { "file": "fonts/dejavu/dejaVu-20-bold.fnt"   } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "dejaVu-18":          { "file": "fonts/dejavu/dejaVu-18.fnt"        } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "dejaVu-16":          { "file": "fonts/dejavu/dejaVu-16.fnt"        } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "exo-2-bold-28":      { "file": "fonts/exo2/exo-2-bold-28.fnt"      } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "exo-2-med-18":       { "file": "fonts/exo2/exo-2-med-18.fnt"       } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "exo-2-med-16":       { "file": "fonts/exo2/exo-2-med-16.fnt"       } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "exo-2-med-14":       { "file": "fonts/exo2/exo-2-med-14.fnt"       } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "exo-2-semi-bold-18": { "file": "fonts/exo2/exo-2-semi-bold-18.fnt" } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "exo-2-semi-bold-16": { "file": "fonts/exo2/exo-2-semi-bold-16.fnt" } },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": { "exo-2-reg-18":       { "file": "fonts/exo2/exo-2-reg-18.fnt"       } },
 
   "com.badlogic.gdx.graphics.Color": {
     "white"     : { "a": 1, "b": 1,   "g": 1,   "r": 1   },
@@ -22,62 +29,77 @@
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle": {
-    "radio"                   : { "up": "radio-on",                 "over": null, "down": "radio-off", "checked": "radio-on",  "disabled": null },
-    "icon-ai-player-blue"     : { "up": "icon-ai-player-blue",      "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-ai-player-brown"    : { "up": "icon-ai-player-brown",     "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-ai-player-cyan"     : { "up": "icon-ai-player-cyan",      "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-ai-player-gold"     : { "up": "icon-ai-player-gold",      "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-ai-player-green"    : { "up": "icon-ai-player-green",     "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-ai-player-pink"     : { "up": "icon-ai-player-pink",      "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-ai-player-purple"   : { "up": "icon-ai-player-purple",    "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-ai-player-red"      : { "up": "icon-ai-player-red",       "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-ai-player-silver"   : { "up": "icon-ai-player-silver",    "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-ai-player-teal"     : { "up": "icon-ai-player-teal",      "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-human-player-blue"  : { "up": "icon-human-player-blue",   "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-human-player-brown" : { "up": "icon-human-player-brown",  "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-human-player-cyan"  : { "up": "icon-human-player-cyan",   "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-human-player-gold"  : { "up": "icon-human-player-gold",   "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-human-player-green" : { "up": "icon-human-player-green",  "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-human-player-pink"  : { "up": "icon-human-player-pink",   "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-human-player-purple": { "up": "icon-human-player-purple", "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-human-player-red"   : { "up": "icon-human-player-red",    "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-human-player-silver": { "up": "icon-human-player-silver", "over": null, "down": null,        "checked": null,        "disabled": null },
-    "icon-human-player-teal"  : { "up": "icon-human-player-teal",   "over": null, "down": null,        "checked": null,        "disabled": null }
+    "radio"                   : { "up": "radio-on",                 "over": null,             "down": "radio-off",      "checked": "radio-on",     "disabled": null },
+    "new-radio"               : { "up": "new-radio-up",             "over": "new-radio-over", "down": "new-radio-down", "checked": "new-radio-up", "disabled": null },
+    "icon-ai-player-blue"     : { "up": "icon-ai-player-blue",      "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-ai-player-brown"    : { "up": "icon-ai-player-brown",     "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-ai-player-cyan"     : { "up": "icon-ai-player-cyan",      "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-ai-player-gold"     : { "up": "icon-ai-player-gold",      "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-ai-player-green"    : { "up": "icon-ai-player-green",     "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-ai-player-pink"     : { "up": "icon-ai-player-pink",      "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-ai-player-purple"   : { "up": "icon-ai-player-purple",    "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-ai-player-red"      : { "up": "icon-ai-player-red",       "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-ai-player-silver"   : { "up": "icon-ai-player-silver",    "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-ai-player-teal"     : { "up": "icon-ai-player-teal",      "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-human-player-blue"  : { "up": "icon-human-player-blue",   "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-human-player-brown" : { "up": "icon-human-player-brown",  "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-human-player-cyan"  : { "up": "icon-human-player-cyan",   "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-human-player-gold"  : { "up": "icon-human-player-gold",   "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-human-player-green" : { "up": "icon-human-player-green",  "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-human-player-pink"  : { "up": "icon-human-player-pink",   "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-human-player-purple": { "up": "icon-human-player-purple", "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-human-player-red"   : { "up": "icon-human-player-red",    "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-human-player-silver": { "up": "icon-human-player-silver", "over": null,             "down": null,             "checked": null,           "disabled": null },
+    "icon-human-player-teal"  : { "up": "icon-human-player-teal",   "over": null,             "down": null,             "checked": null,           "disabled": null }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
-    "default"    : { "up": "button-up",        "down": "button-down",        "over": "button-over",        "disabled": "button-disabled",        "checked": null,         "font": "pirulen-18", "fontColor": "light-gray" },
-    "dialog"     : { "up": "dialog-button-up", "down": "dialog-button-down", "over": "dialog-button-over", "disabled": "dialog-button-disabled", "checked": null,         "font": "pirulen-12", "fontColor": "light-gray" },
-    "menu-choice": { "up": null,               "down": "menu-choice-over",   "over": "menu-choice-over",   "disabled": null,                     "checked": null,         "font": "pirulen-22", "fontColor": "light-gray" },
-    "tab-button" : { "up": null,               "down": null,                 "over": "tab-button",         "disabled": null,                     "checked": "tab-button", "font": "pirulen-16", "fontColor": "white"      }
+    "default"       : { "up": "button-up",            "down": "button-down",            "over": "button-over",            "disabled": "button-disabled",            "checked": null,             "font": "pirulen-18",         "fontColor": "light-gray" },
+    "dialog"        : { "up": "dialog-button-up",     "down": "dialog-button-down",     "over": "dialog-button-over",     "disabled": "dialog-button-disabled",     "checked": null,             "font": "exo-2-semi-bold-16", "fontColor": "light-gray" },
+    "new-dialog"    : { "up": "new-dialog-button-up", "down": "new-dialog-button-down", "over": "new-dialog-button-down", "disabled": "new-dialog-button-disabled", "checked": null,             "font": "pirulen-12",         "fontColor": "light-gray" },
+    "menu-choice"   : { "up": null,                   "down": "menu-choice-over",       "over": "menu-choice-over",       "disabled": null,                         "checked": null,             "font": "pirulen-22",         "fontColor": "light-gray" },
+    "tab-button"    : { "up": null,                   "down": null,                     "over": "tab-button",             "disabled": null,                         "checked": "tab-button",     "font": "pirulen-16",         "fontColor": "white"      },
+    "new-tab-angled": { "up": null,                   "down": "new-tab-angled",         "over": null,                     "disabled": null,                         "checked": "new-tab-angled", "font": "exo-2-semi-bold-18", "fontColor": "white"      },
+    "new-tab-square": { "up": null,                   "down": "new-tab-square",         "over": null,                     "disabled": null,                         "checked": "new-tab-square", "font": "exo-2-semi-bold-18", "fontColor": "white"      }
+
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
-    "default"   : { "up": "button-up",             "imageUp": null,               "over": "button-over",             "imageOver": null,               "down": "button-down",             "imageDown": null,               "disabled": "button-disabled",             "imageDisabled": null },
-    "options"   : { "up": "image-button-up",       "imageUp": "icon-gear",        "over": "image-button-over",       "imageOver": "icon-gear",        "down": "image-button-down",       "imageDown": "icon-gear",        "disabled": "image-button-disabled",       "imageDisabled": "icon-gear"        },
-    "add-row"   : { "up": "small-image-button-up", "imageUp": "icon-plus-small",  "over": "small-image-button-over", "imageOver": "icon-plus-small",  "down": "small-image-button-down", "imageDown": "icon-plus-small",  "disabled": "small-image-button-disabled", "imageDisabled": "icon-plus-small"  },
-    "remove-row": { "up": "small-image-button-up", "imageUp": "icon-minus-small", "over": "small-image-button-over", "imageOver": "icon-minus-small", "down": "small-image-button-down", "imageDown": "icon-minus-small", "disabled": "small-image-button-disabled", "imageDisabled": "icon-minus-small" }
+    "default"       : { "up": "button-up",                 "imageUp": null,                   "over": "button-over",                 "imageOver": null,                   "down": "button-down",                 "imageDown": null,                   "disabled": "button-disabled",                 "imageDisabled": null },
+    "options"       : { "up": "image-button-up",           "imageUp": "icon-gear",            "over": "image-button-over",           "imageOver": "icon-gear",            "down": "image-button-down",           "imageDown": "icon-gear",            "disabled": "image-button-disabled",           "imageDisabled": "icon-gear"            },
+    "add-row"       : { "up": "small-image-button-up",     "imageUp": "icon-plus-small",      "over": "small-image-button-over",     "imageOver": "icon-plus-small",      "down": "small-image-button-down",     "imageDown": "icon-plus-small",      "disabled": "small-image-button-disabled",     "imageDisabled": "icon-plus-small"      },
+    "remove-row"    : { "up": "small-image-button-up",     "imageUp": "icon-minus-small",     "over": "small-image-button-over",     "imageOver": "icon-minus-small",     "down": "small-image-button-down",     "imageDown": "icon-minus-small",     "disabled": "small-image-button-disabled",     "imageDisabled": "icon-minus-small"     },
+    "new-add-row"   : { "up": "new-small-image-button-up", "imageUp": "new-icon-plus-small",  "over": "new-small-image-button-down", "imageOver": "new-icon-plus-small",  "down": "new-small-image-button-down", "imageDown": "new-icon-plus-small",  "disabled": "new-small-image-button-disabled", "imageDisabled": "new-icon-plus-small"  },
+    "new-remove-row": { "up": "new-small-image-button-up", "imageUp": "new-icon-minus-small", "over": "new-small-image-button-down", "imageOver": "new-icon-minus-small", "down": "new-small-image-button-down", "imageDown": "new-icon-minus-small", "disabled": "new-small-image-button-disabled", "imageDisabled": "new-icon-minus-small" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle": {
-    "default": { "vScroll": null, "hScrollKnob": "scroll-knob", "background": null, "hScroll": null, "vScrollKnob": "scroll-knob" }
+    "default"    : { "vScroll": null, "hScrollKnob": "scroll-knob",     "background": null, "hScroll": null, "vScrollKnob": "scroll-knob"     },
+    "new-default": { "vScroll": null, "hScrollKnob": "new-scroll-knob", "background": null, "hScroll": null, "vScrollKnob": "new-scroll-knob" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle": {
-    "default": { "background": "list-background", "fontColorUnselected": "light-gray", "selection": "list-selection", "fontColorSelected": "white", "font": "dejaVu-16" }
+    "default"    : { "background": "list-background",     "fontColorUnselected": "light-gray", "selection": "list-selection",     "fontColorSelected": "white", "font": "dejaVu-16" },
+    "new-default": { "background": "new-list-background", "fontColorUnselected": "light-gray", "selection": "new-list-selection", "fontColorSelected": "white", "font": "exo-2-med-16" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle": {
-    "default"       : { "font": "dejaVu-16", "fontColor": "white", "background": "select-box-background",        "backgroundOver": "select-box-background-over",        "backgroundOpen": "select-box-background-open",        "backgroundDisabled": "select-box-background-disabled",        "scrollStyle": "default", "listStyle": "default" },
-    "default-dialog": { "font": "dejaVu-16", "fontColor": "white", "background": "select-box-dialog-background", "backgroundOver": "select-box-dialog-background-over", "backgroundOpen": "select-box-dialog-background-open", "backgroundDisabled": "select-box-dialog-background-disabled", "scrollStyle": "default", "listStyle": "default" },
-    "option-box"    : { "font": "dejaVu-16", "fontColor": "white", "background": "option-box-background",        "backgroundOver": "option-box-background-over",        "backgroundOpen": "option-box-background-open",        "backgroundDisabled": "option-box-background-disabled",        "scrollStyle": "default", "listStyle": "default" }
+    "default"           : { "font": "dejaVu-16", "fontColor": "white", "background": "select-box-background",            "backgroundOver": "select-box-background-over",            "backgroundOpen": "select-box-background-open",            "backgroundDisabled": "select-box-background-disabled",            "scrollStyle": "default",     "listStyle": "default"     },
+    "default-dialog"    : { "font": "dejaVu-16", "fontColor": "white", "background": "select-box-dialog-background",     "backgroundOver": "select-box-dialog-background-over",     "backgroundOpen": "select-box-dialog-background-open",     "backgroundDisabled": "select-box-dialog-background-disabled",     "scrollStyle": "default",     "listStyle": "default"     },
+    "new-default-dialog": { "font": "dejaVu-16", "fontColor": "white", "background": "new-select-box-dialog-background", "backgroundOver": "new-select-box-dialog-background-open", "backgroundOpen": "new-select-box-dialog-background-open", "backgroundDisabled": "new-select-box-dialog-background-disabled", "scrollStyle": "new-default", "listStyle": "new-default" },
+    "option-box"        : { "font": "dejaVu-16", "fontColor": "white", "background": "option-box-background",            "backgroundOver": "option-box-background-over",            "backgroundOpen": "option-box-background-open",            "backgroundDisabled": "option-box-background-disabled",            "scrollStyle": "default",     "listStyle": "default"     }
    },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle": {
-    "dialog-modal"         : { "titleFont": "pirulen-28", "background": "dialog-background",             "titleFontColor": "white", "stageBackground": "dialogDim" },
-    "players-dialog"       : { "titleFont": "pirulen-28", "background": "players-dialog-background",     "titleFontColor": "white", "stageBackground": "dialogDim" },
-    "play-map-dialog"      : { "titleFont": "pirulen-28", "background": "play-map-dialog-background",    "titleFontColor": "white", "stageBackground": "dialogDim" },
-    "my-settings-dialog"   : { "titleFont": "pirulen-28", "background": "my-settings-dialog-background", "titleFontColor": "white", "stageBackground": "dialogDim" }
+    "dialog-modal"     : { "titleFont": "pirulen-28", "background": "dialog-background",          "titleFontColor": "white", "stageBackground": "dialogDim" },
+    "new-dialog-modal" : { "titleFont": "pirulen-28", "background": "new-dialog-background",      "titleFontColor": "white", "stageBackground": "dialogDim" },
+    "players-dialog"   : { "titleFont": "pirulen-28", "background": "players-dialog-background",  "titleFontColor": "white", "stageBackground": "dialogDim" },
+    "play-map-dialog"  : { "titleFont": "pirulen-28", "background": "play-map-dialog-background", "titleFontColor": "white", "stageBackground": "dialogDim" },
+    "settings-dialog"  : { "titleFont": "pirulen-28", "background": "settings-dialog-background", "titleFontColor": "white", "stageBackground": "dialogDim" }
+  },
+
+  "com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle": {
+    "new-default-horizontal": { "background": "new-horizontal-slider-background", "knob": "new-slider-knob" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
@@ -92,14 +114,20 @@
     "dialog-message"               : { "font": "dejaVu-16",      "fontColor": "white",      "background": null },
     "dialog-settings-title"        : { "font": "dejaVu-18",      "fontColor": "white",      "background": null },
     "dialog-settings"              : { "font": "dejaVu-16",      "fontColor": "light-gray", "background": null },
-    "dialog-boxed-text"            : { "font": "dejaVu-16",      "fontColor": "white",      "background": "label-dialog-background" }
+    "dialog-boxed-text"            : { "font": "dejaVu-16",      "fontColor": "white",      "background": "label-dialog-background" },
+    "new-dialog-title"             : { "font": "exo-2-bold-28",  "fontColor": "white",      "background": null },
+    "new-dialog-sub-title"         : { "font": "exo-2-reg-18",   "fontColor": "light-gray", "background": null },
+    "new-dialog-message"           : { "font": "exo-2-med-18",   "fontColor": "light-gray", "background": null },
+    "new-audio-percent"            : { "font": "exo-2-med-14",   "fontColor": "light-gray", "background": "audio-percent-background" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {
-    "default": { "selection": "selection", "background": "textfield-background", "focusedBackground": "textfield-focused-background", "disabledBackground": "textfield-disabled-background", "font": "dejaVu-16", "fontColor": "white", "cursor": "text-cursor" }
+    "default"    : { "selection": "selection",     "background": "textfield-background",     "focusedBackground": "textfield-focused-background",     "disabledBackground": "textfield-disabled-background",     "font": "dejaVu-16", "fontColor": "white", "cursor": "text-cursor" },
+    "new-default": { "selection": "new-selection", "background": "new-textfield-background", "focusedBackground": "new-textfield-focused-background", "disabledBackground": "new-textfield-disabled-background", "font": "dejaVu-16", "fontColor": "white", "cursor": "text-cursor" }
   },
 
   "com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle": {
-    "default": { "checkboxOn": "checkbox-on", "checkboxOff": "checkbox-off", "checkboxOnDisabled": "checkbox-on-disabled", "checkboxOffDisabled": "checkbox-off-disabled", "font": "default-font", "fontColor": "white" }
+    "default"    : { "checkboxOn": "checkbox-on",     "checkboxOff": "checkbox-off",     "checkboxOnDisabled": "checkbox-on-disabled",     "checkboxOffDisabled": "checkbox-off-disabled",     "font": "default-font", "fontColor": "white", "checkboxOver": null },
+    "new-default": { "checkboxOn": "new-checkbox-on", "checkboxOff": "new-checkbox-off", "checkboxOnDisabled": "new-checkbox-on-disabled", "checkboxOffDisabled": "new-checkbox-off-disabled", "font": "default-font", "fontColor": "white", "checkboxOver": "new-checkbox-over" }
   }
 }
