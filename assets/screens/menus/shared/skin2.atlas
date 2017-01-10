@@ -1,12 +1,40 @@
 skin2.png
-size: 2048, 1024
+size: 2048, 2048
 format: RGBA8888
-filter: MipMapLinearLinear,Linear
+filter: MipMapNearestLinear, Nearest
 repeat: none
-my-settings-dialog-background
+play-map-dialog-background
   rotate: false
-  xy: 0, 0
-  size: 1032, 516
-  orig: 1032, 516
+  xy: 1, 1
+  size: 1204, 638
+  orig: 1204, 638
+  offset: 0, 0
+  index: -1
+menu-bar-long
+  rotate: false
+  xy: 1, 640
+  size: 660, 1080
+  orig: 660, 1080
+  offset: 0, 0
+  index: -1
+menu-bar-short
+  rotate: false
+  xy: 662, 640
+  size: 360, 1080
+  orig: 360, 1080
+  offset: 0, 0
+  index: -1
+settings-dialog-background
+  rotate: false
+  xy: 1023, 640
+  size: 900, 500
+  orig: 900, 500
+  offset: 0, 0
+  index: -1
+players-dialog-background
+  rotate: false
+  xy: 1206, 1
+  size: 692, 524
+  orig: 692, 524
   offset: 0, 0
   index: -1
