@@ -201,6 +201,12 @@ public final class MultiplayerController extends ControllerAdapter
   @Override
   public void onEventTimedOut (final PlayerInputEvent inputEvent)
   {
+    // do not fire timeout notification if player is not currently bound to a client
+    if (!clientsToPlayers.isBound (inputEvent.getPerson ()))
+    {
+      return;
+    }
+
     coreCommunicator.notifyInputEventTimedOut (inputEvent);
   }
 
@@ -1120,6 +1126,7 @@ public final class MultiplayerController extends ControllerAdapter
 
     if (!eventCache.hasPendingEvents (disconnectedPlayer)) return;
 
+    eventCache.cancelAllTimersFor (disconnectedPlayer);
     publish (new SuspendGameEvent (GameSuspendedEvent.Reason.PLAYER_UNAVAILABLE));
   }
 
@@ -1175,11 +1182,11 @@ public final class MultiplayerController extends ControllerAdapter
             clientsToPlayers.players (), gameServerConfig.getPersonLimits ());
     publish (successEvent);
 
-    // only resume game if all players are now bound to clients
-    if (clientsToPlayers.areAllPlayersBound ()) eventBus.publish (new ResumeGameEvent ());
-
     // send current game state to player
     coreCommunicator.requestSendGameStateTo (updatedPlayer, gameServerConfig);
+
+    // only resume game if all players are now bound to clients
+    if (clientsToPlayers.areAllPlayersBound ()) eventBus.publish (new ResumeGameEvent ());
 
     if (!eventCache.hasPendingEvents (updatedPlayer)) return;
 
