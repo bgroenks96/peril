@@ -257,7 +257,8 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
 
   // ------ Event Handlers ------ //
 
-  @Handler
+  // SuspendGameEvent handler must be handled FIRST to prevent the state machine from invoking end()
+  @Handler (priority = Integer.MAX_VALUE)
   void onEvent (final SuspendGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
@@ -267,7 +268,8 @@ public abstract class AbstractGamePhaseHandler implements GamePhaseHandler
     isSuspended = true;
   }
 
-  @Handler
+  // ResumeGameEvent handler must be handled LAST to prevent the state machine from invoking begin()
+  @Handler (priority = Integer.MIN_VALUE)
   void onEvent (final ResumeGameEvent event)
   {
     Arguments.checkIsNotNull (event, "event");

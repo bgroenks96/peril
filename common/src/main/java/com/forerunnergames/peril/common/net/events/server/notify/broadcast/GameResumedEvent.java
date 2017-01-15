@@ -18,12 +18,33 @@
 package com.forerunnergames.peril.common.net.events.server.notify.broadcast;
 
 import com.forerunnergames.peril.common.game.GamePhase;
-import com.forerunnergames.peril.common.net.events.server.defaults.AbstractGamePhaseNotificationEvent;
+import com.forerunnergames.peril.common.game.rules.GameRules;
+import com.forerunnergames.peril.common.net.events.server.defaults.AbstractPlayerRestoreGameStateEvent;
+import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
+import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
+import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
+import com.forerunnergames.tools.net.annotations.RequiredForNetworkSerialization;
 
-public final class GameResumedEvent extends AbstractGamePhaseNotificationEvent
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+
+public final class GameResumedEvent extends AbstractPlayerRestoreGameStateEvent
 {
-  public GameResumedEvent (final GamePhase gamePhase)
+  public GameResumedEvent (final PlayerPacket selfPlayer,
+                           final PlayerPacket currentPlayer,
+                           final GamePhase currentGamePhase,
+                           final int currentGameRound,
+                           final GameRules gameRules,
+                           final CardSetPacket cardsInHand,
+                           final ImmutableSet <CardSetPacket> availableTradeIns,
+                           final ImmutableMap <CountryPacket, PlayerPacket> countriesToPlayers)
   {
-    super (gamePhase);
+    super (selfPlayer, currentPlayer, currentGamePhase, currentGameRound, gameRules, cardsInHand, availableTradeIns,
+           countriesToPlayers);
+  }
+
+  @RequiredForNetworkSerialization
+  private GameResumedEvent ()
+  {
   }
 }

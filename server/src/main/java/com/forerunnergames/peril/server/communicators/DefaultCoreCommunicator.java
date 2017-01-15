@@ -17,15 +17,10 @@
 
 package com.forerunnergames.peril.server.communicators;
 
-import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputEvent;
-import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.core.events.internal.interfaces.InternalRequestEvent;
 import com.forerunnergames.peril.core.events.internal.interfaces.InternalResponseEvent;
 import com.forerunnergames.peril.core.events.internal.player.NotifyPlayerInputTimeoutEvent;
-import com.forerunnergames.peril.core.events.internal.player.SendGameStateRequestEvent;
-import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent;
-import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent.ResponseCode;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 
@@ -49,21 +44,6 @@ public final class DefaultCoreCommunicator implements CoreCommunicator
     this.eventBus = eventBus;
 
     eventBus.subscribe (this);
-  }
-
-  @Override
-  public void requestSendGameStateTo (final PlayerPacket player, final GameServerConfiguration config)
-  {
-    Arguments.checkIsNotNull (player, "player");
-    Arguments.checkIsNotNull (config, "config");
-
-    final SendGameStateRequestEvent requestEvent = new SendGameStateRequestEvent (player, config);
-    eventBus.publish (requestEvent);
-
-    final Optional <InternalResponseEvent> responseEvent = getResponseFor (requestEvent);
-    if (!responseEvent.isPresent ()) return;
-    final SendGameStateResponseEvent sendGameStateResponse = (SendGameStateResponseEvent) responseEvent.get ();
-    assert sendGameStateResponse.getResponse () == ResponseCode.OK;
   }
 
   @Override

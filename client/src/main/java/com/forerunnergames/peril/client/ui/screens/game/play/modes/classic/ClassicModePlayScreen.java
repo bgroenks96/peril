@@ -120,7 +120,6 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.Playe
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipFortifyPhaseEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerRestoreGameStateEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerOccupyCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.ChatMessageSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerEndAttackPhaseSuccessEvent;
@@ -1212,6 +1211,46 @@ public final class ClassicModePlayScreen extends AbstractScreen
 
     log.debug ("Event received [{}].", event);
 
+    log.info ("Restoring game state...");
+
+    updateGameRules (event.getGameRules ());
+
+    gamePhaseHandlers.shutDown ();
+    gamePhaseHandlers.setSelfPlayer (event.getSelfPlayer ());
+    gamePhaseHandlers.activate (event.getCurrentPlayer (), event.getCurrentGamePhase ());
+
+    Gdx.app.postRunnable (new Runnable ()
+    {
+      @Override
+      public void run ()
+      {
+        // This needs to be injected into the play screen elsewhere, or set via an internal event from
+        // client::MultiplayerController.
+        // If for any reason neither of these solutions are plausible, we can consider having server send a follow up
+        // event.
+        // intelBox.setGameServerConfiguration (event.getGameServerConfiguration ());
+        intelBox.setGamePhase (event.getCurrentGamePhase ());
+        intelBox.setGameRound (event.getCurrentGameRound ());
+        intelBox.setOwnedCountriesForSelf (event.getSelfOwnedCountryCount (), event.getPerson ());
+
+        // TODO Update state of control room box buttons.
+
+        playMap.reset ();
+
+        for (final Map.Entry <CountryPacket, PlayerPacket> playMapEntry : event.getCountriesToPlayerEntries ())
+        {
+          playMap.setCountryState (playMapEntry.getKey ().getName (),
+                                   CountryPrimaryImageState.fromPlayerColor (playMapEntry.getValue ().getColor ()));
+          playMap.setArmies (playMapEntry.getKey ().getArmyCount (), playMapEntry.getKey ().getName ());
+        }
+
+        log.info ("Finished restoring game state.");
+
+        notificationDialog.setTitle ("Reconnected");
+        notificationDialog.show ("You have been reconnected to the server, and can resume normal gameplay.");
+      }
+    });
+
     notificationDialog.setTitle ("Game Unpaused");
     notificationDialog.show ("The game has been unpaused and you can resume normal gameplay.");
   }
@@ -1267,49 +1306,6 @@ public final class ClassicModePlayScreen extends AbstractScreen
     log.debug ("Event received [{}].", event);
 
     gamePhaseHandlers.deactivate (event.getGamePhase ());
-  }
-
-  @Handler
-  void onEvent (final PlayerRestoreGameStateEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.debug ("Event received [{}].", event);
-    log.info ("Restoring game state...");
-
-    updateGameRules (event.getGameRules ());
-
-    gamePhaseHandlers.shutDown ();
-    gamePhaseHandlers.setSelfPlayer (event.getSelfPlayer ());
-    gamePhaseHandlers.activate (event.getCurrentPlayer (), event.getCurrentGamePhase ());
-
-    Gdx.app.postRunnable (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        intelBox.setGameServerConfiguration (event.getGameServerConfiguration ());
-        intelBox.setGamePhase (event.getCurrentGamePhase ());
-        intelBox.setGameRound (event.getCurrentGameRound ());
-        intelBox.setOwnedCountriesForSelf (event.getSelfOwnedCountryCount (), event.getPerson ());
-
-        // TODO Update state of control room box buttons.
-
-        playMap.reset ();
-
-        for (final Map.Entry <CountryPacket, PlayerPacket> playMapEntry : event.getCountriesToPlayerEntries ())
-        {
-          playMap.setCountryState (playMapEntry.getKey ().getName (),
-                                   CountryPrimaryImageState.fromPlayerColor (playMapEntry.getValue ().getColor ()));
-          playMap.setArmies (playMapEntry.getKey ().getArmyCount (), playMapEntry.getKey ().getName ());
-        }
-
-        log.info ("Finished restoring game state.");
-
-        notificationDialog.setTitle ("Reconnected");
-        notificationDialog.show ("You have been reconnected to the server, and can resume normal gameplay.");
-      }
-    });
   }
 
   @Handler
