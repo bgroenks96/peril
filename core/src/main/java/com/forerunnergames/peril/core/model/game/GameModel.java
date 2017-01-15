@@ -28,15 +28,11 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.GameR
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.GameSuspendedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.SkipPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.WaitingForPlayersToJoinGameEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerRestoreGameStateEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.packets.card.CardSetPacket;
 import com.forerunnergames.peril.common.net.packets.person.PlayerPacket;
 import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.core.events.internal.player.NotifyPlayerInputTimeoutEvent;
-import com.forerunnergames.peril.core.events.internal.player.SendGameStateRequestEvent;
-import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent;
-import com.forerunnergames.peril.core.events.internal.player.SendGameStateResponseEvent.ResponseCode;
 import com.forerunnergames.peril.core.model.card.CardPackets;
 import com.forerunnergames.peril.core.model.game.phase.AbstractGamePhaseHandler;
 import com.forerunnergames.peril.core.model.people.player.PlayerFactory;
@@ -128,7 +124,22 @@ public final class GameModel extends AbstractGamePhaseHandler
     log.info ("Resuming game...");
 
     changeGamePhaseTo (resumeGamePhase);
-    publish (new GameResumedEvent (resumeGamePhase));
+
+    final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
+    final GamePhase currentPhase = getCurrentGamePhase ();
+    final int currentRoundNumber = playerTurnModel.getRound ();
+    final ImmutableMap <CountryPacket, PlayerPacket> countriesToPlayers = buildPlayMapViewFrom (playerModel,
+                                                                                                playMapModel);
+    for (final PlayerPacket player : playerModel.getTurnOrderedPlayers ())
+    {
+      final String targetPlayerName = player.getName ();
+      final Id targetPlayerId = playerModel.idOf (targetPlayerName);
+      final CardSetPacket cardsInHand = CardPackets.fromCards (cardModel.getCardsInHand (targetPlayerId));
+      final ImmutableSet <CardSetPacket> availableTradeIns = CardPackets
+              .fromCardMatchSet (cardModel.computeMatchesFor (targetPlayerId));
+      publish (new GameResumedEvent (player, currentPlayer, currentPhase, currentRoundNumber, rules, cardsInHand,
+              availableTradeIns, countriesToPlayers));
+    }
   }
 
   @StateTransitionCondition
@@ -269,35 +280,6 @@ public final class GameModel extends AbstractGamePhaseHandler
 
     // handler will verify whether or not the skip player turn event is valid
     publish (new SkipPlayerTurnEvent (event.getPlayer (), SkipPlayerTurnEvent.Reason.PLAYER_INPUT_TIMED_OUT));
-  }
-
-  @Handler
-  void onEvent (final SendGameStateRequestEvent event)
-  {
-    Arguments.checkIsNotNull (event, "event");
-
-    log.trace ("Internal event received [{}]", event);
-
-    final String targetPlayerName = event.getTargetPlayer ().getName ();
-    if (!playerModel.existsPlayerWith (targetPlayerName))
-    {
-      publish (new SendGameStateResponseEvent (ResponseCode.PLAYER_NOT_FOUND, event.getEventId ()));
-      return;
-    }
-
-    final Id targetPlayerId = playerModel.idOf (targetPlayerName);
-
-    final PlayerPacket currentPlayer = getCurrentPlayerPacket ();
-    final GamePhase currentPhase = getCurrentGamePhase ();
-    final int currentRoundNumber = playerTurnModel.getRound ();
-    final ImmutableMap <CountryPacket, PlayerPacket> countriesToPlayers = buildPlayMapViewFrom (playerModel,
-                                                                                                playMapModel);
-    final CardSetPacket cardsInHand = CardPackets.fromCards (cardModel.getCardsInHand (targetPlayerId));
-    final ImmutableSet <CardSetPacket> availableTradeIns = CardPackets
-            .fromCardMatchSet (cardModel.computeMatchesFor (targetPlayerId));
-    publish (new PlayerRestoreGameStateEvent (event.getTargetPlayer (), currentPlayer, currentPhase, currentRoundNumber,
-            cardsInHand, availableTradeIns, countriesToPlayers, event.getGameServerConfiguration ()));
-    publish (new SendGameStateResponseEvent (ResponseCode.OK, event.getEventId ()));
   }
 
   private void beginGame ()

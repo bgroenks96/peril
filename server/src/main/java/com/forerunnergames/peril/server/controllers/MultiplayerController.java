@@ -44,6 +44,7 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.DirectPlaye
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerEvent;
 import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerInputEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.GameSuspendedEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.GameSuspendedEvent.Reason;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerDisconnectEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerInputCanceledEvent;
@@ -1182,11 +1183,18 @@ public final class MultiplayerController extends ControllerAdapter
             clientsToPlayers.players (), gameServerConfig.getPersonLimits ());
     publish (successEvent);
 
-    // send current game state to player
-    coreCommunicator.requestSendGameStateTo (updatedPlayer, gameServerConfig);
-
-    // only resume game if all players are now bound to clients
-    if (clientsToPlayers.areAllPlayersBound ()) eventBus.publish (new ResumeGameEvent ());
+    // only resume game if all players are now bound to clients;
+    // we also need to notify the reconnected player that the game is suspended otherwise
+    if (clientsToPlayers.areAllPlayersBound ())
+    {
+      eventBus.publish (new ResumeGameEvent ());
+    }
+    else
+    {
+      // send the broadcast event to only the reconnected player; yes, this is weird and kind of hack, but
+      // it's the best we can do for now
+      sendToPlayer (updatedPlayer, new GameSuspendedEvent (Reason.PLAYER_UNAVAILABLE));
+    }
 
     if (!eventCache.hasPendingEvents (updatedPlayer)) return;
 

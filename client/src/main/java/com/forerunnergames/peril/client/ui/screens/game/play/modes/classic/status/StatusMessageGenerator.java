@@ -43,8 +43,8 @@ import com.forerunnergames.peril.common.net.events.server.interfaces.PlayerArmie
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginAttackPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginFortifyPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginGameEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialCountryAssignmentPhaseEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginInitialReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.BeginRoundEvent;
@@ -56,6 +56,7 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndIn
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndPlayerTurnEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndReinforcementPhaseEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.EndRoundEvent;
+import com.forerunnergames.peril.common.net.events.server.notify.broadcast.GameResumedEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerDisconnectEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerLoseGameEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.PlayerWinGameEvent;
@@ -68,7 +69,6 @@ import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerReinforceCountryWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerSelectAttackVectorWaitEvent;
 import com.forerunnergames.peril.common.net.events.server.notify.broadcast.wait.PlayerSelectFortifyVectorWaitEvent;
-import com.forerunnergames.peril.common.net.events.server.notify.direct.PlayerRestoreGameStateEvent;
 import com.forerunnergames.peril.common.net.events.server.request.PlayerClaimCountryRequestEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerAttackCountrySuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerCancelFortifySuccessEvent;
@@ -822,7 +822,7 @@ public final class StatusMessageGenerator
   }
 
   @Handler
-  void onEvent (final PlayerRestoreGameStateEvent event)
+  void onEvent (final GameResumedEvent event)
   {
     Arguments.checkIsNotNull (event, "event");
 
