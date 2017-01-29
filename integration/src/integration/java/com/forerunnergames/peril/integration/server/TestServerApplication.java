@@ -19,9 +19,9 @@ package com.forerunnergames.peril.integration.server;
 
 import com.esotericsoftware.kryo.Kryo;
 
+import com.forerunnergames.peril.common.net.kryonet.KryonetServer;
 import com.forerunnergames.peril.server.application.ServerApplication;
 import com.forerunnergames.peril.server.controllers.MultiplayerController;
-import com.forerunnergames.peril.server.kryonet.KryonetServer;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.server.ServerController;

@@ -39,24 +39,28 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   private final GameConfiguration gameConfig;
   private final ServerConfiguration serverConfig;
   private final long serverRequestTimeoutMs;
+  private final int callbackPort;
 
   public DefaultGameServerConfiguration (final String gameServerName,
                                          final GameServerType gameServerType,
                                          final GameConfiguration gameConfig,
                                          final ServerConfiguration serverConfig,
-                                         final long serverRequestTimeoutMs)
+                                         final long serverRequestTimeoutMs,
+                                         final int callbackPort)
   {
     Arguments.checkIsNotNull (gameServerName, "gameServerName");
     Arguments.checkIsNotNull (gameServerType, "gameServerType");
     Arguments.checkIsNotNull (gameConfig, "gameConfig");
     Arguments.checkIsNotNull (serverConfig, "serverConfig");
     Arguments.checkIsNotNegative (serverRequestTimeoutMs, "serverRequestTimeoutMs");
+    Arguments.checkIsNotNegative (callbackPort, "callbackPort");
 
     this.gameServerName = gameServerName;
     this.gameServerType = gameServerType;
     this.gameConfig = gameConfig;
     this.serverConfig = serverConfig;
     this.serverRequestTimeoutMs = serverRequestTimeoutMs;
+    this.callbackPort = callbackPort;
   }
 
   @Override
@@ -172,13 +176,19 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
   }
 
   @Override
+  public int getCallbackPort ()
+  {
+    return callbackPort;
+  }
+
+  @Override
   public String toString ()
   {
     return Strings.format (
                            "{}: GameServerName: [{}] | GameServerType: [{}] | GameConfig: [{}] | ServerConfig: [{}] "
-                                   + "| ServerRequestTimeoutMs: [{}]",
+                                   + "| ServerRequestTimeoutMs: [{}] | CallbackPort: {}",
                            getClass ().getSimpleName (), gameServerName, gameServerType, gameConfig, serverConfig,
-                           serverRequestTimeoutMs);
+                           serverRequestTimeoutMs, callbackPort);
   }
 
   @RequiredForNetworkSerialization
@@ -189,5 +199,6 @@ public final class DefaultGameServerConfiguration implements GameServerConfigura
     gameConfig = null;
     serverConfig = null;
     serverRequestTimeoutMs = 0;
+    callbackPort = 0;
   }
 }

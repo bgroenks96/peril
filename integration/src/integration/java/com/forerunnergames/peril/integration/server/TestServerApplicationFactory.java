@@ -32,9 +32,11 @@ import com.forerunnergames.peril.common.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerType;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
+import com.forerunnergames.peril.common.net.kryonet.KryonetServer;
 import com.forerunnergames.peril.common.playmap.DefaultPlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.settings.GameSettings;
+import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.peril.core.events.DefaultEventRegistry;
 import com.forerunnergames.peril.core.events.EventRegistry;
 import com.forerunnergames.peril.core.model.battle.BattleModel;
@@ -60,7 +62,6 @@ import com.forerunnergames.peril.server.communicators.DefaultSpectatorCommunicat
 import com.forerunnergames.peril.server.communicators.HumanPlayerCommunicator;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
 import com.forerunnergames.peril.server.controllers.MultiplayerController;
-import com.forerunnergames.peril.server.kryonet.KryonetServer;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.net.server.ServerController;
@@ -155,7 +156,7 @@ public class TestServerApplicationFactory
     final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, playMapMetadata, gameRules);
     final ServerConfiguration serverConfig = new DefaultServerConfiguration (serverAddress, serverPort);
     final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (gameServerName, type,
-            gameConfig, serverConfig, TEST_SERVER_REQUEST_TIMEOUT_MS);
+            gameConfig, serverConfig, TEST_SERVER_REQUEST_TIMEOUT_MS, NetworkSettings.DEFAULT_TCP_CALLBACK_PORT);
 
     final MBassador <Event> aiEventBus = EventBusFactory.create ();
 

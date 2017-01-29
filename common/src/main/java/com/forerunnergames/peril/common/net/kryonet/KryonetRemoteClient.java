@@ -15,9 +15,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.server.kryonet;
+package com.forerunnergames.peril.common.net.kryonet;
 
-import com.forerunnergames.peril.common.net.kryonet.AbstractKryonetRemote;
 import com.forerunnergames.tools.common.Strings;
 import com.forerunnergames.tools.net.client.configuration.ClientConfiguration;
 import com.forerunnergames.tools.net.client.configuration.DefaultClientConfiguration;

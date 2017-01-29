@@ -20,12 +20,20 @@ package com.forerunnergames.peril.server.main;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
+import com.forerunnergames.peril.common.eventbus.EventBusPipe;
+import com.forerunnergames.peril.common.net.events.ipc.interfaces.InterProcessEvent;
 import com.forerunnergames.peril.common.settings.CrashSettings;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
+import com.forerunnergames.peril.server.application.ServerApplication;
 import com.forerunnergames.peril.server.application.ServerApplicationFactory;
 import com.forerunnergames.peril.server.main.args.CommandLineArgs;
-import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Classes;
+import com.forerunnergames.tools.common.Event;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +41,10 @@ import org.slf4j.LoggerFactory;
 public final class Main
 {
   private static final Logger log = LoggerFactory.getLogger (Main.class);
+
+  private static ServerInterProcessClient ipcClient = new ServerInterProcessClient ();
+
+  private static boolean isInitialized = false;
 
   public static void main (final String... args)
   {
@@ -71,26 +83,38 @@ public final class Main
       System.exit (0);
     }
 
-    final Application application = ServerApplicationFactory.create (jArgs);
+    final EventBusPipe <InterProcessEvent, Event> pipe = ipcClient.createPipe ();
+    final ServerApplication application = ServerApplicationFactory.create (jArgs, pipe);
 
+    ipcClient.initialize (jArgs.callbackTcpPort);
     application.initialize ();
 
-    // TODO Use a ScheduledExecutorService
-    while (!application.shouldShutDown ())
+    final ScheduledExecutorService executor = Executors.newScheduledThreadPool (1);
+    executor.scheduleAtFixedRate (new Runnable ()
     {
-      application.update ();
-
-      try
+      @Override
+      public void run ()
       {
-        Thread.sleep (250);
-      }
-      catch (final InterruptedException e)
-      {
-        Thread.currentThread ().interrupt ();
-      }
-    }
+        application.update ();
 
+        if (!isInitialized) finishInitialization (application);
+
+        if (application.shouldShutDown ()) shutDown (application, executor);
+      }
+    }, 0, 250, TimeUnit.MILLISECONDS);
+  }
+
+  private static void finishInitialization (final ServerApplication application)
+  {
+    ipcClient.finishInitialize (application);
+    isInitialized = true;
+  }
+
+  private static void shutDown (final ServerApplication application, final ExecutorService executor)
+  {
     application.shutDown ();
+    executor.shutdown ();
+    ipcClient.disconnect ();
   }
 
   private Main ()

@@ -75,4 +75,9 @@ public final class ServerApplication extends DefaultApplication
 
     mainThreadExecutor.executeQueuedJobs ();
   }
+
+  public void subscribe (final Object subscriber)
+  {
+    eventBus.subscribe (subscriber);
+  }
 }

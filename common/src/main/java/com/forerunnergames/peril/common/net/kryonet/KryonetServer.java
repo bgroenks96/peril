@@ -15,15 +15,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.forerunnergames.peril.server.kryonet;
+package com.forerunnergames.peril.common.net.kryonet;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.FrameworkMessage;
 import com.esotericsoftware.kryonet.Listener;
 
-import com.forerunnergames.peril.common.net.kryonet.KryonetLogging;
-import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Strings;
@@ -44,8 +42,8 @@ import org.slf4j.LoggerFactory;
 public final class KryonetServer extends com.esotericsoftware.kryonet.Server implements Server
 {
   private static final Logger log = LoggerFactory.getLogger (KryonetServer.class);
-  private final Map <Integer, RemoteClient> connectionIdsToRemoteClients = new HashMap<> ();
-  private final Map <RemoteClientListener, Listener> remoteClientToKryonetListeners = new HashMap<> ();
+  private final Map <Integer, RemoteClient> connectionIdsToRemoteClients = new HashMap <> ();
+  private final Map <RemoteClientListener, Listener> remoteClientToKryonetListeners = new HashMap <> ();
   private final Kryo kryo;
   private boolean isRunning = false;
 

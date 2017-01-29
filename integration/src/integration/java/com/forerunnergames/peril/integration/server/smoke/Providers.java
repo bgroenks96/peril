@@ -17,10 +17,10 @@
 
 package com.forerunnergames.peril.integration.server.smoke;
 
-import com.forerunnergames.peril.client.net.KryonetClient;
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
 import com.forerunnergames.peril.common.game.PersonLimits;
 import com.forerunnergames.peril.common.net.GameServerType;
+import com.forerunnergames.peril.common.net.kryonet.KryonetClient;
 import com.forerunnergames.peril.integration.NetworkPortPool;
 import com.forerunnergames.peril.integration.server.TestClient;
 import com.forerunnergames.peril.integration.server.TestServerApplication;

@@ -71,6 +71,7 @@ import com.forerunnergames.peril.common.net.events.server.success.JoinGameServer
 import com.forerunnergames.peril.common.net.events.server.success.PlayerJoinGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.PlayerQuitGameSuccessEvent;
 import com.forerunnergames.peril.common.net.events.server.success.SpectatorJoinGameSuccessEvent;
+import com.forerunnergames.peril.common.net.kryonet.KryonetRemoteClient;
 import com.forerunnergames.peril.common.net.packets.defaults.DefaultPlayerPacket;
 import com.forerunnergames.peril.common.net.packets.person.PersonIdentity;
 import com.forerunnergames.peril.common.net.packets.person.PersonSentience;
@@ -80,6 +81,7 @@ import com.forerunnergames.peril.common.net.packets.territory.CountryPacket;
 import com.forerunnergames.peril.common.playmap.DefaultPlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.settings.GameSettings;
+import com.forerunnergames.peril.common.settings.NetworkSettings;
 import com.forerunnergames.peril.core.events.DefaultEventRegistry;
 import com.forerunnergames.peril.core.events.EventRegistry;
 import com.forerunnergames.peril.server.communicators.AiPlayerCommunicator;
@@ -88,7 +90,6 @@ import com.forerunnergames.peril.server.communicators.DefaultSpectatorCommunicat
 import com.forerunnergames.peril.server.communicators.HumanPlayerCommunicator;
 import com.forerunnergames.peril.server.communicators.PlayerCommunicator;
 import com.forerunnergames.peril.server.communicators.SpectatorCommunicator;
-import com.forerunnergames.peril.server.kryonet.KryonetRemoteClient;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Event;
 import com.forerunnergames.tools.common.Strings;
@@ -1413,7 +1414,8 @@ public class MultiplayerControllerTest
       final GameConfiguration gameConfig = new DefaultGameConfiguration (gameMode, playMapMetadata, gameRules);
       final ServerConfiguration serverConfig = new DefaultServerConfiguration (serverAddress, serverPort);
       final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (gameServerName,
-              gameServerType, gameConfig, serverConfig, DEFAULT_TEST_REQUEST_TIMEOUT);
+              gameServerType, gameConfig, serverConfig, DEFAULT_TEST_REQUEST_TIMEOUT,
+              NetworkSettings.DEFAULT_TCP_CALLBACK_PORT);
 
       final MultiplayerController controller = new MultiplayerController (gameServerConfig, connector,
               humanPlayerCommunicator, aiPlayerCommunicator, spectatorCommunicator, coreCommunicator, eventRegistry,

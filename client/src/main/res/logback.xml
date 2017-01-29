@@ -54,7 +54,7 @@
     <appender-ref ref="STDOUT"/>
   </logger>
 
-  <logger name="com.forerunnergames.peril.common.net.kryonet.KryonetLogger" level="INFO" additivity="false">
+  <logger name="com.forerunnergames.peril.common.net.kryonet.KryonetLogger" level="DEBUG" additivity="false">
     <appender-ref ref="STDOUT"/>
   </logger>
 

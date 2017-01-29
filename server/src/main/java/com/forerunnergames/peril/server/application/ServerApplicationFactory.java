@@ -20,6 +20,7 @@ package com.forerunnergames.peril.server.application;
 import com.forerunnergames.peril.ai.application.AiApplication;
 import com.forerunnergames.peril.ai.net.AiClientCommunicator;
 import com.forerunnergames.peril.common.eventbus.EventBusFactory;
+import com.forerunnergames.peril.common.eventbus.EventBusPipe;
 import com.forerunnergames.peril.common.game.DefaultGameConfiguration;
 import com.forerunnergames.peril.common.game.GameConfiguration;
 import com.forerunnergames.peril.common.game.PersonLimits;
@@ -28,6 +29,7 @@ import com.forerunnergames.peril.common.game.rules.GameRulesFactory;
 import com.forerunnergames.peril.common.net.DefaultGameServerConfiguration;
 import com.forerunnergames.peril.common.net.GameServerConfiguration;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
+import com.forerunnergames.peril.common.net.kryonet.KryonetServer;
 import com.forerunnergames.peril.common.playmap.PlayMapMetadata;
 import com.forerunnergames.peril.common.playmap.io.PlayMapMetadataFinder;
 import com.forerunnergames.peril.common.settings.NetworkSettings;
@@ -64,9 +66,7 @@ import com.forerunnergames.peril.server.communicators.DefaultSpectatorCommunicat
 import com.forerunnergames.peril.server.communicators.HumanPlayerCommunicator;
 import com.forerunnergames.peril.server.controllers.EventBasedServerController;
 import com.forerunnergames.peril.server.controllers.MultiplayerController;
-import com.forerunnergames.peril.server.kryonet.KryonetServer;
 import com.forerunnergames.peril.server.main.args.CommandLineArgs;
-import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Arguments;
 import com.forerunnergames.tools.common.Classes;
 import com.forerunnergames.tools.common.Event;
@@ -82,15 +82,19 @@ import com.google.common.collect.ImmutableSet;
 
 import de.matthiasmann.AsyncExecution;
 
+import javax.annotation.Nullable;
+
 import net.engio.mbassy.bus.MBassador;
 
 public final class ServerApplicationFactory
 {
-  public static Application create (final CommandLineArgs args)
+  public static <T> ServerApplication create (final CommandLineArgs args, @Nullable final EventBusPipe <T, Event> pipe)
   {
     Arguments.checkIsNotNull (args, "args");
 
     final MBassador <Event> serverEventBus = EventBusFactory.create ();
+
+    if (pipe != null) pipe.pipeTo (serverEventBus);
 
     final Server server = new KryonetServer ();
 
@@ -147,9 +151,11 @@ public final class ServerApplicationFactory
     final ServerConfiguration serverConfig = new DefaultServerConfiguration (externalAddressResolver.resolveIp (),
             args.serverTcpPort);
 
+    final int callbackPort = args.callbackTcpPort > 0 ? args.callbackTcpPort
+            : NetworkSettings.DEFAULT_TCP_CALLBACK_PORT;
     final GameConfiguration gameConfig = new DefaultGameConfiguration (args.gameMode, playMapMetadata, gameRules);
     final GameServerConfiguration gameServerConfig = new DefaultGameServerConfiguration (args.gameServerName,
-            args.gameServerType, gameConfig, serverConfig, NetworkSettings.SERVER_REQUEST_TIMEOUT_MS);
+            args.gameServerType, gameConfig, serverConfig, NetworkSettings.SERVER_REQUEST_TIMEOUT_MS, callbackPort);
 
     final MBassador <Event> aiEventBus = EventBusFactory.create ();
 

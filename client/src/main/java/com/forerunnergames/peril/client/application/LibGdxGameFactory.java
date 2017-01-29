@@ -27,7 +27,6 @@ import com.forerunnergames.peril.client.assets.AssetManagerFactory;
 import com.forerunnergames.peril.client.assets.AssetUpdater;
 import com.forerunnergames.peril.client.assets.AssetUpdaterFactory;
 import com.forerunnergames.peril.client.net.EventBasedClientController;
-import com.forerunnergames.peril.client.net.KryonetClient;
 import com.forerunnergames.peril.client.net.MultiplayerController;
 import com.forerunnergames.peril.client.ui.music.MusicController;
 import com.forerunnergames.peril.client.ui.music.MusicFactory;
@@ -39,6 +38,7 @@ import com.forerunnergames.peril.common.eventbus.ThrowingPublicationErrorHandler
 import com.forerunnergames.peril.common.eventbus.UnhandledEventHandler;
 import com.forerunnergames.peril.common.net.GameServerCreator;
 import com.forerunnergames.peril.common.net.LocalGameServerCreator;
+import com.forerunnergames.peril.common.net.kryonet.KryonetClient;
 import com.forerunnergames.peril.common.net.kryonet.KryonetRegistration;
 import com.forerunnergames.tools.common.Application;
 import com.forerunnergames.tools.common.Classes;

@@ -28,44 +28,49 @@ import com.forerunnergames.peril.common.settings.NetworkSettings;
 public final class CommandLineArgs
 {
   @Parameter (names = { "--game-mode", "-g", }, description = "Game mode", required = true,
-              converter = GameModeParameterConverter.class, validateWith = GameModeParameterValidator.class)
+          converter = GameModeParameterConverter.class, validateWith = GameModeParameterValidator.class)
   public GameMode gameMode;
 
   @Parameter (names = { "--server-type", "-s" }, description = "Type of server", required = true,
-              converter = ServerTypeParameterConverter.class, validateWith = ServerTypeParameterValidator.class)
+          converter = ServerTypeParameterConverter.class, validateWith = ServerTypeParameterValidator.class)
   public GameServerType gameServerType;
 
   @Parameter (names = { "--title", "-t" }, description = "Server title", required = true,
-              validateWith = ServerTitleParameterValidator.class)
+          validateWith = ServerTitleParameterValidator.class)
   public String gameServerName;
 
   @Parameter (names = { "--map-name", "-m" }, description = "Map name",
-              validateWith = PlayMapNameParameterValidator.class, required = true)
+          validateWith = PlayMapNameParameterValidator.class, required = true)
   public String playMapName;
 
   @Parameter (names = { "--human-players", "-h" }, description = "Maximum number of human players allowed",
-              validateWith = HumanPlayersParameterValidator.class, required = true)
+          validateWith = HumanPlayersParameterValidator.class, required = true)
   public Integer humanPlayers;
 
   @Parameter (names = { "--ai-players", "-ai" }, description = "Maximum number of AI players allowed",
-              validateWith = AiPlayersParameterValidator.class)
+          validateWith = AiPlayersParameterValidator.class)
   public Integer aiPlayers = ClassicGameRules.MIN_AI_PLAYERS;
 
   @Parameter (names = { "--spectators", "-sp" }, description = "Maximum number of spectators allowed",
-              validateWith = SpectatorsParameterValidator.class)
+          validateWith = SpectatorsParameterValidator.class)
   public Integer spectators = ClassicGameRules.MIN_SPECTATORS;
 
   @Parameter (names = { "--port", "-p", }, description = "TCP port number")
   public Integer serverTcpPort = NetworkSettings.DEFAULT_TCP_PORT;
 
   @Parameter (names = { "--win-percent", "-w" },
-              description = "Minimum percentage of countries one must conquer to win the game")
+          description = "Minimum percentage of countries one must conquer to win the game")
   public Integer winPercentage = 100;
 
   @Parameter (names = { "--assignment", "-a" }, description = "Initial country assignment",
-              converter = InitialCountryAssignmentParameterConverter.class,
-              validateWith = InitialCountryAssignmentParameterValidator.class)
+          converter = InitialCountryAssignmentParameterConverter.class,
+          validateWith = InitialCountryAssignmentParameterValidator.class)
   public InitialCountryAssignment initialCountryAssignment = InitialCountryAssignment.RANDOM;
+
+  @Parameter (names = { "--callback-port", "-c" },
+          description = "Local TCP port used for inter-process communication. Only necessary for host-n-play servers.",
+          validateWith = CallbackPortParameterValidator.class)
+  public int callbackTcpPort = NetworkSettings.DEFAULT_TCP_CALLBACK_PORT;
 
   @Parameter (names = "--help", help = true, description = "Show usage")
   public boolean help = false;
